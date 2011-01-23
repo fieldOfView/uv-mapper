@@ -110,6 +110,7 @@ private:
 	int32_t mPatternContrast;
 	int32_t mDespeckleRadius;
 	bool mCentered;
+	bool mInverseFrame;
 
 	// created channels and surfaces
 	vector<Channel>	mPattern;
@@ -150,6 +151,7 @@ void uvConstructionApp::setup()
 		mProjectionWidth = max( min( boost::lexical_cast<int>( argument( "width", "1024" ) ), 2 << ( mBits - 1 ) ), 1);
 		mProjectionHeight = max( min( boost::lexical_cast<int>( argument( "height", "768" ) ), 2 << ( mBits - 1 ) ), 1);
 		mCentered = boost::lexical_cast<bool>( argument( "centered", "0" ) );
+		mInverseFrame = boost::lexical_cast<bool>( argument( "inverseframe", "1" ) );
 
 		mAsymmetricPatterns = max( min( boost::lexical_cast<int>( argument( "asymmetricpatterns", "2" ) ), (int)mBits - 1 ), 0);
 		mPatternContrast = max( boost::lexical_cast<int>( argument( "contrast", "8" ) ), 1);
@@ -192,7 +194,8 @@ void uvConstructionApp::setup()
 		vector<string> channelNames;
 		channelNames.push_back( "Red" ); channelNames.push_back( "Green" ); channelNames.push_back( "Blue" ); channelNames.push_back( "Grayscale" ); 
 		mParams.addParam( "Color channel", channelNames, &mChannel ,"group=`1. uv-map`" );
-		mParams.addParam( "Asymmetric patterns", &mBits, "group=`1. uv-map` min=0 max=15" );
+		mParams.addParam( "Inverse frame", &mInverseFrame, "group=`1. uv-map`" );
+		mParams.addParam( "Asymmetric patterns", &mAsymmetricPatterns, "group=`1. uv-map` min=0 max=15" );
 		mParams.addParam( "Contrast", &mPatternContrast, "group=`1. uv-map` min=1 max=127" );
 		mParams.addParam( "Despeckle1", &mDespeckleRadius, "group=`1. uv-map` label=`Despeckle radius` min=0 max=10" );
 		mParams.addParam( "Skip between h.& v.", &mVSkip, "group=`1. uv-map`" );
@@ -353,10 +356,10 @@ void uvConstructionApp::startProcessing()
 			mFilePathReplace = fileName.substr(firstDigit+1, lastDigit-firstDigit);
 
 			mFirstNumU = boost::lexical_cast<int>(mFilePathReplace);
-			mFirstNumV = mFirstNumU + mBits + 1 + mVSkip;
+			mFirstNumV = mFirstNumU + mBits + ( (mInverseFrame) ? 1 : 0 ) + mVSkip;
 
 			// resize the pattern vector to hold vectors
-			mPattern.resize(mBits + 1);
+			mPattern.resize(mBits + ( (mInverseFrame) ? 1 : 0 ));
 
 			mAxis = 0;
 
@@ -473,7 +476,7 @@ void uvConstructionApp::loadPass()
 	mProgressTexture = gl::Texture( mPattern[ mCounter ] );
 
 	mCounter++;
-	if ( mCounter >= mBits + 1 ) {
+	if ( mCounter >= mBits + ( ( mInverseFrame ) ? 1 : 0 ) ) {
 		mDarkChannel = mPattern[ mAsymmetricPatterns ].clone();
 		mLightChannel = mPattern[ mAsymmetricPatterns ].clone();
 		mAlphaChannel = mDarkChannel.clone( false );	
@@ -491,12 +494,12 @@ void uvConstructionApp::loadPass()
 void uvConstructionApp::extremesPass() 
 {
 	int i;
-	if (mCounter < ( mBits - mAsymmetricPatterns ) ) {
+	if (mCounter < ( mBits - ( ( mInverseFrame ) ? 0 : 1 ) - mAsymmetricPatterns ) ) {
 		// extract lightest & darkest from "symmetric" patterns first
 		i = mCounter + mAsymmetricPatterns + 1;
 	} else {
 		// then clamp "asymmetric" patterns
-		i = mCounter + mAsymmetricPatterns - mBits;
+		i = mCounter + mAsymmetricPatterns - mBits + ( ( mInverseFrame ) ? 0 : 1 );
 	}
 	Channel::Iter darkIter( mDarkChannel.getIter() );
 	Channel::Iter lightIter( mLightChannel.getIter() );
@@ -532,7 +535,7 @@ void uvConstructionApp::extremesPass()
 	mProgressTexture = gl::Texture( mDarkChannel );
 	
 	mCounter++;
-	if ( mCounter > mBits ) {
+	if ( mCounter > mBits - ( ( mInverseFrame ) ? 0 : 1 ) ) {
 		// construct alpha from lightest and darkest pixels
 		Channel::Iter darkIter( mDarkChannel.getIter() );
 		Channel::Iter lightIter( mLightChannel.getIter() );
@@ -586,7 +589,7 @@ void uvConstructionApp::graycodePass()
 			darkIter.pixel();
 			alphaIter.pixel();
 			
-			if (alphaIter.v()>0) {
+			if ( alphaIter.v() > 0 ) {
 				patternIter.v() = (int)min( 255, max( 0,
 									( 255 * (int)mPatternContrast * (int)(patternIter.v()-darkIter.v() ) / alphaIter.v() ) - (int)( 127 * mPatternContrast ) ) );
 			} else {
@@ -647,7 +650,7 @@ void uvConstructionApp::combinePass()
 
 	mCounter++;
 	
-	if ( mCounter > mBits ) {
+	if ( mCounter >= mBits ) {
 		mCounter = 0;
 		if ( mAxis==0 ) {
 			mAxis++;

@@ -1,18 +1,14 @@
-/uvPatterns/xcode/uvPatterns.xcodeproj/Aldo.mode1v3
-/uvPatterns/xcode/uvPatterns.xcodeproj/Aldo.pbxuser
-/uvPlayer/xcode/uvPlayer.xcodeproj/Aldo.mode1v3
-/uvPlayer/xcode/uvPlayer.xcodeproj/Aldo.pbxuser
-/uvConstruction/xcode/uvConstruction.xcodeproj/Aldo.mode1v3
-/uvConstruction/xcode/uvConstruction.xcodeproj/Aldo.pbxuser
-/uvPatterns/xcode/build/
-/uvConstruction/xcode/build/
-/uvPlayer/xcode/build/
-/uvPatterns/vc10/uvPatterns.sdf
-/uvPatterns/vc10/Debug
-/uvPatterns/vc10/Release
-/uvConstruction/vc10/uvConstruction.sdf
-/uvConstruction/vc10/Debug
-/uvConstruction/vc10/Release
-/uvPlayer/vc10/uvPlayer.sdf
-/uvPlayer/vc10/Debug
-/uvPlayer/vc10/Release
+# Mac OS X cruft
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.user
+.DS_Store
+build/
+
+# Windows cruft
+*.suo
+*.ncb
+*.sdf
+Debug/
+Release/
