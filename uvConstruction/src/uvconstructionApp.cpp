@@ -403,9 +403,7 @@ void uvConstructionApp::removeSpeckles( Surface16u aMap, int aWindowSize )
 	if ( aWindowSize == 0 )
 		return;
 
-	// 8 bit median filtering is faster than 16 bit. Since the median filtering is 
-	// only used to detect stray pixels, the loss is an acceptable tradeoff for speed
-	cv::Mat mapOcv( toOcv( Surface8u( aMap, SurfaceConstraintsDefault(), false ) ) );
+	cv::Mat mapOcv( toOcv( aMap ) );
 	cv::Mat medianOcv, diffOcv;
 
 	cv::medianBlur( mapOcv, medianOcv, aWindowSize );
@@ -536,6 +534,10 @@ void uvConstructionApp::extremesPass()
 	
 	mCounter++;
 	if ( mCounter > mBits - ( ( mInverseFrame ) ? 0 : 1 ) ) {
+		// discard inverseframe
+		if ( mInverseFrame )
+			mPattern[mBits].reset();
+
 		// construct alpha from lightest and darkest pixels
 		Channel::Iter darkIter( mDarkChannel.getIter() );
 		Channel::Iter lightIter( mLightChannel.getIter() );
