@@ -46,7 +46,7 @@ public:
 	
 	string argument     ( string argumentName, string defaultValue );	
 	void   loadMovieFile( const string &path );
-	void   loadMapFile  (   const string &path );
+	void   loadMapFile  ( const string &path );
 	void   defaultMap   ();
 	
 	bool			mShowInfo;
@@ -112,6 +112,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			break;
 		
 		case KeyEvent::KEY_o:
+			setFullScreen(false);
 			path = getOpenFilePath();
 			if( !path.empty() ) {
 				loadMovieFile( path );
@@ -119,6 +120,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			break;
 
 		case KeyEvent::KEY_m:
+			setFullScreen(false);
 			path = getOpenFilePath();
 			if( !path.empty() ) {
 				loadMapFile( path );
@@ -200,6 +202,13 @@ void uvPlayerApp::loadMovieFile( const string &moviePath )
 		infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
 		infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
 		infoText.addLine( toString( mMovie.getFramerate() ) + " fps" );
+		
+		infoText.addCenteredLine( "Keys" );
+		infoText.addLine( "o: load movie" );
+		infoText.addLine( "m: load uvmap" );
+		infoText.addLine( "f: toggle fullscreen" );
+		infoText.addLine( "i: toggle info" );
+
 		infoText.setBorder( 4, 2 );
 		mInfoTexture = gl::Texture( infoText.render( true ) );
 	}
