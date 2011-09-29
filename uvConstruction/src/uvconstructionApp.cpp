@@ -150,7 +150,7 @@ void uvConstructionApp::setup()
 		mChannel = max( min( boost::lexical_cast<int>( argument( "channel", "0" ) ), 3), 0);
 		mProjectionWidth = max( min( boost::lexical_cast<int>( argument( "width", "1024" ) ), 2 << ( mBits - 1 ) ), 1);
 		mProjectionHeight = max( min( boost::lexical_cast<int>( argument( "height", "768" ) ), 2 << ( mBits - 1 ) ), 1);
-		mCentered = boost::lexical_cast<bool>( argument( "centered", "0" ) );
+		mCentered = boost::lexical_cast<bool>( argument( "centered", "1" ) );
 		mInverseFrame = boost::lexical_cast<bool>( argument( "inverseframe", "1" ) );
 
 		mAsymmetricPatterns = max( min( boost::lexical_cast<int>( argument( "asymmetricpatterns", "2" ) ), (int)mBits - 1 ), 0);
