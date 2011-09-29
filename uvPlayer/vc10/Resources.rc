@@ -4,3 +4,5 @@ ID ICON "..\\resources\\cinder_app_icon.ico"
 
 RES_PASSTHRU_VERT
 RES_EFFECT_FRAG
+
+RES_DEFAULT_IMAGE

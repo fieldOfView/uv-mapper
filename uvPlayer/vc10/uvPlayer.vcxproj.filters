@@ -31,10 +31,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\effect_frag.glsl">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="..\resources\passThru_vert.glsl">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\default_image.png">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>

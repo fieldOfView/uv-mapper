@@ -113,6 +113,7 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\resources\default_image.png" />
     <None Include="..\resources\effect_frag.glsl" />
     <None Include="..\resources\passThru_vert.glsl" />
   </ItemGroup>
