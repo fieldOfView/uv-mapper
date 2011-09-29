@@ -98,6 +98,7 @@ private:
 	int32_t mProjectionWidth;
 	int32_t mProjectionHeight;
 	int32_t mInverseThreshold;
+	int32_t mMinFillRadius;
 	int32_t mMaxFillRadius;
 
 	string mFirstFilePath;
@@ -158,6 +159,7 @@ void uvConstructionApp::setup()
 		mDespeckleRadius = max( min( boost::lexical_cast<int>( argument( "despeckleradius", "1" ) ), 10), 0);
 
 		mInverseThreshold = 256 * max( min( boost::lexical_cast<int>( argument( "inversethreshold", "0" ) ), 255), 0);
+		mMinFillRadius = max( min( boost::lexical_cast<int>( argument( "minfillradius", "0" ) ), 10), 0);
 		mMaxFillRadius = max( min( boost::lexical_cast<int>( argument( "maxfillradius", "5" ) ), 10), 0);
 
 		if (mFirstFilePath == "" )
@@ -210,6 +212,7 @@ void uvConstructionApp::setup()
 		//mParams.setOptions( "2. Inverse-map", "opened=false" );
 		
 		mParams.addParam( "Filename3", &mProjectionFileName, "group=`3. Fill gaps` label=Filename" );
+		mParams.addParam( "Minimum radius", &mMinFillRadius, "group=`3. Fill gaps` min=0 max=10" );
 		mParams.addParam( "Maximum radius", &mMaxFillRadius, "group=`3. Fill gaps` min=0 max=10" );
 		//mParams.setOptions( "3. Fill gaps", "opened=false" );
 
@@ -317,7 +320,7 @@ void uvConstructionApp::startProcessing()
 			
 			mProgressTexture = gl::Texture( mInverseMap );
 
-
+			mCounter = mMinFillRadius-1;
 			mState = STATE_FILLINVERSE;
 			break;
 
@@ -358,7 +361,7 @@ void uvConstructionApp::startProcessing()
 			mFirstNumU = boost::lexical_cast<int>(mFilePathReplace);
 			mFirstNumV = mFirstNumU + mBits + ( (mInverseFrame) ? 1 : 0 ) + mVSkip;
 
-			// resize the pattern vector to hold vectors
+			// resize the pattern vector to contains all patterns
 			mPattern.resize(mBits + ( (mInverseFrame) ? 1 : 0 ));
 
 			mAxis = 0;
@@ -800,6 +803,7 @@ void uvConstructionApp::fillInversePass()
 			writeImage( getPathDirectory( mFirstFilePath ) + mProjectionFileName, Surface16u( mInverseMap, SurfaceConstraintsDefault(), false ) );
 
 			if ( mPasses != DO_FILL ) {
+				mCounter = mMinFillRadius-1;
 				mState++;
 			} else {
 				mState = STATE_IDLE;
