@@ -40,24 +40,24 @@ using namespace std;
 
 class uvPlayerApp : public AppBasic {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
+	void prepareSettings ( Settings *settings );
+	void setup ();
+	void update ();
+	void draw ();
 	
-	void resize( ResizeEvent event );
+	void resize ( ResizeEvent event );
 	void keyDown ( KeyEvent event );
 	void fileDrop( FileDropEvent event );	
 	
-	bool			mShowPatterns;
+	string argument ( string argumentName, string defaultValue );	
+	bool mShowPatterns;
 
 	// player
-	string argument     ( string argumentName, string defaultValue );	
-	void   loadMovieFile( const string &path );
-	void   loadMapFile  ( const string &path );
-	void   defaultMap   ();
-	void   defaultImage ();
-	void   infoTexture  ( const string &title );
+	void loadMovieFile( const string &path );
+	void loadMapFile  ( const string &path );
+	void defaultMap   ();
+	void defaultImage ();
+	void infoTexture  ( const string &title );
 
 	bool			mShowInfo;
 	gl::Texture		mFrameTexture, mInfoTexture, mMapTexture;
