@@ -1,7 +1,7 @@
-uv Projection mapping suite
+uvMapping suite
 ---------------------------
-http://fieldofview.com/projects/uv-projection
+http://fieldofview.com/projects/uv-mapping
 
-The uv Projection mapping suite provides an alternative to classic projection mapping animation and calibration techniques. The main tools suite uses Cinder (http://www.libcinder.org) and supports Mac OS X and Windows. 
+The uvMapping suite provides an alternative to classic projection mapping animation and calibration techniques. The main tools suite uses Cinder (http://www.libcinder.org) and supports Mac OS X and Windows. 
 
-The uv Projection mapping suite is released under the Modified BSD License.
+The uvMapping suite is released under the Modified BSD License.
