@@ -26,7 +26,6 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "boost/algorithm/string.hpp" 
-#include "boost/lexical_cast.hpp"
 
 #include "cinder/params/Params.h"
 #include "cinder/ip/Fill.h"
@@ -140,32 +139,32 @@ void uvConstructionApp::setup()
 
 	try {
 		mFirstFilePath = argument( "pattern","" );
-		mVSkip = boost::lexical_cast<int>( argument( "vskip", "0" ) );
+		mVSkip = fromString<int>( argument( "vskip", "0" ) );
 	
 		mUVFileName = argument( "uvmap","uv-map.tif" );
 		mInverseFileName = argument( "inversemap","inverse-map.tif" );
 		mProjectionFileName = argument( "projectionmap","projection-map.tif" );
 
-		mPasses = max( min( boost::lexical_cast<int>( argument( "pass", "0" ) ), (int)DO_FILL), (int)DO_ALL);
-		mBits = max( min( boost::lexical_cast<int>( argument( "bits", "10" ) ), 16), 4);
-		mChannel = max( min( boost::lexical_cast<int>( argument( "channel", "0" ) ), 3), 0);
-		mProjectionWidth = max( min( boost::lexical_cast<int>( argument( "width", "1024" ) ), 2 << ( mBits - 1 ) ), 1);
-		mProjectionHeight = max( min( boost::lexical_cast<int>( argument( "height", "768" ) ), 2 << ( mBits - 1 ) ), 1);
-		mCentered = boost::lexical_cast<bool>( argument( "centered", "1" ) );
-		mInverseFrame = boost::lexical_cast<bool>( argument( "inverseframe", "1" ) );
+		mPasses = max( min( fromString<int>( argument( "pass", "0" ) ), (int)DO_FILL), (int)DO_ALL);
+		mBits = max( min( fromString<int>( argument( "bits", "10" ) ), 16), 4);
+		mChannel = max( min( fromString<int>( argument( "channel", "0" ) ), 3), 0);
+		mProjectionWidth = max( min( fromString<int>( argument( "width", "1024" ) ), 2 << ( mBits - 1 ) ), 1);
+		mProjectionHeight = max( min( fromString<int>( argument( "height", "768" ) ), 2 << ( mBits - 1 ) ), 1);
+		mCentered = fromString<bool>( argument( "centered", "1" ) );
+		mInverseFrame = fromString<bool>( argument( "inverseframe", "1" ) );
 
-		mAsymmetricPatterns = max( min( boost::lexical_cast<int>( argument( "asymmetricpatterns", "2" ) ), (int)mBits - 1 ), 0);
-		mPatternContrast = max( boost::lexical_cast<int>( argument( "contrast", "8" ) ), 1);
-		mDespeckleRadius = max( min( boost::lexical_cast<int>( argument( "despeckleradius", "1" ) ), 10), 0);
+		mAsymmetricPatterns = max( min( fromString<int>( argument( "asymmetricpatterns", "2" ) ), (int)mBits - 1 ), 0);
+		mPatternContrast = max( fromString<int>( argument( "contrast", "8" ) ), 1);
+		mDespeckleRadius = max( min( fromString<int>( argument( "despeckleradius", "1" ) ), 10), 0);
 
-		mInverseThreshold = 256 * max( min( boost::lexical_cast<int>( argument( "inversethreshold", "0" ) ), 255), 0);
-		mMinFillRadius = max( min( boost::lexical_cast<int>( argument( "minfillradius", "0" ) ), 10), 0);
-		mMaxFillRadius = max( min( boost::lexical_cast<int>( argument( "maxfillradius", "5" ) ), 10), 0);
+		mInverseThreshold = 256 * max( min( fromString<int>( argument( "inversethreshold", "0" ) ), 255), 0);
+		mMinFillRadius = max( min( fromString<int>( argument( "minfillradius", "0" ) ), 10), 0);
+		mMaxFillRadius = max( min( fromString<int>( argument( "maxfillradius", "5" ) ), 10), 0);
 
 		if (mFirstFilePath == "" )
 			mInteractive = true;
 		else
-			mInteractive = boost::lexical_cast<bool>( argument( "interactive", "0" ) );	
+			mInteractive = fromString<bool>( argument( "interactive", "0" ) );	
 	}
 	catch( ... ) {
 		showMessage( "Unable to parse commandline options.", true );
@@ -358,7 +357,7 @@ void uvConstructionApp::startProcessing()
 			size_t firstDigit = fileName.find_last_not_of( "0123456789", lastDigit);
 			mFilePathReplace = fileName.substr(firstDigit+1, lastDigit-firstDigit);
 
-			mFirstNumU = boost::lexical_cast<int>(mFilePathReplace);
+			mFirstNumU = fromString<int>(mFilePathReplace);
 			mFirstNumV = mFirstNumU + mBits + ( (mInverseFrame) ? 1 : 0 ) + mVSkip;
 
 			// resize the pattern vector to contains all patterns
