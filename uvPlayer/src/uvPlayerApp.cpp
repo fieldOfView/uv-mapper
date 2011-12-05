@@ -55,12 +55,13 @@ public:
 	// player
 	void loadMovieFile( const string &path );
 	void loadMapFile  ( const string &path );
+	void loadOverlayFile ( const string &path );
 	void defaultMap   ();
 	void defaultImage ();
 	void infoTexture  ( const string &title );
 
 	bool			mShowInfo;
-	gl::Texture		mFrameTexture, mInfoTexture, mMapTexture;
+	gl::Texture		mFrameTexture, mInfoTexture, mMapTexture, mOverlayTexture;
 	qtime::MovieGl	mMovie;
 	gl::GlslProg	mShader;
 
@@ -79,6 +80,7 @@ void uvPlayerApp::prepareSettings( Settings *settings )
 	settings->setWindowSize(APP_WIDTH, APP_HEIGHT);
 	settings->setTitle("uvPlayer");
 
+	/*
 	const vector<shared_ptr<Display> > &displays( Display::getDisplays() );
 	for( vector<shared_ptr<Display> >::const_iterator it = displays.begin(); it != displays.end(); ++it ) {
 		Area a = (*it)->getArea();
@@ -87,6 +89,7 @@ void uvPlayerApp::prepareSettings( Settings *settings )
 
 	if( displays.size() > 1 )
 		settings->setDisplay( displays[1] );
+	*/
 }
 
 void uvPlayerApp::setup()
@@ -118,6 +121,8 @@ void uvPlayerApp::setup()
 	else
 		defaultImage();
 
+	mOverlayTexture.reset();
+
 	mShowPatterns = false;
 }
 
@@ -148,7 +153,6 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 		
 	case KeyEvent::KEY_f:
-		// todo: go to full screen on the screen the window is on 
 		setFullScreen( ! isFullScreen() );
 		// todo: fix hiding cursor after going fullscreen
 		
@@ -165,21 +169,46 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		mShowInfo = !mShowInfo;
 			
 		break;
+
+	case KeyEvent::KEY_SPACE:
+		if(!mShowPatterns) {
+			if(mMovie.isPlaying())
+				mMovie.stop();
+			else
+				mMovie.play();
+		}
+		break;
+
+	case KeyEvent::KEY_BACKSPACE:
+		if(!mShowPatterns) 
+			mMovie.seekToStart();
 		
+		break;
+
 	case KeyEvent::KEY_o:
 		setFullScreen(false);
 		path = getOpenFilePath();
-		if( !path.empty() ) {
+		if( !path.empty() ) 
 			loadMovieFile( path );
-		}
+		
 		break;
 
 	case KeyEvent::KEY_m:
 		setFullScreen(false);
 		path = getOpenFilePath();
-		if( !path.empty() ) {
+		if( !path.empty() ) 
 			loadMapFile( path );
-		}
+		
+		break;
+
+	case KeyEvent::KEY_l:
+		setFullScreen(false);
+		path = getOpenFilePath();
+		if( !path.empty() ) 
+			loadOverlayFile( path );
+		else 
+			mOverlayTexture.reset();
+		
 		break;
 
 	case KeyEvent::KEY_p:
@@ -261,7 +290,11 @@ void uvPlayerApp::draw()
 			mMapTexture.unbind();
 			mShader.unbind();
 		}
-	
+
+		if( mOverlayTexture ) {
+			gl::draw( mOverlayTexture, getWindowBounds() );
+		}
+
 		if( mInfoTexture && mShowInfo ) {
 			glDisable( GL_TEXTURE_RECTANGLE_ARB );
 			gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - (float)mInfoTexture.getHeight() ) );
@@ -291,6 +324,9 @@ void uvPlayerApp::draw()
 				gl::rotate( -90.0 );
 				gl::translate( Vec2f( -(float)patternWidth , (float)offset ) );
 			}
+		}
+		if( mOverlayTexture ) {
+			gl::draw( mOverlayTexture, getWindowBounds() );
 		}
 	}
 }
@@ -348,6 +384,19 @@ void uvPlayerApp::loadMapFile( const string &mapPath )
 	};
 }
 
+void uvPlayerApp::loadOverlayFile( const string &overlayPath )
+{
+	try {
+		mOverlayTexture = gl::Texture( loadImage( overlayPath ) );
+	}
+	catch( ... ) {
+		console() << "Unable to load overlay file." << endl;
+		
+		mOverlayTexture.reset();
+	};
+}
+
+
 void uvPlayerApp::defaultMap()
 {
 	Surface16u defaultMap = Surface16u( APP_WIDTH, APP_HEIGHT, false, SurfaceChannelOrder::RGB );
@@ -373,14 +422,21 @@ void uvPlayerApp::infoTexture( const string &title )
 	infoText.addCenteredLine( title );
 	if( mMovie ) {
 		infoText.addLine( toString( mMovie.getWidth() ) + " x " + toString( mMovie.getHeight() ) + " pixels" );
-		infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
-		infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
-		infoText.addLine( toString( mMovie.getFramerate() ) + " fps" );
+		if( mMovie.getNumFrames() > 0 ) {
+			infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
+			infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
+			infoText.addLine( toString( mMovie.getFramerate() ) + " fps" );
+		} else {
+			infoText.addLine( "still image" );
+		}
 	}
 
 	infoText.addCenteredLine( "Keys" );
+	infoText.addLine( "space: play/pause" );
+	infoText.addLine( "backspace: rewind" );
 	infoText.addLine( "o: load movie" );
 	infoText.addLine( "m: load uvmap" );
+	infoText.addLine( "l: load overlay" );
 	infoText.addLine( "f: toggle fullscreen" );
 	infoText.addLine( "i: toggle info" );
 	infoText.addLine( "p: toggle graycode patterns" );
