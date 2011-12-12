@@ -479,4 +479,4 @@ Channel uvPlayerApp::graycodes( int aBits )
 	return graycodes;
 }
 
-CINDER_APP_BASIC( uvPlayerApp, RendererGl );
+CINDER_APP_BASIC( uvPlayerApp, RendererGl(RendererGl::AA_NONE) );
