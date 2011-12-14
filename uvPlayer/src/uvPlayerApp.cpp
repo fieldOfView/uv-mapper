@@ -50,7 +50,13 @@ public:
 	void fileDrop( FileDropEvent event );	
 	
 	string argument ( string argumentName, string defaultValue );	
-	bool mShowPatterns;
+
+	enum stateType {
+		STATE_PLAYING,
+		STATE_EXPORTING,
+		STATE_PATTERNS
+	};
+	stateType mState;
 
 	// player
 	void loadMovieFile( const string &path );
@@ -79,17 +85,6 @@ void uvPlayerApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize(APP_WIDTH, APP_HEIGHT);
 	settings->setTitle("uvPlayer");
-
-	/*
-	const vector<shared_ptr<Display> > &displays( Display::getDisplays() );
-	for( vector<shared_ptr<Display> >::const_iterator it = displays.begin(); it != displays.end(); ++it ) {
-		Area a = (*it)->getArea();
-		console() << "Display: " << a << " size: " << a.getWidth() << " x " << a.getHeight() << " @ depth: " << (*it)->getBitsPerPixel() << endl;
-	}
-
-	if( displays.size() > 1 )
-		settings->setDisplay( displays[1] );
-	*/
 }
 
 void uvPlayerApp::setup()
@@ -123,7 +118,7 @@ void uvPlayerApp::setup()
 
 	mOverlayTexture.reset();
 
-	mShowPatterns = false;
+	mState = STATE_PLAYING;
 }
 
 void uvPlayerApp::resize( ResizeEvent event )
@@ -171,7 +166,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_SPACE:
-		if(!mShowPatterns) {
+		if(mState == STATE_PLAYING) {
 			if(mMovie.isPlaying())
 				mMovie.stop();
 			else
@@ -180,7 +175,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_BACKSPACE:
-		if(!mShowPatterns) 
+		if(mState == STATE_PLAYING) 
 			mMovie.seekToStart();
 		
 		break;
@@ -211,22 +206,33 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		
 		break;
 
+	case KeyEvent::KEY_e:
+		// export processed movie/image
+		break;
+
 	case KeyEvent::KEY_p:
-		mShowPatterns = !mShowPatterns;
-		
-		if(mShowPatterns) {
+		switch( mState ) {
+		case STATE_PLAYING:
+			if(mMovie) 
+				mMovie.stop();			
+
+			mState = STATE_PATTERNS;
+
 			mGraycodeLine = 0;
 			mPatternAxis = false;
 
-			if(mMovie) 
-				mMovie.stop();
-		} else {
+			break;
+		case STATE_PATTERNS:
+			mState = STATE_PLAYING;
+
 			if(mMovie) { 
 				mMovie.seekToStart();
 				mMovie.play();
 			}
-		}
 
+			break;
+		}
+		
 		break;
 
 	case KeyEvent::KEY_LEFT:
@@ -268,8 +274,8 @@ void uvPlayerApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 	
-	if( !mShowPatterns ) {
-		gl::enableAlphaBlending();
+	switch( mState ) {
+	case STATE_PLAYING:
 	
 		if( mFrameTexture && mMapTexture ) {
 			Rectf centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
@@ -299,7 +305,11 @@ void uvPlayerApp::draw()
 			glDisable( GL_TEXTURE_RECTANGLE_ARB );
 			gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - (float)mInfoTexture.getHeight() ) );
 		}
-	} else {
+
+		break;
+
+	case STATE_PATTERNS:
+
 		int32_t patternWidth = mGraycode.getWidth();
 
 		int32_t offset = 0;
@@ -328,6 +338,8 @@ void uvPlayerApp::draw()
 		if( mOverlayTexture ) {
 			gl::draw( mOverlayTexture, getWindowBounds() );
 		}
+
+		break;
 	}
 }
 
