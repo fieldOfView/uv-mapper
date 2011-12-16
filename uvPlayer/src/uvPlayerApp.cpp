@@ -20,14 +20,16 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppBasic.h"
 #include "cinder/Surface.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/qtime/QuickTime.h"
 #include "cinder/Text.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
+#include "cinder/app/AppBasic.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/qtime/QuickTime.h"
+#include "cinder/qtime/MovieWriter.h"
 
 #include "Resources.h"
 
@@ -70,6 +72,10 @@ public:
 	gl::Texture		mFrameTexture, mInfoTexture, mMapTexture, mOverlayTexture;
 	qtime::MovieGl	mMovie;
 	gl::GlslProg	mShader;
+
+	// exporting
+	gl::Fbo				mRenderBuffer;
+	qtime::MovieWriter	mMovieWriter;
 
 	// patterns
 	Channel graycodes ( int aBits );
@@ -140,16 +146,24 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 	switch ( event.getCode() ) {
 	case KeyEvent::KEY_ESCAPE:
-		if(isFullScreen())
-			setFullScreen( false );
-		else
-			AppBasic::quit();
-			
+		if(mState == STATE_EXPORTING) {
+			mState = STATE_PLAYING;
+			if(mMovie) {
+				mMovieWriter.finish();
+				mMovie.seekToStart();
+				mMovie.play();
+			}
+
+		} else {
+			if(isFullScreen())
+				setFullScreen( false );
+			else
+				AppBasic::quit();
+		}			
 		break;
 		
 	case KeyEvent::KEY_f:
 		setFullScreen( ! isFullScreen() );
-		// todo: fix hiding cursor after going fullscreen
 		
 		if(isFullScreen()) {
 			hideCursor();
@@ -181,6 +195,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_o:
+		// _Open movie/image
 		setFullScreen(false);
 		path = getOpenFilePath();
 		if( !path.empty() ) 
@@ -189,6 +204,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_m:
+		// Open _map
 		setFullScreen(false);
 		path = getOpenFilePath();
 		if( !path.empty() ) 
@@ -197,6 +213,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_l:
+		// Open over_lay
 		setFullScreen(false);
 		path = getOpenFilePath();
 		if( !path.empty() ) 
@@ -207,7 +224,38 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_e:
-		// export processed movie/image
+		// Export movie
+		switch( mState ) {
+		case STATE_PLAYING:
+			{
+			setFullScreen(false);
+			
+			path = getSaveFilePath();
+			if( path.empty() ) 
+				break;
+				
+			qtime::MovieWriter::Format qtFormat;
+			if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
+				break;
+			mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), qtFormat );
+			
+			gl::Fbo::Format renderFormat;
+			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
+
+			mMovie.stop();
+			mMovie.seekToStart();
+			mState = STATE_EXPORTING;
+
+			break;
+			}
+		case STATE_EXPORTING:
+			mState = STATE_PLAYING;
+			mMovieWriter.finish();
+			mMovie.seekToStart();
+			mMovie.play();
+			break;
+		}
+
 		break;
 
 	case KeyEvent::KEY_p:
@@ -265,21 +313,59 @@ void uvPlayerApp::fileDrop( FileDropEvent event )
 
 void uvPlayerApp::update()
 {
-	if( mMovie && mMovie.checkNewFrame() ) {
-		mFrameTexture = mMovie.getTexture();
+	switch( mState ) {
+	case STATE_PLAYING:
+		if( mMovie && mMovie.checkNewFrame() ) {
+			mFrameTexture = mMovie.getTexture();
+		}
+		break;
+	case STATE_EXPORTING:
+		
+		if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
+			mMovie.stepForward();
+			mFrameTexture = mMovie.getTexture();
+		} else {
+			mMovie.seekToStart();
+			mMovie.play();
+
+			mMovieWriter.finish();
+			mFrameTexture.reset();
+
+			mState = STATE_PLAYING;
+		}
 	}
 }
 
 void uvPlayerApp::draw()
 {
+	gl::enableAlphaBlending();
 	gl::clear( Color( 0, 0, 0 ) );
 	
 	switch( mState ) {
 	case STATE_PLAYING:
-	
-		if( mFrameTexture && mMapTexture ) {
-			Rectf centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
+	case STATE_EXPORTING:
 
+		if( mFrameTexture && mMapTexture ) {
+			Rectf centeredRect;
+
+			if( mState == STATE_EXPORTING ) {
+				// this will restore the old framebuffer binding when we leave this function
+				// on non-OpenGL ES platforms, you can just call mFbo.unbindFramebuffer() at the end of the function
+				// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
+				//gl::SaveFramebufferBinding bindingSaver;
+	
+				// bind the framebuffer - now everything we draw will go there
+				mRenderBuffer.bindFramebuffer();
+				//gl::clear( Color(255, 0, 0) );
+
+				centeredRect = Rectf( mRenderBuffer.getBounds() );
+				gl::setViewport( mRenderBuffer.getBounds() );
+
+			} else {
+				centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
+				gl::setViewport( getWindowBounds() );
+			}
+			
 			mShader.bind();
 
 			mMapTexture.bind( 0 );
@@ -295,10 +381,22 @@ void uvPlayerApp::draw()
 			mFrameTexture.unbind();
 			mMapTexture.unbind();
 			mShader.unbind();
-		}
+			
+			if( mOverlayTexture ) {
+				gl::draw( mOverlayTexture, centeredRect );
+			}
 
-		if( mOverlayTexture ) {
-			gl::draw( mOverlayTexture, getWindowBounds() );
+			if( mState == STATE_EXPORTING ) {
+				mRenderBuffer.unbindFramebuffer();
+				glEnable( GL_TEXTURE_2D );
+
+				Surface processedFrame = Surface(mRenderBuffer.getTexture() );
+				mMovieWriter.addFrame( processedFrame );
+
+				gl::setViewport( getWindowBounds() );
+				//gl::clear( Color(0,0,0) );
+				gl::draw( processedFrame, Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ));
+			}
 		}
 
 		if( mInfoTexture && mShowInfo ) {
@@ -307,7 +405,7 @@ void uvPlayerApp::draw()
 		}
 
 		break;
-
+		
 	case STATE_PATTERNS:
 
 		int32_t patternWidth = mGraycode.getWidth();
