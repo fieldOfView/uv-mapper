@@ -178,7 +178,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_SPACE:
-		if(mState == STATE_PLAYING) {
+		if(mState == STATE_PLAYING && mMovie) {
 			if(mMovie.isPlaying())
 				mMovie.stop();
 			else
@@ -187,7 +187,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_BACKSPACE:
-		if(mState == STATE_PLAYING) 
+		if(mState == STATE_PLAYING && mMovie) 
 			mMovie.seekToStart();
 		
 		break;
@@ -223,6 +223,9 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 	case KeyEvent::KEY_e:
 		// Export movie
+		if(!mMovie)
+			break;
+
 		switch( mState ) {
 		case STATE_PLAYING:
 			{
@@ -282,21 +285,26 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_LEFT:
-		if ( mGraycodeLine > 0 )
-			mGraycodeLine--;
-		else {
-			mGraycodeLine = mGraycode.getHeight() - 1;
-			mPatternAxis = !mPatternAxis;
+		if( mState == STATE_PATTERNS ) {
+		
+			if ( mGraycodeLine > 0 )
+				mGraycodeLine--;
+			else {
+				mGraycodeLine = mGraycode.getHeight() - 1;
+				mPatternAxis = !mPatternAxis;
+			}
 		}
-
 		break;
 
 	case KeyEvent::KEY_RIGHT:
-		if ( mGraycodeLine < ( mGraycode.getHeight() - 1 ) ) 
-			mGraycodeLine++;
-		else {
-			mGraycodeLine = 0;
-			mPatternAxis = !mPatternAxis;
+		if( mState == STATE_PATTERNS ) {
+
+			if ( mGraycodeLine < ( mGraycode.getHeight() - 1 ) ) 
+				mGraycodeLine++;
+			else {
+				mGraycodeLine = 0;
+				mPatternAxis = !mPatternAxis;
+			}
 		}
 
 		break;
