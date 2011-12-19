@@ -27,7 +27,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/MovieWriter.h"
 
@@ -74,7 +73,6 @@ public:
 	gl::GlslProg	mShader;
 
 	// exporting
-	gl::Fbo				mRenderBuffer;
 	qtime::MovieWriter	mMovieWriter;
 
 	// patterns
@@ -237,11 +235,11 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			qtime::MovieWriter::Format qtFormat;
 			if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
 				break;
-			mMovieWriter = qtime::MovieWriter( path, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
-			
-			gl::Fbo::Format renderFormat;
-			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
 
+			setFullScreen(true);
+
+			mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), qtFormat );
+			
 			mMovie.stop();
 			mMovie.seekToStart();
 			mState = STATE_EXPORTING;
@@ -348,23 +346,8 @@ void uvPlayerApp::draw()
 		if( mFrameTexture && mMapTexture ) {
 			Rectf centeredRect;
 
-			if( mState == STATE_EXPORTING ) {
-				// this will restore the old framebuffer binding when we leave this function
-				// on non-OpenGL ES platforms, you can just call mFbo.unbindFramebuffer() at the end of the function
-				// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
-				gl::SaveFramebufferBinding bindingSaver;
-	
-				// bind the framebuffer - now everything we draw will go there
-				mRenderBuffer.bindFramebuffer();
-				//gl::clear( Color(255, 0, 0) );
-
-				centeredRect = Rectf( mRenderBuffer.getBounds() );
-				gl::setViewport( mRenderBuffer.getBounds() );
-
-			} else {
-				centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
-				gl::setViewport( getWindowBounds() );
-			}
+			centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
+			gl::setViewport( getWindowBounds() );
 			
 			mShader.bind();
 
@@ -387,15 +370,7 @@ void uvPlayerApp::draw()
 			}
 
 			if( mState == STATE_EXPORTING ) {
-				mRenderBuffer.unbindFramebuffer();
-				glEnable( GL_TEXTURE_2D );
-
-				Surface processedFrame = Surface(mRenderBuffer.getTexture() );
-				mMovieWriter.addFrame( processedFrame );
-
-				gl::setViewport( getWindowBounds() );
-
-				gl::draw( processedFrame, mRenderBuffer.getBounds(), Rectf( mRenderBuffer.getBounds() ).getCenteredFit( getWindowBounds(), true ));
+				mMovieWriter.addFrame( copyWindowSurface() );
 			}
 		}
 
