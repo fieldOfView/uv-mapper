@@ -163,6 +163,9 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 		
 	case KeyEvent::KEY_f:
+		if( mState == STATE_EXPORTING )
+			break;
+
 		setFullScreen( ! isFullScreen() );
 		
 		if(isFullScreen()) {
@@ -170,7 +173,6 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			mShowInfo = false;
 		} else
 			showCursor();
-		
 
 		break;
 
@@ -254,6 +256,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			}
 		case STATE_EXPORTING:
 			mState = STATE_PLAYING;
+
 			mMovieWriter.finish();
 			mMovie.seekToStart();
 			mMovie.play();
@@ -317,7 +320,8 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 void uvPlayerApp::fileDrop( FileDropEvent event )
 {
-	loadMovieFile( event.getFile( 0 ) );
+	if( mState == STATE_PLAYING )
+		loadMovieFile( event.getFile( 0 ) );
 }
 
 void uvPlayerApp::update()
