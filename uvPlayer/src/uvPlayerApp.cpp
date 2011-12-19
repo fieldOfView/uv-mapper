@@ -237,7 +237,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			qtime::MovieWriter::Format qtFormat;
 			if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
 				break;
-			mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), qtFormat );
+			mMovieWriter = qtime::MovieWriter( path, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
 			
 			gl::Fbo::Format renderFormat;
 			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
@@ -352,7 +352,7 @@ void uvPlayerApp::draw()
 				// this will restore the old framebuffer binding when we leave this function
 				// on non-OpenGL ES platforms, you can just call mFbo.unbindFramebuffer() at the end of the function
 				// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
-				//gl::SaveFramebufferBinding bindingSaver;
+				gl::SaveFramebufferBinding bindingSaver;
 	
 				// bind the framebuffer - now everything we draw will go there
 				mRenderBuffer.bindFramebuffer();
@@ -394,8 +394,8 @@ void uvPlayerApp::draw()
 				mMovieWriter.addFrame( processedFrame );
 
 				gl::setViewport( getWindowBounds() );
-				//gl::clear( Color(0,0,0) );
-				gl::draw( processedFrame, Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ));
+
+				gl::draw( processedFrame, mRenderBuffer.getBounds(), Rectf( mRenderBuffer.getBounds() ).getCenteredFit( getWindowBounds(), true ));
 			}
 		}
 
@@ -547,6 +547,7 @@ void uvPlayerApp::infoTexture( const string &title )
 	infoText.addLine( "o: load movie" );
 	infoText.addLine( "m: load uvmap" );
 	infoText.addLine( "l: load overlay" );
+	infoText.addLine( "e: export processed movie" );
 	infoText.addLine( "f: toggle fullscreen" );
 	infoText.addLine( "i: toggle info" );
 	infoText.addLine( "p: toggle graycode patterns" );
