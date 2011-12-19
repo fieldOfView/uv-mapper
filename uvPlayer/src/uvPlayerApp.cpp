@@ -27,6 +27,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/MovieWriter.h"
 
@@ -74,6 +75,7 @@ public:
 
 	// exporting
 	qtime::MovieWriter	mMovieWriter;
+	gl::Fbo				mRenderBuffer;
 
 	// patterns
 	Channel graycodes ( int aBits );
@@ -239,10 +241,11 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
 				break;
 
-			setFullScreen(true);
+			mMovieWriter = qtime::MovieWriter( path, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
 
-			mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), qtFormat );
-			
+			gl::Fbo::Format renderFormat;
+			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
+
 			mMovie.stop();
 			mMovie.seekToStart();
 			mState = STATE_EXPORTING;
@@ -352,11 +355,25 @@ void uvPlayerApp::draw()
 	case STATE_EXPORTING:
 
 		if( mFrameTexture && mMapTexture ) {
-			Rectf centeredRect;
+			Rectf shaderRect;
 
-			centeredRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
-			gl::setViewport( getWindowBounds() );
-			
+			if( mState == STATE_EXPORTING ) {  
+				// bind the FBO, so we can draw on it
+				mRenderBuffer.bindFramebuffer();
+	
+				// set the correct viewport and matrices
+				glPushAttrib( GL_VIEWPORT_BIT );
+				gl::setViewport( mRenderBuffer.getBounds() );
+	
+				gl::pushMatrices();
+				gl::setMatricesWindow( mRenderBuffer.getSize() );
+
+				// draw Fbo upsidedown, because.
+				shaderRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
+			} else {
+				shaderRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
+			}
+
 			mShader.bind();
 
 			mMapTexture.bind( 0 );
@@ -367,18 +384,29 @@ void uvPlayerApp::draw()
 			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture.getWidth(), (float)mFrameTexture.getHeight() ) );
 			mShader.uniform( "flipv", mFrameTexture.isFlipped() );
 		
-			gl::drawSolidRect( centeredRect );
+			gl::drawSolidRect( shaderRect );
 		
 			mFrameTexture.unbind();
 			mMapTexture.unbind();
 			mShader.unbind();
 			
 			if( mOverlayTexture ) {
-				gl::draw( mOverlayTexture, centeredRect );
+				gl::draw( mOverlayTexture, shaderRect );
 			}
 
 			if( mState == STATE_EXPORTING ) {
-				mMovieWriter.addFrame( copyWindowSurface() );
+				// restore matrices and viewport
+				gl::popMatrices();
+				glPopAttrib();
+
+				// unbind the FBO to stop drawing on it
+				mRenderBuffer.unbindFramebuffer();
+
+				Surface processedFrame = Surface(mRenderBuffer.getTexture() );
+				mMovieWriter.addFrame( processedFrame );
+
+				// draw processed frame to show progress onscreen
+				gl::draw( processedFrame, Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
 			}
 		}
 
