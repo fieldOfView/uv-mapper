@@ -197,30 +197,38 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_o:
-		// _Open movie/image
-		setFullScreen(false);
-		path = getOpenFilePath();
-		if( !path.empty() ) 
-			loadMovieFile( path );
-		
+		// _Open/reset movie/image
+		if( !event.isShiftDown() ) {
+			setFullScreen(false);
+			path = getOpenFilePath();
+			if( !path.empty() ) 
+				loadMovieFile( path );
+		} else {
+			mMovie.reset();
+			defaultImage();
+		}
 		break;
 
 	case KeyEvent::KEY_m:
-		// Open _map
-		setFullScreen(false);
-		path = getOpenFilePath();
-		if( !path.empty() ) 
-			loadMapFile( path );
+		// Open/reset _map
+		if( !event.isShiftDown() ) {
+			setFullScreen(false);
+			path = getOpenFilePath();
+			if( !path.empty() ) 
+				loadMapFile( path );
+		} else
+			defaultMap();
 		
 		break;
 
 	case KeyEvent::KEY_l:
-		// Open over_lay
-		setFullScreen(false);
-		path = getOpenFilePath();
-		if( !path.empty() ) 
-			loadOverlayFile( path );
-		else 
+		// Open/reset over_lay
+		if( !event.isShiftDown() ) {
+			setFullScreen(false);
+			path = getOpenFilePath();
+			if( !path.empty() ) 
+				loadOverlayFile( path );
+		} else 
 			mOverlayTexture.reset();
 		
 		break;
