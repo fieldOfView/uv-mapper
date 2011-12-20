@@ -811,4 +811,4 @@ void uvConstructionApp::fillInversePass()
 	}
 }
 
-CINDER_APP_BASIC( uvPlayerApp, RendererGl(RendererGl::AA_NONE) );
+CINDER_APP_BASIC( uvConstructionApp, RendererGl(RendererGl::AA_NONE) );
