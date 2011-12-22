@@ -90,7 +90,7 @@ public:
 void uvPlayerApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize(APP_WIDTH, APP_HEIGHT);
-	settings->setTitle("uvPlayer");
+	settings->setTitle("UV Mapper Player");
 }
 
 void uvPlayerApp::setup()

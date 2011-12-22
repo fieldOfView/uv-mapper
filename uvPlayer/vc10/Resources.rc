@@ -1,6 +1,6 @@
 #include "Resources.h"
 
-ID ICON "..\\resources\\cinder_app_icon.ico"
+ID ICON "..\\resources\\uvPlayer.ico"
 
 RES_PASSTHRU_VERT
 RES_EFFECT_FRAG
