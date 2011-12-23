@@ -20,10 +20,15 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/Utilities.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/texture.h"
+#include "cinder/ImageIo.h"
 
+#include "cinder/ip/Fill.h"
+#include "cinder/ip/Grayscale.h"
+
+#include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
 
 using namespace ci;
@@ -71,20 +76,25 @@ private:
 	};
 	void setTexture( UVTEXTURES textureType );
 
-	params::InterfaceGl		mParams;
+	// ui
+	params::InterfaceGl	mParams;
 	bool mShowParams;
 	
+	// map
 	Surface16u mMap;
-	string mFileName;
+	string mFilename;
+	Surface16u mUndoMap;
 
 	int32_t mMapWidth;
 	int32_t mMapHeight;
 	int32_t mMapBits;
 
+	// create from patterns
 	int32_t mPatternAsymmetric;	
 	int32_t mPatternContrast;
 	int mPatternChannel;
 
+	// filter
 	int32_t mFilterRadius;
 	int32_t mFilterThreshold;
 };
@@ -102,6 +112,9 @@ void uvToolApp::setup()
 	mMapHeight = uvToolApp::getSettings().getDisplay()->getHeight();
 	mMapBits = (int32_t)ceil( log( (double)max(mMapWidth, mMapHeight) ) / log( 2. ) );
 
+	// create empty document
+	passthroughMap();
+
 	mPatternAsymmetric = 2;	
 	mPatternContrast = 8;
 	mPatternChannel = 0;
@@ -116,15 +129,15 @@ void uvToolApp::setup()
 	
 	mParams.addButton ( "file_open",	std::bind( &uvToolApp::openFile, this, true ),	"label='Open...' group=file key=CTRL+o" );
 	mParams.addButton ( "file_reopen",	std::bind( &uvToolApp::openFile, this, false ),	"label='Reload' group=file key=CTRL+r" );
-	mParams.addButton ( "file_save",	std::bind( &uvToolApp::openFile, this, false ),	"label='Save' group=file key=CTRL+s" );
-	mParams.addButton ( "file_saveas",	std::bind( &uvToolApp::openFile, this, true ),	"label='Save as...' group=file key=CTRL+S" );
+	mParams.addButton ( "file_save",	std::bind( &uvToolApp::saveFile, this, false ),	"label='Save' group=file key=CTRL+s" );
+	mParams.addButton ( "file_saveas",	std::bind( &uvToolApp::saveFile, this, true ),	"label='Save as...' group=file key=CTRL+S" );
 	mParams.addSeparator ( "file_sep1",		"group=file" );
 	mParams.addButton ( "file_undo",	std::bind( &uvToolApp::switchUndo, this ),		"label='Undo' group=file key=CTRL+z" );
 	mParams.setOptions ( "file",		"label='File'" );
 
-	mParams.addButton ( "create_passthrough",	std::bind( &uvToolApp::passthroughMap, this ),	"label='Default map' group=create" );
-	mParams.addButton ( "create_frompatterns",	std::bind( &uvToolApp::mapFromPatterns, this ),	"label='From patterns...' group=create" );
-	mParams.addButton ( "create_inverse",		std::bind( &uvToolApp::inverseMap, this ),		"label='Inverse map' group=create" );
+	mParams.addButton ( "create_passthrough",	std::bind( &uvToolApp::passthroughMap, this ),	"label='Unit map' group=create key=CTRL+n" );
+	mParams.addButton ( "create_frompatterns",	std::bind( &uvToolApp::mapFromPatterns, this ),	"label='From patterns...' group=create key=CTRL+p" );
+	mParams.addButton ( "create_inverse",		std::bind( &uvToolApp::inverseMap, this ),		"label='Inverse map' group=create key=CTRL+i" );
 	mParams.setOptions ( "create",				"label='Create'" );
 	mParams.addParam ( "create_width",			&mMapWidth,		"label='Width' group=create_settings min=16 max=4096" );
 	mParams.addParam ( "create_height",			&mMapHeight,	"label='Height' group=create_settings min=16 max=4096" );
@@ -207,30 +220,134 @@ void uvToolApp::keyDown ( KeyEvent event )
 
 void uvToolApp::openFile( bool askFilename ) 
 {
+	if( askFilename || mFilename == "" ) {
+		string filename = getOpenFilePath();
+		if ( !filename.empty() )
+			mFilename = filename;
+		else
+			return;
+	}
+
+	try {
+		mMap = Surface16u( loadImage( mFilename ) );
+	}
+	catch( ... ) {
+		console() << "Unable to load uv map file." << endl;
+		return;
+	};
+	storeUndo();
 }
 
 void uvToolApp::saveFile( bool askFilename ) 
 {
+	if( askFilename || mFilename == "" ) {
+		string filename = getSaveFilePath();
+		if ( !filename.empty() )
+			mFilename = filename;
+		else
+			return;
+	}
+
+	try {
+		writeImage( mFilename, mMap );
+	}
+	catch( ... ) {
+		console() << "Unable to save uv map file." << endl;
+		return;
+	};
+	storeUndo();
 }
 
 void uvToolApp::storeUndo()
 {
+	mUndoMap = mMap.clone();
 }
 
 void uvToolApp::switchUndo()
 {
+	Surface16u undo = mMap.clone();
+	mMap = mUndoMap;
+	mUndoMap = undo;
 }
 
 void uvToolApp::passthroughMap()
 {
+	mMap = Surface16u( mMapWidth, mMapHeight, false, SurfaceChannelOrder::RGB );
+	ip::fill( &mMap, Color(0, 0, 0) );
+
+	Surface16u::Iter mapIter( mMap.getIter() );
+
+	while ( mapIter.line() ) {
+		uint16_t vValue = (uint16_t)(( mapIter.y() << 16 ) / mMapHeight );
+		while ( mapIter.pixel() ) {
+			mapIter.r() = (uint16_t)(( mapIter.x() << 16 ) / mMapWidth );
+			mapIter.g() = vValue;
+			mapIter.b() = 0;
+		}
+	}
+	mFilename = "";
+	storeUndo();
 }
 
 void uvToolApp::mapFromPatterns()
 {
+	mFilename = "";
+	storeUndo();
 }
 
 void uvToolApp::inverseMap()
 {
+	// TODO: make mInverseThreshold into a setting (or factor out mInverseThreshold)
+	int32_t mInverseThreshold = 8;
+	
+	// invert created uv-map
+	Surface16u newMap = Surface16u( mMapWidth,mMapHeight, true, SurfaceChannelOrder::RGBA ); 
+	ip::fill( &newMap, ColorAT<uint16_t>( 0, 0, 0, 0 ) );
+	Channel16u newMapAlpha = newMap.getChannelAlpha();
+
+	Surface16u::Iter mapIter( mMap.getIter() );
+	
+	unsigned int mapWidth = mMap.getWidth() - 1;
+	unsigned int mapHeight = mMap.getHeight() - 1;
+	
+	unsigned int patternWidth = (unsigned int)pow( 2., (double)mMapBits );
+
+	double coordMultiplier = (double)patternWidth / 65536;
+	int xOffset = ( patternWidth - mMapWidth) / 2;
+	int yOffset = ( patternWidth - mMapHeight) / 2;
+
+	bool mapHasAlpha = mMap.hasAlpha();
+
+	while ( mapIter.line() ) {
+		while ( mapIter.pixel() ) {
+			if ( ( !mapHasAlpha || mapIter.a() > mInverseThreshold ) && mapIter.r() > 0 && mapIter.g() > 0 ) {
+				// multiply u&v to cover 16 bit resolution
+				Vec2i mappedCoordinate = Vec2i( (int)( coordMultiplier * mapIter.r() - xOffset ), (int)( coordMultiplier * mapIter.g() - yOffset ) );
+				
+				if( mapHasAlpha ) {
+					// check if a "better defined" pixel in the uvmap has already "claimed" this mapped coordinate
+					uint16_t alphaValue = mapIter.a();
+					if ( newMapAlpha.getValue( mappedCoordinate ) < alphaValue ) {
+						newMap.setPixel( mappedCoordinate, ColorT<uint16_t>(
+												(uint16_t)( ( (uint32_t)mapIter.x() << 16) / mapWidth ), 
+												(uint16_t)( ( (uint32_t)mapIter.y() << 16) / mapHeight ), 0 ) );
+						newMapAlpha.setValue( mappedCoordinate, alphaValue );
+					}
+				} else {
+					newMap.setPixel( mappedCoordinate, ColorT<uint16_t>(
+											(uint16_t)( ( (uint32_t)mapIter.x() << 16) / mapWidth ), 
+											(uint16_t)( ( (uint32_t)mapIter.y() << 16) / mapHeight ), 0 ) );
+					newMapAlpha.setValue( mappedCoordinate, -1 );	
+				}
+			}
+		}	
+	}
+	
+	// inverted map is new document
+	mMap = newMap;	
+
+	mFilename = "";
+	storeUndo();
 }
 
 void uvToolApp::applyFilter( UVFILTERS filterType ) 
