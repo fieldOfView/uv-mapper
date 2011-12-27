@@ -71,14 +71,19 @@ private:
 
 	enum UVTEXTURES {
 		TEXTURE_MAP,
+		TEXTURE_ALPHA,
 		TEXTURE_GRID,
 		TEXTURE_MOVIE
 	};
 	void setTexture( UVTEXTURES textureType );
+	void updateTexture();
 
 	// ui
 	params::InterfaceGl	mParams;
 	bool mShowParams;
+
+	gl::Texture mDisplayTexture;
+	UVTEXTURES mDisplayType;
 	
 	// map
 	Surface16u mMap;
@@ -122,6 +127,7 @@ void uvToolApp::setup()
 	mFilterRadius = 1;
 	mFilterThreshold = 0;
 
+	// initialise params interface
 	mShowParams = true;
 
 	mParams = params::InterfaceGl( "UV Mapper Tool", Vec2i( 200, 400 )  );
@@ -159,24 +165,32 @@ void uvToolApp::setup()
 	mParams.addParam ( "filter_threhold",		&mFilterThreshold,	"label='Threshold' group=filter_settings min=0 max=255" );
 	mParams.setOptions ( "filter_settings",		"label='Settings' group=filter opened=false" );	
 
-
 	mParams.addButton ( "view_fullscreen",		std::bind( &uvToolApp::toggleFullscreen, this ), "label='Full screen' group=view key=CTRL+f" );
 	mParams.addSeparator ( "view_sep1",			"group=view" );
 	mParams.addButton ( "view_map",				std::bind( &uvToolApp::setTexture, this, TEXTURE_MAP ), "label='Map' group=view" );
+	mParams.addButton ( "view_alpha",				std::bind( &uvToolApp::setTexture, this, TEXTURE_ALPHA ), "label='Alpha' group=view" );
 	mParams.addButton ( "view_grid",			std::bind( &uvToolApp::setTexture, this, TEXTURE_GRID ), "label='Grid' group=view" );
 	mParams.addButton ( "view_movie",			std::bind( &uvToolApp::setTexture, this, TEXTURE_MOVIE ), "label='File...' group=view" );
 	mParams.setOptions ( "view",		"label='View'" );
+
+	// initialise display
+	setTexture( TEXTURE_MAP );
 }
 
 
 void uvToolApp::update()
 {
+	updateTexture();
 }
 
 void uvToolApp::draw()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
+
+	// draw display/preview texture, if any
+	if( mDisplayTexture )
+		gl::draw( mDisplayTexture, Rectf( mDisplayTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
 
 	// draw params interface
 	if( mShowParams )
@@ -236,6 +250,7 @@ void uvToolApp::openFile( bool askFilename )
 		return;
 	};
 	storeUndo();
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::saveFile( bool askFilename ) 
@@ -268,6 +283,8 @@ void uvToolApp::switchUndo()
 	Surface16u undo = mMap.clone();
 	mMap = mUndoMap;
 	mUndoMap = undo;
+
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::passthroughMap()
@@ -287,12 +304,14 @@ void uvToolApp::passthroughMap()
 	}
 	mFilename = "";
 	storeUndo();
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::mapFromPatterns()
 {
 	mFilename = "";
 	storeUndo();
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::inverseMap()
@@ -343,11 +362,11 @@ void uvToolApp::inverseMap()
 		}	
 	}
 	
+	storeUndo();
 	// inverted map is new document
 	mMap = newMap;	
 
-	mFilename = "";
-	storeUndo();
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::applyFilter( UVFILTERS filterType ) 
@@ -360,6 +379,9 @@ void uvToolApp::applyFilter( UVFILTERS filterType )
 	case FILTER_DESPECKLE:
 		break;
 	}
+
+	storeUndo();
+	mDisplayTexture.reset();
 }
 
 void uvToolApp::fillHoles()
@@ -376,13 +398,43 @@ void uvToolApp::toggleFullscreen()
 
 void uvToolApp::setTexture( UVTEXTURES textureType ) 
 {
-	switch (textureType) {
+	mDisplayTexture.reset();
+
+	switch( textureType ) {
 	case TEXTURE_MAP:
 		break;
+
+	case TEXTURE_ALPHA:
+		break;
+
 	case TEXTURE_GRID:
 		break;
+
 	case TEXTURE_MOVIE:
 		break;
+	}
+	mDisplayType = textureType;
+}
+
+void uvToolApp::updateTexture() 
+{
+	switch( mDisplayType ) {
+	case TEXTURE_MAP:
+		if( !mDisplayTexture && mMap )
+			mDisplayTexture = gl::Texture( mMap );
+		break;
+
+	case TEXTURE_ALPHA:
+		if( !mDisplayTexture && mMap && mMap.hasAlpha() ) 
+			mDisplayTexture = gl::Texture( mMap.getChannelAlpha().clone() );
+		break;
+
+	case TEXTURE_GRID:
+		break;
+
+	case TEXTURE_MOVIE:
+		break;
+
 	}
 }
 
