@@ -74,6 +74,7 @@ public:
 	gl::GlslProg	mShader;
 
 	// exporting
+	string				mExportPath;
 	qtime::MovieWriter	mMovieWriter;
 	gl::Fbo				mRenderBuffer;
 
@@ -240,28 +241,31 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 		switch( mState ) {
 		case STATE_PLAYING:
-			{
 			setFullScreen(false);
-			
-			path = getSaveFilePath();
-			if( path.empty() ) 
-				break;
-				
-			qtime::MovieWriter::Format qtFormat;
-			if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
+
+			mExportPath = getSaveFilePath();
+			if( mExportPath.empty() ) 
 				break;
 
-			mMovieWriter = qtime::MovieWriter( path, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
+			{
+				gl::Fbo::Format renderFormat;
+				mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
+			}
 
-			gl::Fbo::Format renderFormat;
-			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
+			if( mMovie.getNumFrames() > 1 ) {
+				qtime::MovieWriter::Format qtFormat;
+				if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
+					break;
 
-			mMovie.stop();
-			mMovie.seekToStart();
+				mMovieWriter = qtime::MovieWriter( mExportPath, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
+
+				mMovie.stop();
+				mMovie.seekToStart();
+			}
 			mState = STATE_EXPORTING;
 
 			break;
-			}
+
 		case STATE_EXPORTING:
 			mState = STATE_PLAYING;
 
@@ -340,19 +344,20 @@ void uvPlayerApp::update()
 			mFrameTexture = mMovie.getTexture();
 		}
 		break;
-	case STATE_EXPORTING:
-		
-		if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
-			mMovie.stepForward();
-			mFrameTexture = mMovie.getTexture();
-		} else {
-			mMovie.seekToStart();
-			mMovie.play();
+	case STATE_EXPORTING:		
+		if( mMovie.getNumFrames() > 1 ) {
+			if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
+				mMovie.stepForward();
+				mFrameTexture = mMovie.getTexture();
+			} else {
+				mMovie.seekToStart();
+				mMovie.play();
 
-			mMovieWriter.finish();
-			mFrameTexture.reset();
+				mMovieWriter.finish();
+				mFrameTexture.reset();
 
-			mState = STATE_PLAYING;
+				mState = STATE_PLAYING;
+			}
 		}
 	}
 }
@@ -413,12 +418,17 @@ void uvPlayerApp::draw()
 
 				// unbind the FBO to stop drawing on it
 				mRenderBuffer.unbindFramebuffer();
-
 				Surface processedFrame = Surface(mRenderBuffer.getTexture() );
-				mMovieWriter.addFrame( processedFrame );
-
+					
 				// draw processed frame to show progress onscreen
 				gl::draw( processedFrame, Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
+
+				if( mMovie.getNumFrames() > 1 ) {
+					mMovieWriter.addFrame( processedFrame );
+				} else {
+					writeImage( mExportPath, processedFrame );	
+					mState = STATE_PLAYING; 
+				}
 			}
 		}
 
