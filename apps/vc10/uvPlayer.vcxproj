@@ -110,7 +110,7 @@
     <ClInclude Include="..\src\uvPlayerResources.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources.rc" />
+    <ResourceCompile Include="uvPlayerResources.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\resources\default_image.png" />

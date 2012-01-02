@@ -110,7 +110,7 @@
     <ClInclude Include="..\src\uvToolResources.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources.rc" />
+    <ResourceCompile Include="uvToolResources.rc" />
   </ItemGroup>  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

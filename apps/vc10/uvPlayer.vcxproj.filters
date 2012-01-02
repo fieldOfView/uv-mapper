@@ -25,7 +25,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources.rc">
+    <ResourceCompile Include="uvPlayerResources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
