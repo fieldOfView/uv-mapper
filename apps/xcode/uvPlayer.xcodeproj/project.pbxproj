@@ -45,7 +45,7 @@
 		6AAEEF7512A8FE0600266514 /* effect_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = effect_frag.glsl; path = ../resources/effect_frag.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = passThru_vert.glsl; path = ../resources/passThru_vert.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF8C12A8FF9B00266514 /* uvPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uvPlayerResources.h; path = ../src/uvPlayerResources.h; sourceTree = SOURCE_ROOT; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* uvPlayer_Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = uvPlayer_Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* uvPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = uvPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -140,7 +140,7 @@
 				6A92D1F214B1092800205498 /* default_image.png */,
 				6AAEEF7512A8FE0600266514 /* effect_frag.glsl */,
 				6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */,
-				8D1107310486CEB800E47090 /* Info.plist */,
+				8D1107310486CEB800E47090 /* uvPlayer_Info.plist */,
 				00CCAF14116A9FEE008396D5 /* uvPlayer.icns */,
 			);
 			name = Resources;
@@ -238,7 +238,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = uvPlayer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = uvPlayer_Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = uvPlayer;
@@ -259,7 +259,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = uvPlayer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_FILE = uvPlayer_Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = uvPlayer;
