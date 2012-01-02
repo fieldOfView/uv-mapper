@@ -1,4 +1,4 @@
-#include "cinder/CinderResources.h"
+#include "uvToolResources.h"
 
 ID ICON "..\\resources\\uvTool.ico"
 

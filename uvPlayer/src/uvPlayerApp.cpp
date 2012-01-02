@@ -31,7 +31,7 @@
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/MovieWriter.h"
 
-#include "Resources.h"
+#include "uvPlayerResources.h"
 
 using namespace ci;
 using namespace ci::app;

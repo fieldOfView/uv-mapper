@@ -20,7 +20,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h">
+    <ClInclude Include="..\src\uvToolResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>  
