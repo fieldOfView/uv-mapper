@@ -87,7 +87,7 @@ private:
 	
 	// map
 	Surface16u mMap;
-	string mFilename;
+	fs::path mFilename;
 	Surface16u mUndoMap;
 
 	int32_t mMapWidth;
@@ -234,8 +234,8 @@ void uvToolApp::keyDown ( KeyEvent event )
 
 void uvToolApp::openFile( bool askFilename ) 
 {
-	if( askFilename || mFilename == "" ) {
-		string filename = getOpenFilePath();
+	if( askFilename || mFilename.empty() ) {
+		fs::path filename = getOpenFilePath();
 		if ( !filename.empty() )
 			mFilename = filename;
 		else
@@ -255,8 +255,8 @@ void uvToolApp::openFile( bool askFilename )
 
 void uvToolApp::saveFile( bool askFilename ) 
 {
-	if( askFilename || mFilename == "" ) {
-		string filename = getSaveFilePath();
+	if( askFilename || mFilename.empty() ) {
+		fs::path filename = getSaveFilePath();
 		if ( !filename.empty() )
 			mFilename = filename;
 		else
@@ -302,14 +302,14 @@ void uvToolApp::passthroughMap()
 			mapIter.b() = 0;
 		}
 	}
-	mFilename = "";
+	mFilename.clear();
 	storeUndo();
 	mDisplayTexture.reset();
 }
 
 void uvToolApp::mapFromPatterns()
 {
-	mFilename = "";
+	mFilename.clear();
 	storeUndo();
 	mDisplayTexture.reset();
 }

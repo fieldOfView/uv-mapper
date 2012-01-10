@@ -61,9 +61,9 @@ public:
 	stateType mState;
 
 	// player
-	void loadMovieFile( const string &path );
-	void loadMapFile  ( const string &path );
-	void loadOverlayFile ( const string &path );
+	void loadMovieFile( const fs::path &path );
+	void loadMapFile  ( const fs::path &path );
+	void loadOverlayFile ( const fs::path &path );
 	void defaultMap   ();
 	void defaultImage ();
 	void infoTexture  ( const string &title );
@@ -74,7 +74,7 @@ public:
 	gl::GlslProg	mShader;
 
 	// exporting
-	string				mExportPath;
+	fs::path			mExportPath;
 	qtime::MovieWriter	mMovieWriter;
 	gl::Fbo				mRenderBuffer;
 
@@ -111,13 +111,13 @@ void uvPlayerApp::setup()
 		return;
 	}
 	
-	string mapPath = argument("map","");
+	fs::path mapPath = argument("map","");
 	if( ! mapPath.empty() ) 
 		loadMapFile( mapPath );
 	else
 		defaultMap();
 	
-	string moviePath = argument("file","");
+	fs::path moviePath = argument("file","");
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
 	else
@@ -143,7 +143,7 @@ void uvPlayerApp::resize( ResizeEvent event )
 
 void uvPlayerApp::keyDown( KeyEvent event )
 {
-	string path;
+	fs::path path;
 
 	switch ( event.getCode() ) {
 	case KeyEvent::KEY_ESCAPE:
@@ -486,7 +486,7 @@ string uvPlayerApp::argument(string argumentName, string defaultValue = "")
 	return defaultValue;
 }
 
-void uvPlayerApp::loadMovieFile( const string &moviePath )
+void uvPlayerApp::loadMovieFile( const fs::path &moviePath )
 {
 	try {
 		// load up the movie, set it to loop, and begin playing
@@ -494,7 +494,7 @@ void uvPlayerApp::loadMovieFile( const string &moviePath )
 		mMovie.setLoop();
 		mMovie.play();
 
-		infoTexture( getPathFileName( moviePath ) );
+		infoTexture( moviePath.filename().string() );
 	}
 	catch( ... ) {
 		console() << "Unable to load the movie." << endl;
@@ -515,7 +515,7 @@ void uvPlayerApp::defaultImage()
 	infoTexture( "No movie loaded" );
 }
 
-void uvPlayerApp::loadMapFile( const string &mapPath )
+void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 {
 	try {
 		mMapTexture = gl::Texture( loadImage( mapPath ) );
@@ -527,7 +527,7 @@ void uvPlayerApp::loadMapFile( const string &mapPath )
 	};
 }
 
-void uvPlayerApp::loadOverlayFile( const string &overlayPath )
+void uvPlayerApp::loadOverlayFile( const fs::path &overlayPath )
 {
 	try {
 		mOverlayTexture = gl::Texture( loadImage( overlayPath ) );
