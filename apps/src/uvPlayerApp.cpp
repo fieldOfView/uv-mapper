@@ -247,10 +247,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			if( mExportPath.empty() ) 
 				break;
 
-			{
-				gl::Fbo::Format renderFormat;
-				mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), renderFormat );
-			}
+			// make sure we're either creating TIF for stills or MOV for movie output
+			mExportPath.replace_extension( ( mMovie.getNumFrames() > 1 ) ? ".mov" : ".tif" ); 
+
+			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
 
 			if( mMovie.getNumFrames() > 1 ) {
 				qtime::MovieWriter::Format qtFormat;
