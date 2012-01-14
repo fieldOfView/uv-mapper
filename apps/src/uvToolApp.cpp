@@ -257,10 +257,11 @@ void uvToolApp::saveFile( bool askFilename )
 {
 	if( askFilename || mFilename.empty() ) {
 		fs::path filename = getSaveFilePath();
-		if ( !filename.empty() )
-			mFilename = filename;
-		else
+		if ( filename.empty() )
 			return;
+
+		mFilename = filename;
+		mFilename.replace_extension( ".tif" ); 
 	}
 
 	try {
