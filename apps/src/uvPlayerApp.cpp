@@ -385,6 +385,9 @@ void uvPlayerApp::draw()
 				gl::pushMatrices();
 				gl::setMatricesWindow( mRenderBuffer.getSize() );
 
+				// clear the buffer
+				gl::clear( Color( 0, 0, 0 ) );
+
 				// draw Fbo upsidedown, because.
 				shaderRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
 			} else {
