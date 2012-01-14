@@ -97,7 +97,7 @@ void uvPlayerApp::prepareSettings( Settings *settings )
 void uvPlayerApp::setup()
 {
 	try {
-		mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_EFFECT_FRAG ) );
+		mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_UVMAP_FRAG ) );
 	}
 	catch( gl::GlslProgCompileExc &exc ) {
 		console() << "Shader compile error: " << endl;

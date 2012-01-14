@@ -2,4 +2,6 @@
 
 ID ICON "..\\resources\\uvTool.ico"
 
-//RES_MY_RESOURCE
+RES_PASSTHRU_VERT
+RES_EFFECT_FRAG
+

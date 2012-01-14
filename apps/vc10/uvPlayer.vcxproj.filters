@@ -30,13 +30,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\resources\effect_frag.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\resources\passThru_vert.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\resources\default_image.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\resources\uvMap_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

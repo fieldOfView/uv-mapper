@@ -19,7 +19,7 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		6A92D1F314B1092800205498 /* default_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A92D1F214B1092800205498 /* default_image.png */; };
-		6AAEEF7712A8FE0600266514 /* effect_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEEF7512A8FE0600266514 /* effect_frag.glsl */; };
+		6AAEEF7712A8FE0600266514 /* uvMap_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */; };
 		6AAEEF7812A8FE0600266514 /* passThru_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -42,7 +42,7 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		6A92D1F214B1092800205498 /* default_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = default_image.png; path = ../resources/default_image.png; sourceTree = SOURCE_ROOT; };
-		6AAEEF7512A8FE0600266514 /* effect_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = effect_frag.glsl; path = ../resources/effect_frag.glsl; sourceTree = SOURCE_ROOT; };
+		6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = uvMap_frag.glsl; path = ../resources/uvMap_frag.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = passThru_vert.glsl; path = ../resources/passThru_vert.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF8C12A8FF9B00266514 /* uvPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uvPlayerResources.h; path = ../src/uvPlayerResources.h; sourceTree = SOURCE_ROOT; };
 		8D1107310486CEB800E47090 /* uvPlayer_Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = uvPlayer_Info.plist; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				6A92D1F214B1092800205498 /* default_image.png */,
-				6AAEEF7512A8FE0600266514 /* effect_frag.glsl */,
+				6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */,
 				6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */,
 				8D1107310486CEB800E47090 /* uvPlayer_Info.plist */,
 				00CCAF14116A9FEE008396D5 /* uvPlayer.icns */,
@@ -206,7 +206,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00CCAF15116A9FEE008396D5 /* uvPlayer.icns in Resources */,
-				6AAEEF7712A8FE0600266514 /* effect_frag.glsl in Resources */,
+				6AAEEF7712A8FE0600266514 /* uvMap_frag.glsl in Resources */,
 				6AAEEF7812A8FE0600266514 /* passThru_vert.glsl in Resources */,
 				6A92D1F314B1092800205498 /* default_image.png in Resources */,
 			);
