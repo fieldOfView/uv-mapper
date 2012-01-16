@@ -20,14 +20,16 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/Surface.h"
-#include "cinder/Text.h"
+#include "cinder/app/AppBasic.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/Text.h"
+#include "cinder/Surface.h"
+
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Fbo.h"
+
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/MovieWriter.h"
 
@@ -250,8 +252,6 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			// make sure we're either creating TIF for stills or MOV for movie output
 			mExportPath.replace_extension( ( mMovie.getNumFrames() > 1 ) ? ".mov" : ".tif" ); 
 
-			mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
-
 			if( mMovie.getNumFrames() > 1 ) {
 				qtime::MovieWriter::Format qtFormat;
 				if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
@@ -340,60 +340,46 @@ void uvPlayerApp::update()
 {
 	switch( mState ) {
 	case STATE_PLAYING:
-		if( mMovie && mMovie.checkNewFrame() ) {
-			mFrameTexture = mMovie.getTexture();
-		}
-		break;
-	case STATE_EXPORTING:		
-		if( mMovie.getNumFrames() > 1 ) {
-			if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
-				mMovie.stepForward();
+	case STATE_EXPORTING:
+		if( mState == STATE_PLAYING ) {
+			if( mMovie && mMovie.checkNewFrame() ) {
 				mFrameTexture = mMovie.getTexture();
-			} else {
-				mMovie.seekToStart();
-				mMovie.play();
+			}
+		} else {
+			if( mMovie.getNumFrames() > 1 ) {
+				if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
+					mMovie.stepForward();
+					mFrameTexture = mMovie.getTexture();
+				} else {
+					mMovie.seekToStart();
+					mMovie.play();
 
-				mMovieWriter.finish();
-				mFrameTexture.reset();
+					mMovieWriter.finish();
+					mFrameTexture.reset();
 
-				mState = STATE_PLAYING;
+					mState = STATE_PLAYING;
+				}
 			}
 		}
-	}
-}
 
-void uvPlayerApp::draw()
-{
-	gl::enableAlphaBlending();
-	gl::clear( Color( 0, 0, 0 ) );
+		// bind the FBO, so we can draw on it
+		mRenderBuffer.bindFramebuffer();
 	
-	switch( mState ) {
-	case STATE_PLAYING:
-	case STATE_EXPORTING:
+		// set the correct viewport and matrices
+		glPushAttrib( GL_VIEWPORT_BIT );
+		gl::setViewport( mRenderBuffer.getBounds() );
+	
+		gl::pushMatrices();
+		gl::setMatricesWindow( mRenderBuffer.getSize() );
+
+		// clear the buffer
+		gl::clear( Color( 0, 0, 0 ) );
+
+		// draw Fbo upsidedown, because.
+		Rectf bufferRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
 
 		if( mFrameTexture && mMapTexture ) {
-			Rectf shaderRect;
-
-			if( mState == STATE_EXPORTING ) {  
-				// bind the FBO, so we can draw on it
-				mRenderBuffer.bindFramebuffer();
-	
-				// set the correct viewport and matrices
-				glPushAttrib( GL_VIEWPORT_BIT );
-				gl::setViewport( mRenderBuffer.getBounds() );
-	
-				gl::pushMatrices();
-				gl::setMatricesWindow( mRenderBuffer.getSize() );
-
-				// clear the buffer
-				gl::clear( Color( 0, 0, 0 ) );
-
-				// draw Fbo upsidedown, because.
-				shaderRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
-			} else {
-				shaderRect = Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
-			}
-
+			// use uvmap shader to draw frame into Fbo
 			mShader.bind();
 
 			mMapTexture.bind( 0 );
@@ -404,34 +390,45 @@ void uvPlayerApp::draw()
 			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture.getWidth(), (float)mFrameTexture.getHeight() ) );
 			mShader.uniform( "flipv", mFrameTexture.isFlipped() );
 		
-			gl::drawSolidRect( shaderRect );
+			gl::drawSolidRect( bufferRect );
 		
 			mFrameTexture.unbind();
 			mMapTexture.unbind();
 			mShader.unbind();
-			
-			if( mOverlayTexture ) {
-				gl::draw( mOverlayTexture, shaderRect );
-			}
+		}
 
-			if( mState == STATE_EXPORTING ) {
-				// restore matrices and viewport
-				gl::popMatrices();
-				glPopAttrib();
+		if( mOverlayTexture ) {
+			gl::draw( mOverlayTexture, bufferRect );
+		}
 
-				// unbind the FBO to stop drawing on it
-				mRenderBuffer.unbindFramebuffer();
-				Surface processedFrame = Surface(mRenderBuffer.getTexture() );
-					
-				// draw processed frame to show progress onscreen
-				gl::draw( processedFrame, Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
+		// restore matrices and viewport
+		gl::popMatrices();
+		glPopAttrib();
 
-				if( mMovie.getNumFrames() > 1 ) {
-					mMovieWriter.addFrame( processedFrame );
-				} else {
-					writeImage( mExportPath, processedFrame );	
-					mState = STATE_PLAYING; 
-				}
+		// unbind the FBO to stop drawing on it
+		mRenderBuffer.unbindFramebuffer();
+
+		break;
+	}
+}
+
+void uvPlayerApp::draw()
+{
+	gl::enableAlphaBlending();
+	gl::clear( Color( 0, 0, 0 ) );
+	
+	switch( mState ) {
+	case STATE_PLAYING:
+	case STATE_EXPORTING: 
+		// draw renderbuffer to screen
+		gl::draw( mRenderBuffer.getTexture(), Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
+
+		if( mState == STATE_EXPORTING ) {
+			if( mMovie.getNumFrames() > 1 ) {
+				mMovieWriter.addFrame( Surface(mRenderBuffer.getTexture() ) );
+			} else {
+				writeImage( mExportPath, Surface(mRenderBuffer.getTexture() ) );	
+				mState = STATE_PLAYING; 
 			}
 		}
 
@@ -441,7 +438,7 @@ void uvPlayerApp::draw()
 		}
 
 		break;
-		
+
 	case STATE_PATTERNS:
 
 		int32_t patternWidth = mGraycode.getWidth();
@@ -522,6 +519,7 @@ void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 {
 	try {
 		mMapTexture = gl::Texture( loadImage( mapPath ) );
+		mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
 	}
 	catch( ... ) {
 		console() << "Unable to load uv map file." << endl;
@@ -557,6 +555,7 @@ void uvPlayerApp::defaultMap()
 	}
 
 	mMapTexture = gl::Texture( defaultMap );
+	mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
 }
 
 void uvPlayerApp::infoTexture( const string &title )
