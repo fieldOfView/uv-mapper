@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>uvTool.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.cinder.uvTool</string>
+	<string>com.fieldofview.uv-mapper.tool</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

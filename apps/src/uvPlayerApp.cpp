@@ -22,11 +22,13 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/Utilities.h"
-#include "cinder/ImageIo.h"
 #include "cinder/Text.h"
+
+#include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
 
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
+#include "cinder/gl/texture.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Fbo.h"
 
@@ -126,7 +128,7 @@ void uvPlayerApp::setup()
 		defaultImage();
 
 	mOverlayTexture.reset();
-
+    mShowInfo = true;
 	mState = STATE_PLAYING;
 }
 

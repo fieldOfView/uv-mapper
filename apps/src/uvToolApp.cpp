@@ -223,6 +223,8 @@ void uvToolApp::update()
 
 void uvToolApp::draw()
 {
+    gl::enableAlphaBlending();
+
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
 

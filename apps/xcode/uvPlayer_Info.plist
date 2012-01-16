@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>uvPlayer.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.libcinder.uvPlayer</string>
+	<string>com.fieldofview.uv-mapper.player</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
