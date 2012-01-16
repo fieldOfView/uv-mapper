@@ -14,6 +14,6 @@ void main()
 	if ( flipv ) 
 		uv.y = 1.0-uv.y;
 
-    gl_FragColor.rgb = texture2DRect( frame, uv.xy * frameSize ).rgb;	
-    gl_FragColor.a = uv.a;	
+    gl_FragColor = texture2DRect( frame, uv.xy * frameSize );	
+    gl_FragColor.a *= uv.a;	
 }

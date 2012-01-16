@@ -34,12 +34,6 @@ kernel uvmapper <
 		aePointRelativeDefaultValue: float2(1.0, 1.0);
 	>;
 
-	parameter bool useAlpha <
-		aeDisplayName: "Use alpha from uv-map";
-		aeUIControl: "aeCheckbox";
-		defaultValue: true;
-	>;
-
 	input image4 texture;
 	input image4 uvMap;	
 	output pixel4 outputImage;
@@ -56,8 +50,6 @@ kernel uvmapper <
 		uv.xy *= textureSize;
 
 		outputImage = sampleLinear( texture, uv.xy );
-		if(useAlpha) {
-			outputImage.a = uv.a;
-		}
+		outputImage.a *= uv.a;
 	}
 }
