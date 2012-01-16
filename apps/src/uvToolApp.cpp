@@ -21,15 +21,22 @@
 */
 
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
-#include "cinder/gl/texture.h"
-#include "cinder/ImageIo.h"
+#include "cinder/Utilities.h"
+#include "cinder/params/Params.h"
 
+#include "cinder/ImageIo.h"
+#include "cinder/Surface.h"
 #include "cinder/ip/Fill.h"
 #include "cinder/ip/Grayscale.h"
 
-#include "cinder/Utilities.h"
-#include "cinder/params/Params.h"
+#include "cinder/gl/gl.h"
+#include "cinder/gl/texture.h"
+#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Fbo.h"
+
+#include "cinder/qtime/QuickTime.h"
+
+#include "uvToolResources.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -69,6 +76,7 @@ private:
 
 	void toggleFullscreen();
 
+	// map display
 	enum UVTEXTURES {
 		TEXTURE_MAP,
 		TEXTURE_ALPHA,
@@ -77,6 +85,13 @@ private:
 	};
 	void setTexture( UVTEXTURES textureType );
 	void updateTexture();
+	void makeGrid();
+
+	gl::Texture		mTexture;
+	gl::GlslProg	mUVShader;
+	qtime::MovieGl	mMovie;
+	gl::Texture		mGridTexture;
+	gl::Fbo			mRenderBuffer;
 
 	// ui
 	params::InterfaceGl	mParams;
@@ -102,6 +117,10 @@ private:
 	// filter
 	int32_t mFilterRadius;
 	int32_t mFilterThreshold;
+
+	// utility
+	void bindFbo( gl::Fbo buffer );
+	void unbindFbo( gl::Fbo buffer );
 };
 
 void uvToolApp::prepareSettings( Settings *settings ) 
@@ -113,6 +132,23 @@ void uvToolApp::prepareSettings( Settings *settings )
 
 void uvToolApp::setup()
 {
+	// Load and compile UV Mapping Shader
+	try {
+		mUVShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_UVMAP_FRAG ) );
+	}
+	catch( gl::GlslProgCompileExc &exc ) {
+		console() << "Shader compile error: " << endl;
+		console() << exc.what();
+		uvToolApp::quit();
+		return;
+	}
+	catch( ... ) {
+		console() << "Unable to load shader" << endl;
+		uvToolApp::quit();
+		return;
+	}
+
+
 	mMapWidth = uvToolApp::getSettings().getDisplay()->getWidth();
 	mMapHeight = uvToolApp::getSettings().getDisplay()->getHeight();
 	mMapBits = (int32_t)ceil( log( (double)max(mMapWidth, mMapHeight) ) / log( 2. ) );
@@ -126,6 +162,10 @@ void uvToolApp::setup()
 
 	mFilterRadius = 1;
 	mFilterThreshold = 0;
+
+	// initialise display
+	makeGrid();
+	setTexture( TEXTURE_MAP );
 
 	// initialise params interface
 	mShowParams = true;
@@ -173,8 +213,6 @@ void uvToolApp::setup()
 	mParams.addButton ( "view_movie",			std::bind( &uvToolApp::setTexture, this, TEXTURE_MOVIE ), "label='File...' group=view" );
 	mParams.setOptions ( "view",		"label='View'" );
 
-	// initialise display
-	setTexture( TEXTURE_MAP );
 }
 
 
@@ -249,8 +287,12 @@ void uvToolApp::openFile( bool askFilename )
 		console() << "Unable to load uv map file." << endl;
 		return;
 	};
+
 	storeUndo();
+	mRenderBuffer = gl::Fbo( mMap.getWidth(), mMap.getHeight(), mMap.hasAlpha() );
 	mDisplayTexture.reset();
+
+	setTexture( TEXTURE_MAP );
 }
 
 void uvToolApp::saveFile( bool askFilename ) 
@@ -285,6 +327,7 @@ void uvToolApp::switchUndo()
 	mMap = mUndoMap;
 	mUndoMap = undo;
 
+	mRenderBuffer = gl::Fbo( mMap.getWidth(), mMap.getHeight(), mMap.hasAlpha() );
 	mDisplayTexture.reset();
 }
 
@@ -304,15 +347,22 @@ void uvToolApp::passthroughMap()
 		}
 	}
 	mFilename.clear();
+
 	storeUndo();
+	mRenderBuffer = gl::Fbo( mMap.getWidth(), mMap.getHeight(), mMap.hasAlpha() );
 	mDisplayTexture.reset();
+
+	setTexture( TEXTURE_MAP );
 }
 
 void uvToolApp::mapFromPatterns()
 {
 	mFilename.clear();
 	storeUndo();
+	mRenderBuffer = gl::Fbo( mMap.getWidth(), mMap.getHeight(), mMap.hasAlpha() );
 	mDisplayTexture.reset();
+
+	setTexture( TEXTURE_MAP );
 }
 
 void uvToolApp::inverseMap()
@@ -367,7 +417,10 @@ void uvToolApp::inverseMap()
 	// inverted map is new document
 	mMap = newMap;	
 
+	mRenderBuffer = gl::Fbo( mMap.getWidth(), mMap.getHeight(), mMap.hasAlpha() );
 	mDisplayTexture.reset();
+
+	setTexture( TEXTURE_MAP );
 }
 
 void uvToolApp::applyFilter( UVFILTERS filterType ) 
@@ -409,6 +462,7 @@ void uvToolApp::setTexture( UVTEXTURES textureType )
 		break;
 
 	case TEXTURE_GRID:
+		mTexture = mGridTexture;
 		break;
 
 	case TEXTURE_MOVIE:
@@ -431,6 +485,36 @@ void uvToolApp::updateTexture()
 		break;
 
 	case TEXTURE_GRID:
+		if( !mDisplayTexture ) {
+			bindFbo( mRenderBuffer );
+
+			// clear the buffer
+			gl::clear( Color( 0, 0, 0 ) );
+
+			if( mTexture ) {
+				// use uvmap shader to draw frame into Fbo
+				mUVShader.bind();
+
+				gl::Texture mapTexture = gl::Texture( mMap );
+				mapTexture.bind( 0 );
+				mUVShader.uniform( "map", 0 );
+
+				mTexture.bind( 1 );
+				mUVShader.uniform( "frame", 1 );
+				mUVShader.uniform( "frameSize", Vec2f( (float)mTexture.getWidth(), (float)mTexture.getHeight() ) );
+				mUVShader.uniform( "flipv", mTexture.isFlipped() );
+		
+				// draw fbo upsidedown because
+				gl::drawSolidRect( Rectf ( 0., (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0.) );
+		
+				mTexture.unbind();
+				mapTexture.unbind();
+				mUVShader.unbind();
+			}
+			unbindFbo( mRenderBuffer );
+
+			mDisplayTexture = mRenderBuffer.getTexture();
+		}
 		break;
 
 	case TEXTURE_MOVIE:
@@ -439,5 +523,57 @@ void uvToolApp::updateTexture()
 	}
 }
 
+void uvToolApp::makeGrid() 
+{
+	float gridWidth = 1024.;
+	float gridHeight = 1024.;
 
+	// create grid texture as texture2drect, no alpha
+	gl::Fbo::Format bufferFormat = gl::Fbo::Format();
+	bufferFormat.setTarget( GL_TEXTURE_RECTANGLE_ARB );
+	bufferFormat.setColorInternalFormat( GL_RGB8 );
+	gl::Fbo gridBuffer = gl::Fbo( (int)gridWidth, (int)gridHeight, bufferFormat ); 
+	
+	bindFbo( gridBuffer );
+
+	// clear the buffer
+	gl::clear( Color( 0, 0, 0 ) );
+	gl::color( Color( 255, 255, 255 ) );
+	// draw grid
+	for( float i=1; i< gridWidth; i += 16. ) {
+		gl::drawLine( Vec2f( i, 0. ), Vec2f( i, gridHeight ) );
+	}
+	gl::drawLine( Vec2f( gridWidth, 0. ), Vec2f( gridWidth, gridHeight ) );
+	for( float j=1; j< gridHeight; j += 16. ) {
+		gl::drawLine( Vec2f( 0., j ), Vec2f( gridWidth, j ) );	
+	}
+	gl::drawLine( Vec2f( 0., gridHeight ), Vec2f( gridWidth, gridHeight ) );
+
+	mGridTexture = gridBuffer.getTexture();
+	unbindFbo( gridBuffer );
+}
+
+void uvToolApp::bindFbo( gl::Fbo buffer )
+{
+	// bind the FBO, so we can draw on it
+	buffer.bindFramebuffer();
+	
+	// set the correct viewport and matrices
+	glPushAttrib( GL_VIEWPORT_BIT );
+	gl::setViewport( buffer.getBounds() );
+	
+	gl::pushMatrices();
+	gl::setMatricesWindow( buffer.getSize() );
+
+}
+
+void uvToolApp::unbindFbo( gl::Fbo buffer )
+{
+	// restore matrices and viewport
+	gl::popMatrices();
+	glPopAttrib();
+
+	// unbind the FBO to stop drawing on it
+	buffer.unbindFramebuffer();
+}
 CINDER_APP_BASIC( uvToolApp, RendererGl( RendererGl::AA_NONE ) )

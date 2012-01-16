@@ -3,5 +3,5 @@
 ID ICON "..\\resources\\uvTool.ico"
 
 RES_PASSTHRU_VERT
-RES_EFFECT_FRAG
+RES_UVMAP_FRAG
 
