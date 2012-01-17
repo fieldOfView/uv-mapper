@@ -454,6 +454,9 @@ void uvToolApp::toggleFullscreen()
 
 void uvToolApp::setTexture( UVTEXTURES textureType ) 
 {
+	if( mMovie && mMovie.isPlaying() ) 
+		mMovie.stop();
+
 	mDisplayTexture.reset();
 
 	switch( textureType ) {
@@ -468,6 +471,26 @@ void uvToolApp::setTexture( UVTEXTURES textureType )
 		break;
 
 	case TEXTURE_MOVIE:
+		mMovie.reset();
+
+		fs::path path = getOpenFilePath();
+		if( path.empty() ) {
+			setTexture( TEXTURE_MAP );
+			break;
+		}
+			
+		try {
+			// load up the movie, set it to loop, and begin playing
+			mMovie = qtime::MovieGl( path );
+			mMovie.setLoop();
+			mMovie.play();
+		}
+		catch( ... ) {
+			console() << "Unable to load the movie." << endl;
+			setTexture( TEXTURE_MAP );
+			break;
+		}
+
 		break;
 	}
 	mDisplayType = textureType;
@@ -475,6 +498,8 @@ void uvToolApp::setTexture( UVTEXTURES textureType )
 
 void uvToolApp::updateTexture() 
 {
+	bool doMapping = false;
+
 	switch( mDisplayType ) {
 	case TEXTURE_MAP:
 		if( !mDisplayTexture && mMap )
@@ -487,41 +512,48 @@ void uvToolApp::updateTexture()
 		break;
 
 	case TEXTURE_GRID:
-		if( !mDisplayTexture ) {
-			bindFbo( mRenderBuffer );
-
-			// clear the buffer
-			gl::clear( Color( 0, 0, 0 ) );
-
-			if( mTexture ) {
-				// use uvmap shader to draw frame into Fbo
-				mUVShader.bind();
-
-				gl::Texture mapTexture = gl::Texture( mMap );
-				mapTexture.bind( 0 );
-				mUVShader.uniform( "map", 0 );
-
-				mTexture.bind( 1 );
-				mUVShader.uniform( "frame", 1 );
-				mUVShader.uniform( "frameSize", Vec2f( (float)mTexture.getWidth(), (float)mTexture.getHeight() ) );
-				mUVShader.uniform( "flipv", mTexture.isFlipped() );
+		if( !mDisplayTexture )
+			doMapping = true;
 		
-				// draw fbo upsidedown because
-				gl::drawSolidRect( Rectf ( 0., (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0.) );
-		
-				mTexture.unbind();
-				mapTexture.unbind();
-				mUVShader.unbind();
-			}
-			unbindFbo( mRenderBuffer );
-
-			mDisplayTexture = mRenderBuffer.getTexture();
-		}
 		break;
 
 	case TEXTURE_MOVIE:
+		if( mMovie && ( !mDisplayTexture || mMovie.checkNewFrame() ) ) {
+			mTexture = mMovie.getTexture();
+			doMapping = true;
+		}
 		break;
+	}
 
+	if( doMapping ) {
+		bindFbo( mRenderBuffer );
+
+		// clear the buffer
+		gl::clear( Color( 0, 0, 0 ) );
+
+		if( mTexture ) {
+			// use uvmap shader to draw frame into Fbo
+			mUVShader.bind();
+
+			gl::Texture mapTexture = gl::Texture( mMap );
+			mapTexture.bind( 0 );
+			mUVShader.uniform( "map", 0 );
+
+			mTexture.bind( 1 );
+			mUVShader.uniform( "frame", 1 );
+			mUVShader.uniform( "frameSize", Vec2f( (float)mTexture.getWidth(), (float)mTexture.getHeight() ) );
+			mUVShader.uniform( "flipv", mTexture.isFlipped() );
+		
+			// draw fbo upsidedown because
+			gl::drawSolidRect( Rectf ( 0., (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0.) );
+		
+			mTexture.unbind();
+			mapTexture.unbind();
+			mUVShader.unbind();
+		}
+		unbindFbo( mRenderBuffer );
+
+		mDisplayTexture = mRenderBuffer.getTexture();
 	}
 }
 
