@@ -521,7 +521,7 @@ void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 {
 	try {
 		mMapTexture = gl::Texture( loadImage( mapPath ) );
-		mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
+		mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), false );    
 	}
 	catch( ... ) {
 		console() << "Unable to load uv map file." << endl;
@@ -557,7 +557,7 @@ void uvPlayerApp::defaultMap()
 	}
 
 	mMapTexture = gl::Texture( defaultMap );
-	mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), gl::Fbo::Format() );
+	mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), false );
 }
 
 void uvPlayerApp::infoTexture( const string &title )
