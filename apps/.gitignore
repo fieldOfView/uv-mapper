@@ -4,7 +4,7 @@
 *.mode2v3
 *.user
 .DS_Store
-build/
+Build/
 
 # Windows cruft
 *.suo

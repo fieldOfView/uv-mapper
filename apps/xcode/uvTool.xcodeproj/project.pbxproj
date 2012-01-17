@@ -236,6 +236,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = uvTool;
+				SYMROOT = ./Build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -261,6 +262,7 @@
 				);
 				PRODUCT_NAME = uvTool;
 				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./Build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
