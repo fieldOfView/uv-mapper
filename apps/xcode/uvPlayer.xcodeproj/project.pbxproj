@@ -21,6 +21,7 @@
 		6A92D1F314B1092800205498 /* default_image.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A92D1F214B1092800205498 /* default_image.png */; };
 		6AAEEF7712A8FE0600266514 /* uvMap_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */; };
 		6AAEEF7812A8FE0600266514 /* passThru_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */; };
+		6AB2EB3114DFC21000E799A9 /* uvMap_8bit_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 6AB2EB3014DFC20F00E799A9 /* uvMap_8bit_frag.glsl */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 		6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = uvMap_frag.glsl; path = ../resources/uvMap_frag.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = passThru_vert.glsl; path = ../resources/passThru_vert.glsl; sourceTree = SOURCE_ROOT; };
 		6AAEEF8C12A8FF9B00266514 /* uvPlayerResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uvPlayerResources.h; path = ../src/uvPlayerResources.h; sourceTree = SOURCE_ROOT; };
+		6AB2EB3014DFC20F00E799A9 /* uvMap_8bit_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = uvMap_8bit_frag.glsl; path = ../resources/uvMap_8bit_frag.glsl; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* uvPlayer_Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = uvPlayer_Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* uvPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = uvPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -139,6 +141,7 @@
 			children = (
 				6A92D1F214B1092800205498 /* default_image.png */,
 				6AAEEF7512A8FE0600266514 /* uvMap_frag.glsl */,
+				6AB2EB3014DFC20F00E799A9 /* uvMap_8bit_frag.glsl */,
 				6AAEEF7612A8FE0600266514 /* passThru_vert.glsl */,
 				8D1107310486CEB800E47090 /* uvPlayer_Info.plist */,
 				00CCAF14116A9FEE008396D5 /* uvPlayer.icns */,
@@ -206,6 +209,7 @@
 				6AAEEF7712A8FE0600266514 /* uvMap_frag.glsl in Resources */,
 				6AAEEF7812A8FE0600266514 /* passThru_vert.glsl in Resources */,
 				6A92D1F314B1092800205498 /* default_image.png in Resources */,
+				6AB2EB3114DFC21000E799A9 /* uvMap_8bit_frag.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

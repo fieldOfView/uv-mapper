@@ -70,10 +70,14 @@ public:
 	void loadOverlayFile ( const fs::path &path );
 	void defaultMap   ();
 	void defaultImage ();
+	void splitMap ( Surface16u sourceMap );
 	void infoTexture  ( const string &title );
 
+	bool			mUse8bitPath;
+
 	bool			mShowInfo;
-	gl::Texture		mFrameTexture, mInfoTexture, mMapTexture, mOverlayTexture;
+	gl::Texture		mFrameTexture, mInfoTexture, mOverlayTexture;
+	gl::Texture		mMapTexture, mMapTextureMSB, mMapTextureLSB;
 	qtime::MovieGl	mMovie;
 	gl::GlslProg	mShader;
 
@@ -100,8 +104,15 @@ void uvPlayerApp::prepareSettings( Settings *settings )
 
 void uvPlayerApp::setup()
 {
+	// TODO: properly determine if 8bit path is necessary; this checks GL_RGBA16F, we need GL_RGBA16
+	mUse8bitPath = !( gl::isExtensionAvailable( "GL_ARB_half_float_pixel" ) );
+
+	// load shader
 	try {
-		mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_UVMAP_FRAG ) );
+		if( !mUse8bitPath )
+			mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_UVMAP_FRAG ) );
+		else
+			mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_UVMAP_8BIT_FRAG ) );
 	}
 	catch( gl::GlslProgCompileExc &exc ) {
 		console() << "Shader compile error: " << endl;
@@ -115,6 +126,7 @@ void uvPlayerApp::setup()
 		return;
 	}
 	
+	// load default map and image
 	fs::path mapPath = argument("map","");
 	if( ! mapPath.empty() ) 
 		loadMapFile( mapPath );
@@ -384,11 +396,22 @@ void uvPlayerApp::update()
 			// use uvmap shader to draw frame into Fbo
 			mShader.bind();
 
-			mMapTexture.bind( 0 );
-			mShader.uniform( "map", 0 );
+			if( !mUse8bitPath ) {
+				mMapTexture.bind( 0 );
+				mShader.uniform( "map", 0 );
 
-			mFrameTexture.bind( 1 );
-			mShader.uniform( "frame", 1 );
+				mFrameTexture.bind( 1 );
+				mShader.uniform( "frame", 1 );
+			} else {
+				mMapTextureMSB.bind( 0 );
+				mShader.uniform( "map_MSB", 0 );
+
+				mMapTextureLSB.bind( 1 );
+				mShader.uniform( "map_LSB", 1 );
+
+				mFrameTexture.bind( 2 );
+				mShader.uniform( "frame", 2 );				
+			}
 			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture.getWidth(), (float)mFrameTexture.getHeight() ) );
 			mShader.uniform( "flipv", mFrameTexture.isFlipped() );
 		
@@ -520,8 +543,12 @@ void uvPlayerApp::defaultImage()
 void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 {
 	try {
-		mMapTexture = gl::Texture( loadImage( mapPath ) );
-		mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), false );    
+		Surface16u mapImage = loadImage( mapPath );
+		mMapTexture = gl::Texture( mapImage );
+		if( mUse8bitPath ) 
+			splitMap( mapImage );
+
+		mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
 	}
 	catch( ... ) {
 		console() << "Unable to load uv map file." << endl;
@@ -529,19 +556,6 @@ void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 		defaultMap();
 	};
 }
-
-void uvPlayerApp::loadOverlayFile( const fs::path &overlayPath )
-{
-	try {
-		mOverlayTexture = gl::Texture( loadImage( overlayPath ) );
-	}
-	catch( ... ) {
-		console() << "Unable to load overlay file." << endl;
-		
-		mOverlayTexture.reset();
-	};
-}
-
 
 void uvPlayerApp::defaultMap()
 {
@@ -556,10 +570,59 @@ void uvPlayerApp::defaultMap()
 		}
 	}
 
+	if( mUse8bitPath )
+		splitMap( defaultMap );
 	mMapTexture = gl::Texture( defaultMap );
-	mRenderBuffer = gl::Fbo( mMapTexture.getWidth(), mMapTexture.getHeight(), false );
+
+	mRenderBuffer = gl::Fbo( defaultMap.getWidth(), defaultMap.getHeight(), false );
 }
 
+void uvPlayerApp::splitMap( Surface16u sourceMap ) 
+{
+	Surface16u::Iter sourceMapIter( sourceMap.getIter() );
+	Surface8u mapMSB( sourceMap.getWidth(), sourceMap.getHeight(), sourceMap.hasAlpha() );
+	Surface8u::Iter mapMSBIter( mapMSB.getIter() );
+	Surface8u mapLSB( sourceMap.getWidth(), sourceMap.getHeight(), sourceMap.hasAlpha() );
+	Surface8u::Iter mapLSBIter( mapLSB.getIter() );
+	
+	uint16_t uValue, vValue, aValue;
+
+	while( sourceMapIter.line() ) {
+		mapMSBIter.line();
+		mapLSBIter.line();
+
+		while( sourceMapIter.pixel() ) {
+			mapMSBIter.pixel();
+			mapLSBIter.pixel();
+
+			uValue = sourceMapIter.r();
+			mapMSBIter.r() = (uint8_t)(uValue >> 8);
+			mapLSBIter.r() = (uint8_t)(uValue - mapMSBIter.r() * 256);
+			vValue = sourceMapIter.g();
+			mapMSBIter.g() = (uint8_t)(vValue >> 8);
+			mapLSBIter.g() = (uint8_t)(vValue - mapMSBIter.g() * 256);
+			if( sourceMap.hasAlpha() ) {
+				aValue = sourceMapIter.a();
+				mapMSBIter.a() = (uint8_t)(aValue >> 8);
+				mapLSBIter.a() = (uint8_t)(aValue - mapMSBIter.a() * 256);
+			}
+		}
+	}
+	mMapTextureMSB = gl::Texture( mapMSB );
+	mMapTextureLSB = gl::Texture( mapLSB );
+}
+
+void uvPlayerApp::loadOverlayFile( const fs::path &overlayPath )
+{
+	try {
+		mOverlayTexture = gl::Texture( loadImage( overlayPath ) );
+	}
+	catch( ... ) {
+		console() << "Unable to load overlay file." << endl;
+		
+		mOverlayTexture.reset();
+	};
+}
 void uvPlayerApp::infoTexture( const string &title )
 {
 	// create a texture for showing some info about the movie

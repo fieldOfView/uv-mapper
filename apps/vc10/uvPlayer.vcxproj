@@ -116,6 +116,7 @@
     <None Include="..\resources\default_image.png" />
     <None Include="..\resources\passThru_vert.glsl" />
     <None Include="..\resources\uvMap_frag.glsl" />
+    <None Include="..\resources\uvMap_8bit_frag.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

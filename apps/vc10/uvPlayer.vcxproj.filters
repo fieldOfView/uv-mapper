@@ -39,5 +39,8 @@
     <None Include="..\resources\uvMap_frag.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\resources\uvMap_8bit_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
