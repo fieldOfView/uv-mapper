@@ -70,14 +70,14 @@ public:
 	void loadOverlayFile ( const fs::path &path );
 	void defaultMap   ();
 	void defaultImage ();
-	void splitMap ( Surface16u sourceMap );
+	void splitMap ( Surface16u sourceMap, gl::Texture *msbTexture, gl::Texture *lsbTexture );
 	void infoTexture  ( const string &title );
 
 	bool			mUse8bitPath;
 
 	bool			mShowInfo;
 	gl::Texture		mFrameTexture, mInfoTexture, mOverlayTexture;
-	gl::Texture		mMapTexture, mMapTextureMSB, mMapTextureLSB;
+	gl::Texture		mMapTexture, mMapMSBTexture, mMapLSBTexture;
 	qtime::MovieGl	mMovie;
 	gl::GlslProg	mShader;
 
@@ -408,10 +408,10 @@ void uvPlayerApp::update()
 				mFrameTexture.bind( 1 );
 				mShader.uniform( "frame", 1 );
 			} else {
-				mMapTextureMSB.bind( 0 );
+				mMapMSBTexture.bind( 0 );
 				mShader.uniform( "map_MSB", 0 );
 
-				mMapTextureLSB.bind( 1 );
+				mMapLSBTexture.bind( 1 );
 				mShader.uniform( "map_LSB", 1 );
 
 				mFrameTexture.bind( 2 );
@@ -551,7 +551,7 @@ void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 		Surface16u mapImage = loadImage( mapPath );
 		mMapTexture = gl::Texture( mapImage );
 		if( mUse8bitPath ) 
-			splitMap( mapImage );
+			splitMap( mapImage, &mMapMSBTexture, &mMapLSBTexture );
 
 		mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
 	}
@@ -576,13 +576,13 @@ void uvPlayerApp::defaultMap()
 	}
 
 	if( mUse8bitPath )
-		splitMap( defaultMap );
+		splitMap( defaultMap, &mMapMSBTexture, &mMapLSBTexture );
 	mMapTexture = gl::Texture( defaultMap );
 
 	mRenderBuffer = gl::Fbo( defaultMap.getWidth(), defaultMap.getHeight(), false );
 }
 
-void uvPlayerApp::splitMap( Surface16u sourceMap ) 
+void uvPlayerApp::splitMap( Surface16u sourceMap, gl::Texture *msbTexture, gl::Texture *lsbTexture ) 
 {
 	Surface16u::Iter sourceMapIter( sourceMap.getIter() );
 	Surface8u mapMSB( sourceMap.getWidth(), sourceMap.getHeight(), sourceMap.hasAlpha() );
@@ -613,8 +613,8 @@ void uvPlayerApp::splitMap( Surface16u sourceMap )
 			}
 		}
 	}
-	mMapTextureMSB = gl::Texture( mapMSB );
-	mMapTextureLSB = gl::Texture( mapLSB );
+	*msbTexture = gl::Texture( mapMSB );
+	*lsbTexture = gl::Texture( mapLSB );
 }
 
 void uvPlayerApp::loadOverlayFile( const fs::path &overlayPath )
