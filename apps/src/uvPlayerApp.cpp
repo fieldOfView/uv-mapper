@@ -172,9 +172,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			}
 
 		} else {
-			if(isFullScreen())
+			if(isFullScreen()) {
+				showCursor();
 				setFullScreen( false );
-			else
+			} else
 				AppBasic::quit();
 		}			
 		break;
@@ -183,13 +184,13 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		if( mState == STATE_EXPORTING )
 			break;
 
-		setFullScreen( ! isFullScreen() );
-		
-		if(isFullScreen()) {
+		if( !isFullScreen() ) {
 			hideCursor();
 			mShowInfo = false;
 		} else
 			showCursor();
+
+		setFullScreen( !isFullScreen() );
 
 		break;
 
@@ -216,6 +217,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_o:
 		// _Open/reset movie/image
 		if( !event.isShiftDown() ) {
+			showCursor();
 			setFullScreen(false);
 			path = getOpenFilePath();
 			if( !path.empty() ) 
@@ -229,6 +231,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_m:
 		// Open/reset _map
 		if( !event.isShiftDown() ) {
+			showCursor();
 			setFullScreen(false);
 			path = getOpenFilePath();
 			if( !path.empty() ) 
@@ -241,6 +244,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_l:
 		// Open/reset over_lay
 		if( !event.isShiftDown() ) {
+			showCursor();
 			setFullScreen(false);
 			path = getOpenFilePath();
 			if( !path.empty() ) 
@@ -257,6 +261,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 		switch( mState ) {
 		case STATE_PLAYING:
+			showCursor();
 			setFullScreen(false);
 
 			mExportPath = getSaveFilePath();
