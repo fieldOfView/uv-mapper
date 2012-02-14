@@ -37,6 +37,8 @@
 
 #include "uvPlayerResources.h"
 
+#include <vector>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -77,7 +79,7 @@ public:
 
 	bool			mShowInfo;
 	gl::Texture		mFrameTexture, mInfoTexture, mOverlayTexture;
-	gl::Texture		mMapTexture, mMapMSBTexture, mMapLSBTexture;
+	vector<gl::Texture>	mMapTexture, mMapMSBTexture, mMapLSBTexture;
 	qtime::MovieGl	mMovie;
 	gl::GlslProg	mShader;
 
@@ -276,7 +278,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 				if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
 					break;
 
-				mMovieWriter = qtime::MovieWriter( mExportPath, mMapTexture.getWidth(), mMapTexture.getHeight(), qtFormat );
+				mMovieWriter = qtime::MovieWriter( mExportPath, mRenderBuffer.getWidth(), mRenderBuffer.getHeight(), qtFormat );
 
 				mMovie.stop();
 				mMovie.seekToStart();
@@ -397,33 +399,41 @@ void uvPlayerApp::update()
 		// draw Fbo upsidedown, because.
 		Rectf bufferRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
 
-		if( mFrameTexture && mMapTexture ) {
+		if( mFrameTexture ) {
 			// use uvmap shader to draw frame into Fbo
 			mShader.bind();
 
-			if( !mUse8bitPath ) {
-				mMapTexture.bind( 0 );
-				mShader.uniform( "map", 0 );
-
-				mFrameTexture.bind( 1 );
-				mShader.uniform( "frame", 1 );
-			} else {
-				mMapMSBTexture.bind( 0 );
-				mShader.uniform( "map_MSB", 0 );
-
-				mMapLSBTexture.bind( 1 );
-				mShader.uniform( "map_LSB", 1 );
-
-				mFrameTexture.bind( 2 );
-				mShader.uniform( "frame", 2 );				
-			}
 			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture.getWidth(), (float)mFrameTexture.getHeight() ) );
 			mShader.uniform( "flipv", mFrameTexture.isFlipped() );
+
+			for( vector<gl::Texture>::size_type pass = 0; pass != mMapTexture.size(); pass++) {
+				if( !mUse8bitPath ) {
+					mMapTexture[ pass ].bind( 0 );
+					mShader.uniform( "map", 0 );
+
+					mFrameTexture.bind( 1 );
+					mShader.uniform( "frame", 1 );
+				} else {
+					mMapMSBTexture[ pass ].bind( 0 );
+					mShader.uniform( "mapMSB", 0 );
+
+					mMapLSBTexture[ pass ].bind( 1 );
+					mShader.uniform( "mapLSB", 1 );
+
+					mFrameTexture.bind( 2 );
+					mShader.uniform( "frame", 2 );				
+				}
 		
-			gl::drawSolidRect( bufferRect );
+				gl::drawSolidRect( bufferRect );
 		
+				if( !mUse8bitPath ) {
+					mMapTexture[ pass ].unbind();
+				} else {
+					mMapMSBTexture[ pass ].unbind();
+					mMapLSBTexture[ pass ].unbind();
+				}
+			}
 			mFrameTexture.unbind();
-			mMapTexture.unbind();
 			mShader.unbind();
 		}
 
@@ -451,7 +461,7 @@ void uvPlayerApp::draw()
 	case STATE_PLAYING:
 	case STATE_EXPORTING: 
 		// draw renderbuffer to screen
-		gl::draw( mRenderBuffer.getTexture(), Rectf( mMapTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
+		gl::draw( mRenderBuffer.getTexture(), Rectf( mRenderBuffer.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
 
 		if( mState == STATE_EXPORTING ) {
 			if( mMovie.getNumFrames() > 1 ) {
@@ -472,7 +482,6 @@ void uvPlayerApp::draw()
 	case STATE_PATTERNS:
 
 		int32_t patternWidth = mGraycode.getWidth();
-
 		int32_t offset = 0;
 
 		if(mPatternTexture) {
@@ -547,19 +556,27 @@ void uvPlayerApp::defaultImage()
 
 void uvPlayerApp::loadMapFile( const fs::path &mapPath )
 {
+	Surface16u mapImage;
 	try {
-		Surface16u mapImage = loadImage( mapPath );
-		mMapTexture = gl::Texture( mapImage );
-		if( mUse8bitPath ) 
-			splitMap( mapImage, &mMapMSBTexture, &mMapLSBTexture );
-
-		mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
+		mapImage = loadImage( mapPath );
 	}
 	catch( ... ) {
 		console() << "Unable to load uv map file." << endl;
 		
 		defaultMap();
+		return;
 	};
+	mMapTexture.clear();
+	mMapTexture.push_back( gl::Texture( mapImage ) );
+	if( mUse8bitPath ) {
+		mMapMSBTexture.clear();
+		mMapMSBTexture.push_back( gl::Texture() );
+		mMapLSBTexture.clear();
+		mMapLSBTexture.push_back( gl::Texture() );
+		splitMap( mapImage, &mMapMSBTexture[0], &mMapLSBTexture[0] );
+	}
+
+	mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
 }
 
 void uvPlayerApp::defaultMap()
@@ -575,9 +592,16 @@ void uvPlayerApp::defaultMap()
 		}
 	}
 
-	if( mUse8bitPath )
-		splitMap( defaultMap, &mMapMSBTexture, &mMapLSBTexture );
-	mMapTexture = gl::Texture( defaultMap );
+	if( mUse8bitPath ) {
+		mMapMSBTexture.clear();
+		mMapMSBTexture.push_back( gl::Texture() );
+		mMapLSBTexture.clear();
+		mMapLSBTexture.push_back( gl::Texture() );
+		splitMap( defaultMap, &mMapMSBTexture[0], &mMapLSBTexture[0] );
+	}
+	mMapTexture.clear();
+	mMapTexture.push_back( gl::Texture( defaultMap ) );
+
 
 	mRenderBuffer = gl::Fbo( defaultMap.getWidth(), defaultMap.getHeight(), false );
 }

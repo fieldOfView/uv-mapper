@@ -1,8 +1,8 @@
 #version 110
 #extension GL_ARB_texture_rectangle : enable
 
-uniform sampler2D map_MSB;
-uniform sampler2D map_LSB;
+uniform sampler2D mapMSB;
+uniform sampler2D mapLSB;
 
 uniform sampler2DRect frame;
 uniform vec2 frameSize;
