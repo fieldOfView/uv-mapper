@@ -68,7 +68,7 @@ public:
 
 	// player
 	void loadMovieFile( const fs::path &path );
-	void loadMapFile  ( const fs::path &path );
+	void loadMapFile  ( fs::path &path );
 	void loadOverlayFile ( const fs::path &path );
 	void defaultMap   ();
 	void defaultImage ();
@@ -554,28 +554,35 @@ void uvPlayerApp::defaultImage()
 	infoTexture( "No movie loaded" );
 }
 
-void uvPlayerApp::loadMapFile( const fs::path &mapPath )
+void uvPlayerApp::loadMapFile( fs::path &mapPath )
 {
-	Surface16u mapImage;
-	try {
-		mapImage = loadImage( mapPath );
-	}
-	catch( ... ) {
-		console() << "Unable to load uv map file." << endl;
-		
-		defaultMap();
-		return;
-	};
 	mMapTexture.clear();
-	mMapTexture.push_back( gl::Texture( mapImage ) );
-	if( mUse8bitPath ) {
-		mMapMSBTexture.clear();
-		mMapMSBTexture.push_back( gl::Texture() );
-		mMapLSBTexture.clear();
-		mMapLSBTexture.push_back( gl::Texture() );
-		splitMap( mapImage, &mMapMSBTexture[0], &mMapLSBTexture[0] );
-	}
+	
+	Surface16u mapImage;
+	while ( fs::exists( mapPath ) ) {
+		try {
+			mapImage = loadImage( mapPath );
+		}
+		catch( ... ) {
+			console() << "Unable to load uv map file." << endl;
+		
+			defaultMap();
+			return;
+		};
 
+		mMapTexture.push_back( gl::Texture( mapImage ) );
+		if( mUse8bitPath ) {
+			mMapMSBTexture.clear();
+			mMapMSBTexture.push_back( gl::Texture() );
+			mMapLSBTexture.clear();
+			mMapLSBTexture.push_back( gl::Texture() );
+			splitMap( mapImage, &mMapMSBTexture[0], &mMapLSBTexture[0] );
+		}
+
+		string newPath = mapPath.string();
+		newPath[ newPath.length() - mapPath.extension().string().length() - 1 ]++;
+		mapPath = fs::path( newPath );
+	}
 	mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
 }
 
