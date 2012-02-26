@@ -28,15 +28,15 @@ kernel uvmapper <
 	description:	"Transform the given image by a 16bit red/green uv-map";
 	displayname: 	"uv-mapper";
 > {
+	input image4 map; 
+	input image4 texture; 
+	output pixel4 result; 
+	
 	parameter float2 textureSize <
 		aeDisplayName: "Texture size";
 		aeUIControl: "aePoint";
 		aePointRelativeDefaultValue: float2(1.0, 1.0);
 	>;
-
-	input image4 texture;
-	input image4 uvMap;	
-	output pixel4 outputImage;
 
 	// Expand the region to be processed to the texture if needed
 	region needed(region outputRegion, imageRef inputRef ) {
@@ -45,11 +45,10 @@ kernel uvmapper <
 
 	// Convert each uv pixel into a coordinate in the source texture, 
 	// and sample the color at that coordinate
-	void evaluatePixel() {
-		float4 uv = sampleLinear(uvMap, outCoord());
-		uv.xy *= textureSize;
-
-		outputImage = sampleLinear( texture, uv.xy );
-		outputImage.a *= uv.a;
-	}
-}
+	void evaluatePixel(){ 
+		pixel4 uv = sampleNearest( map, outCoord() ); 
+		
+		result = sampleLinear( texture, uv.rg * ( textureSize - pixelSize( texture )));
+		result.a *= uv.a;
+	} 
+} 
