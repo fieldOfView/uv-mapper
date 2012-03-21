@@ -294,6 +294,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			mMovie.seekToStart();
 			mMovie.play();
 			break;
+
+		case STATE_PATTERNS:
+			// nothing
+			break;
 		}
 
 		break;
@@ -318,6 +322,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 				mMovie.play();
 			}
 
+			break;
+
+		case STATE_EXPORTING:
+			// nothing
 			break;
 		}
 		
@@ -360,6 +368,9 @@ void uvPlayerApp::fileDrop( FileDropEvent event )
 void uvPlayerApp::update()
 {
 	switch( mState ) {
+	case STATE_PATTERNS:
+		//nothing;
+		break;
 	case STATE_PLAYING:
 	case STATE_EXPORTING:
 		if( mState == STATE_PLAYING ) {
@@ -557,6 +568,8 @@ void uvPlayerApp::defaultImage()
 void uvPlayerApp::loadMapFile( fs::path &mapPath )
 {
 	mMapTexture.clear();
+	mMapMSBTexture.clear();
+	mMapLSBTexture.clear();
 	
 	Surface16u mapImage;
 	while ( fs::exists( mapPath ) ) {
@@ -572,11 +585,9 @@ void uvPlayerApp::loadMapFile( fs::path &mapPath )
 
 		mMapTexture.push_back( gl::Texture( mapImage ) );
 		if( mUse8bitPath ) {
-			mMapMSBTexture.clear();
 			mMapMSBTexture.push_back( gl::Texture() );
-			mMapLSBTexture.clear();
 			mMapLSBTexture.push_back( gl::Texture() );
-			splitMap( mapImage, &mMapMSBTexture[0], &mMapLSBTexture[0] );
+			splitMap( mapImage, &mMapMSBTexture[ mMapMSBTexture.size()-1 ], &mMapLSBTexture[ mMapLSBTexture.size()-1 ] );
 		}
 
 		string newPath = mapPath.string();
