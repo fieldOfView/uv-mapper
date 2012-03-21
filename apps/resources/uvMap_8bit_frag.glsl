@@ -11,7 +11,7 @@ uniform bool flipv;
 
 void main()
 {
-	vec4 uv = texture2D( map_MSB, gl_TexCoord[0].xy ) + texture2D( map_LSB, gl_TexCoord[0].xy ) / 256.;
+	vec4 uv = texture2D( mapMSB, gl_TexCoord[0].xy ) + texture2D( mapLSB, gl_TexCoord[0].xy ) / 256.;
 	if ( flipv ) 
 		uv.y = 1.0-uv.y;
 
