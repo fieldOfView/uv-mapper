@@ -78,9 +78,10 @@ public:
 	bool			mUse8bitPath;
 
 	bool			mShowInfo;
-	gl::Texture		mFrameTexture, mInfoTexture, mOverlayTexture;
+	vector<gl::Texture> mFrameTexture;
+	gl::Texture		mInfoTexture, mOverlayTexture;
 	vector<gl::Texture>	mMapTexture, mMapMSBTexture, mMapLSBTexture;
-	qtime::MovieGl	mMovie;
+	vector<qtime::MovieGl>	mMovie;
 	gl::GlslProg	mShader;
 
 	// exporting
@@ -167,10 +168,12 @@ void uvPlayerApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_ESCAPE:
 		if(mState == STATE_EXPORTING) {
 			mState = STATE_PLAYING;
-			if(mMovie) {
+			if(mMovie.size()>0) {
 				mMovieWriter.finish();
-				mMovie.seekToStart();
-				mMovie.play();
+				for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+					mMovie[movienr].seekToStart();
+					mMovie[movienr].play();
+				}
 			}
 
 		} else {
@@ -202,18 +205,21 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		break;
 
 	case KeyEvent::KEY_SPACE:
-		if(mState == STATE_PLAYING && mMovie) {
-			if(mMovie.isPlaying())
-				mMovie.stop();
-			else
-				mMovie.play();
+		if(mState == STATE_PLAYING && mMovie.size()>0) {
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				if(mMovie[movienr].isPlaying())
+					mMovie[movienr].stop();
+				else
+					mMovie[movienr].play();
+			}
 		}
 		break;
 
 	case KeyEvent::KEY_BACKSPACE:
-		if(mState == STATE_PLAYING && mMovie) 
-			mMovie.seekToStart();
-		
+		if(mState == STATE_PLAYING && mMovie.size()>0) 
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				mMovie[movienr].seekToStart();
+			}	
 		break;
 
 	case KeyEvent::KEY_o:
@@ -225,7 +231,9 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			if( !path.empty() ) 
 				loadMovieFile( path );
 		} else {
-			mMovie.reset();
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				mMovie[movienr].reset();
+			}
 			defaultImage();
 		}
 		break;
@@ -258,7 +266,7 @@ void uvPlayerApp::keyDown( KeyEvent event )
 
 	case KeyEvent::KEY_e:
 		// Export movie
-		if(!mMovie)
+		if(mMovie.size()==0)
 			break;
 
 		switch( mState ) {
@@ -271,17 +279,19 @@ void uvPlayerApp::keyDown( KeyEvent event )
 				break;
 
 			// make sure we're either creating TIF for stills or MOV for movie output
-			mExportPath.replace_extension( ( mMovie.getNumFrames() > 1 ) ? ".mov" : ".tif" ); 
+			mExportPath.replace_extension( ( mMovie[0].getNumFrames() > 1 ) ? ".mov" : ".tif" ); 
 
-			if( mMovie.getNumFrames() > 1 ) {
+			if( mMovie[0].getNumFrames() > 1 ) {
 				qtime::MovieWriter::Format qtFormat;
 				if( !(qtime::MovieWriter::getUserCompressionSettings( &qtFormat, loadImage( loadResource( RES_DEFAULT_IMAGE ) ) ) ) )
 					break;
 
 				mMovieWriter = qtime::MovieWriter( mExportPath, mRenderBuffer.getWidth(), mRenderBuffer.getHeight(), qtFormat );
 
-				mMovie.stop();
-				mMovie.seekToStart();
+				for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+					mMovie[movienr].stop();
+					mMovie[movienr].seekToStart();
+				}
 			}
 			mState = STATE_EXPORTING;
 
@@ -291,8 +301,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			mState = STATE_PLAYING;
 
 			mMovieWriter.finish();
-			mMovie.seekToStart();
-			mMovie.play();
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				mMovie[movienr].seekToStart();
+				mMovie[movienr].play();
+			}
 			break;
 		}
 
@@ -301,8 +313,10 @@ void uvPlayerApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_p:
 		switch( mState ) {
 		case STATE_PLAYING:
-			if(mMovie) 
-				mMovie.stop();			
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				if(mMovie[movienr]) 
+					mMovie[movienr].stop();
+			}
 
 			mState = STATE_PATTERNS;
 
@@ -313,9 +327,11 @@ void uvPlayerApp::keyDown( KeyEvent event )
 		case STATE_PATTERNS:
 			mState = STATE_PLAYING;
 
-			if(mMovie) { 
-				mMovie.seekToStart();
-				mMovie.play();
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				if(mMovie[movienr]) {
+					mMovie[movienr].seekToStart();
+					mMovie[movienr].play();
+				}
 			}
 
 			break;
@@ -363,20 +379,30 @@ void uvPlayerApp::update()
 	case STATE_PLAYING:
 	case STATE_EXPORTING:
 		if( mState == STATE_PLAYING ) {
-			if( mMovie && mMovie.checkNewFrame() ) {
-				mFrameTexture = mMovie.getTexture();
+			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+				if( (int)movienr < (int)mMapTexture.size() &&  mMovie[movienr] && mMovie[movienr].checkNewFrame() ) {
+					mFrameTexture[movienr] = mMovie[movienr].getTexture();
+				}
 			}
 		} else {
-			if( mMovie.getNumFrames() > 1 ) {
-				if( !( mMovie.getCurrentTime() >= mMovie.getDuration() - ( 1 / mMovie.getFramerate() ) ) ) {
-					mMovie.stepForward();
-					mFrameTexture = mMovie.getTexture();
+			if( mMovie[0].getNumFrames() > 1 ) {
+				if( !( mMovie[0].getCurrentTime() >= mMovie[0].getDuration() - ( 1 / mMovie[0].getFramerate() ) ) ) {
+					for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+						if( (int)movienr < (int)mMapTexture.size() ) {
+							mMovie[movienr].stepForward();
+							mFrameTexture[movienr] = mMovie[movienr].getTexture();
+						}
+					}
 				} else {
-					mMovie.seekToStart();
-					mMovie.play();
+					for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+						if( (int)movienr < (int)mMapTexture.size() ) {
+							mMovie[movienr].seekToStart();
+							mMovie[movienr].play();
 
+							mFrameTexture[movienr].reset();
+						}
+					}
 					mMovieWriter.finish();
-					mFrameTexture.reset();
 
 					mState = STATE_PLAYING;
 				}
@@ -399,41 +425,44 @@ void uvPlayerApp::update()
 		// draw Fbo upsidedown, because.
 		Rectf bufferRect = Rectf( 0, (float)mRenderBuffer.getHeight(), (float)mRenderBuffer.getWidth(), 0 );
 
-		if( mFrameTexture ) {
+		if( mFrameTexture.size()>0 && mFrameTexture[0] ) {
 			// use uvmap shader to draw frame into Fbo
 			mShader.bind();
 
-			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture.getWidth(), (float)mFrameTexture.getHeight() ) );
-			mShader.uniform( "flipv", mFrameTexture.isFlipped() );
+			mShader.uniform( "frameSize", Vec2f( (float)mFrameTexture[0].getWidth(), (float)mFrameTexture[0].getHeight() ) );
+			mShader.uniform( "flipv", mFrameTexture[0].isFlipped() );
 
-			for( vector<gl::Texture>::size_type pass = 0; pass != mMapTexture.size(); pass++) {
+			for( vector<gl::Texture>::size_type mapPass = 0; mapPass != mMapTexture.size(); mapPass++) {
+				vector<gl::Texture>::size_type framePass = mapPass;
+				if( framePass > mFrameTexture.size()-1 ) framePass = mFrameTexture.size()-1;
+
 				if( !mUse8bitPath ) {
-					mMapTexture[ pass ].bind( 0 );
+					mMapTexture[ mapPass ].bind( 0 );
 					mShader.uniform( "map", 0 );
 
-					mFrameTexture.bind( 1 );
+					mFrameTexture[ framePass ].bind( 1 );
 					mShader.uniform( "frame", 1 );
 				} else {
-					mMapMSBTexture[ pass ].bind( 0 );
+					mMapMSBTexture[ mapPass ].bind( 0 );
 					mShader.uniform( "mapMSB", 0 );
 
-					mMapLSBTexture[ pass ].bind( 1 );
+					mMapLSBTexture[ mapPass ].bind( 1 );
 					mShader.uniform( "mapLSB", 1 );
 
-					mFrameTexture.bind( 2 );
+					mFrameTexture[ framePass ].bind( 2 );
 					mShader.uniform( "frame", 2 );				
 				}
 		
 				gl::drawSolidRect( bufferRect );
 		
 				if( !mUse8bitPath ) {
-					mMapTexture[ pass ].unbind();
+					mMapTexture[ mapPass ].unbind();
 				} else {
-					mMapMSBTexture[ pass ].unbind();
-					mMapLSBTexture[ pass ].unbind();
+					mMapMSBTexture[ mapPass ].unbind();
+					mMapLSBTexture[ mapPass ].unbind();
 				}
+				mFrameTexture[ framePass ].unbind();
 			}
-			mFrameTexture.unbind();
 			mShader.unbind();
 		}
 
@@ -464,7 +493,7 @@ void uvPlayerApp::draw()
 		gl::draw( mRenderBuffer.getTexture(), Rectf( mRenderBuffer.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
 
 		if( mState == STATE_EXPORTING ) {
-			if( mMovie.getNumFrames() > 1 ) {
+			if( mMovie[0].getNumFrames() > 1 ) {
 				mMovieWriter.addFrame( Surface(mRenderBuffer.getTexture() ) );
 			} else {
 				writeImage( mExportPath, Surface(mRenderBuffer.getTexture() ) );	
@@ -527,29 +556,46 @@ string uvPlayerApp::argument(string argumentName, string defaultValue = "")
 
 void uvPlayerApp::loadMovieFile( const fs::path &moviePath )
 {
-	try {
-		// load up the movie, set it to loop, and begin playing
-		mMovie = qtime::MovieGl( moviePath );
-		mMovie.setLoop();
-		mMovie.play();
+	mMovie.clear();
+	mFrameTexture.clear();
 
-		infoTexture( moviePath.filename().string() );
+	qtime::MovieGl movie;
+	fs::path constructedPath = fs::path(moviePath);
+
+	while ( fs::exists( constructedPath ) ) {
+		try {
+			movie = qtime::MovieGl( moviePath );
+			movie.setLoop();
+			movie.play();
+
+			infoTexture( moviePath.filename().string() );
+		}
+		catch( ... ) {
+			console() << "Unable to load the movie." << endl;
+			movie.reset();
+		
+			defaultImage();
+			return;
+		};
+
+		mMovie.push_back( movie );
+		mFrameTexture.push_back( gl::Texture() );
+
+		string newPath = moviePath.string();
+		newPath[ newPath.length() - moviePath.extension().string().length() - 1 ]++;
+		constructedPath = fs::path( newPath );
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << endl;
-		mMovie.reset();
-		defaultImage();
-	}
-	
-	mFrameTexture.reset();
 }
 
 void uvPlayerApp::defaultImage()
 {
+	mMovie.clear();
+	mFrameTexture.clear();
+
 	gl::Texture::Format format;
 	format.setTargetRect();
 
-	mFrameTexture = gl::Texture( loadImage( loadResource( RES_DEFAULT_IMAGE ) ), format );
+	mFrameTexture.push_back( gl::Texture( loadImage( loadResource( RES_DEFAULT_IMAGE ) ), format ) );
 
 	infoTexture( "No movie loaded" );
 }
@@ -666,12 +712,12 @@ void uvPlayerApp::infoTexture( const string &title )
 	infoText.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.5f ) );
 	infoText.setColor( Color::white() );
 	infoText.addCenteredLine( title );
-	if( mMovie ) {
-		infoText.addLine( toString( mMovie.getWidth() ) + " x " + toString( mMovie.getHeight() ) + " pixels" );
-		if( mMovie.getNumFrames() > 0 ) {
-			infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
-			infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
-			infoText.addLine( toString( mMovie.getFramerate() ) + " fps" );
+	if( mMovie.size() > 0 && mMovie[0] ) {
+		infoText.addLine( toString( mMovie[0].getWidth() ) + " x " + toString( mMovie[0].getHeight() ) + " pixels" );
+		if( mMovie[0].getNumFrames() > 0 ) {
+			infoText.addLine( toString( mMovie[0].getDuration() ) + " seconds" );
+			infoText.addLine( toString( mMovie[0].getNumFrames() ) + " frames" );
+			infoText.addLine( toString( mMovie[0].getFramerate() ) + " fps" );
 		} else {
 			infoText.addLine( "still image" );
 		}
