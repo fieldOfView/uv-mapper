@@ -575,11 +575,9 @@ void uvPlayerApp::loadMovieFile( const fs::path &moviePath )
 
 	while ( fs::exists( constructedPath ) ) {
 		try {
-			movie = qtime::MovieGl( moviePath );
+			movie = qtime::MovieGl( constructedPath );
 			movie.setLoop();
 			movie.play();
-
-			infoTexture( moviePath.filename().string() );
 		}
 		catch( ... ) {
 			console() << "Unable to load the movie." << endl;
@@ -592,10 +590,12 @@ void uvPlayerApp::loadMovieFile( const fs::path &moviePath )
 		mMovie.push_back( movie );
 		mFrameTexture.push_back( gl::Texture() );
 
-		string newPath = moviePath.string();
-		newPath[ newPath.length() - moviePath.extension().string().length() - 1 ]++;
+		string newPath = constructedPath.string();
+		newPath[ newPath.length() - constructedPath.extension().string().length() - 1 ]++;
 		constructedPath = fs::path( newPath );
 	}
+	infoTexture( moviePath.filename().string() );
+
 }
 
 void uvPlayerApp::defaultImage()
