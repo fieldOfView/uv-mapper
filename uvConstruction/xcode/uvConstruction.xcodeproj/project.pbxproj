@@ -228,8 +228,8 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libcv.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libcxcore.a\"",
+					"$(CINDER_PATH)/blocks/opencv/lib/macosx/libopencv_imgproc.a",
+					"$(CINDER_PATH)/blocks/opencv/lib/macosx/libopencv_core.a",
 				);
 				PRODUCT_NAME = uvConstruction;
 				WRAPPER_EXTENSION = app;
@@ -253,8 +253,8 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"\"$(CINDER_PATH)/lib/libcinder.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libcv.a\"",
-					"\"$(CINDER_PATH)/blocks/OpenCV/lib/macosx/libcxcore.a\"",
+					"$(CINDER_PATH)/blocks/opencv/lib/macosx/libopencv_imgproc.a",
+					"$(CINDER_PATH)/blocks/opencv/lib/macosx/libopencv_core.a",
 				);
 				PRODUCT_NAME = uvConstruction;
 				STRIP_INSTALLED_PRODUCT = YES;

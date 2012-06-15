@@ -294,9 +294,9 @@ void uvConstructionApp::draw()
 
 void uvConstructionApp::browse()
 {
-	string fileName = getOpenFilePath();
+	fs::path fileName = getOpenFilePath();
 	if ( !fileName.empty() )
-		mFirstFilePath = fileName;
+		mFirstFilePath = fileName.generic_string();
 }
 
 void uvConstructionApp::startProcessing()
