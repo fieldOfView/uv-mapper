@@ -5,9 +5,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -83,6 +83,7 @@ public:
 	vector<gl::Texture>	mMapTexture, mMapMSBTexture, mMapLSBTexture;
 	vector<qtime::MovieGl>	mMovie;
 	gl::GlslProg	mShader;
+	bool			mStepFrames;
 
 	// exporting
 	fs::path			mExportPath;
@@ -143,8 +144,9 @@ void uvPlayerApp::setup()
 		defaultImage();
 
 	mOverlayTexture.reset();
-    mShowInfo = true;
+	mShowInfo = true;
 	mState = STATE_PLAYING;
+	mStepFrames = false;
 }
 
 void uvPlayerApp::resize( ResizeEvent event )
@@ -172,7 +174,8 @@ void uvPlayerApp::keyDown( KeyEvent event )
 				mMovieWriter.finish();
 				for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 					mMovie[movienr].seekToStart();
-					mMovie[movienr].play();
+					if(!mStepFrames)
+						mMovie[movienr].play();
 				}
 			}
 
@@ -204,8 +207,19 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			
 		break;
 
+	case KeyEvent::KEY_s:
+		mStepFrames = !mStepFrames;
+		for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
+			if(mStepFrames)
+				mMovie[movienr].stop();
+			else
+				mMovie[movienr].play();
+		}
+
+		break;
+	
 	case KeyEvent::KEY_SPACE:
-		if(mState == STATE_PLAYING && mMovie.size()>0) {
+		if(mState == STATE_PLAYING && mMovie.size()>0 && !mStepFrames) {
 			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 				if(mMovie[movienr].isPlaying())
 					mMovie[movienr].stop();
@@ -303,7 +317,8 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			mMovieWriter.finish();
 			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 				mMovie[movienr].seekToStart();
-				mMovie[movienr].play();
+				if(!mStepFrames)
+					mMovie[movienr].play();
 			}
 			break;
 
@@ -334,7 +349,8 @@ void uvPlayerApp::keyDown( KeyEvent event )
 			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 				if(mMovie[movienr]) {
 					mMovie[movienr].seekToStart();
-					mMovie[movienr].play();
+					if(!mStepFrames)
+						mMovie[movienr].play();
 				}
 			}
 
@@ -389,7 +405,7 @@ void uvPlayerApp::update()
 		break;
 	case STATE_PLAYING:
 	case STATE_EXPORTING:
-		if( mState == STATE_PLAYING ) {
+		if( mState == STATE_PLAYING && !mStepFrames ) {
 			for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 				if( (int)movienr < (int)mMapTexture.size() &&  mMovie[movienr] && mMovie[movienr].checkNewFrame() ) {
 					mFrameTexture[movienr] = mMovie[movienr].getTexture();
@@ -408,14 +424,17 @@ void uvPlayerApp::update()
 					for( vector<qtime::MovieGl>::size_type movienr = 0; movienr != mMovie.size(); movienr++) {
 						if( (int)movienr < (int)mMapTexture.size() ) {
 							mMovie[movienr].seekToStart();
-							mMovie[movienr].play();
+							if(!mStepFrames)
+								mMovie[movienr].play();
 
 							mFrameTexture[movienr].reset();
 						}
 					}
-					mMovieWriter.finish();
+					if(mState == STATE_EXPORTING) {
+						mMovieWriter.finish();
 
-					mState = STATE_PLAYING;
+						mState = STATE_PLAYING;
+					}
 				}
 			}
 		}
@@ -577,7 +596,8 @@ void uvPlayerApp::loadMovieFile( const fs::path &moviePath )
 		try {
 			movie = qtime::MovieGl( constructedPath );
 			movie.setLoop();
-			movie.play();
+			if(!mStepFrames)
+				movie.play();
 		}
 		catch( ... ) {
 			console() << "Unable to load the movie." << endl;
@@ -640,7 +660,7 @@ void uvPlayerApp::loadMapFile( fs::path &mapPath )
 		newPath[ newPath.length() - mapPath.extension().string().length() - 1 ]++;
 		mapPath = fs::path( newPath );
 	}
-	mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );    
+	mRenderBuffer = gl::Fbo( mapImage.getWidth(), mapImage.getHeight(), false );
 }
 
 void uvPlayerApp::defaultMap()
@@ -741,6 +761,7 @@ void uvPlayerApp::infoTexture( const string &title )
 	infoText.addLine( "m: load uvmap" );
 	infoText.addLine( "l: load overlay" );
 	infoText.addLine( "e: export processed movie" );
+	infoText.addLine( "s: toggle frame-by-frame mode" );
 	infoText.addLine( "f: toggle fullscreen" );
 	infoText.addLine( "i: toggle info" );
 	infoText.addLine( "p: toggle graycode patterns" );
