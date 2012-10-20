@@ -10,7 +10,7 @@ The main tools suite uses Cinder (http://www.libcinder.org) and supports Mac OS 
 The UV Player is used apply a UV map to deform a source video. Videos can be played back in real-time (or as near to real time as hardware allows), and they can be exported to a new video. The UV Player currently uses Quicktime to display video, so playback is limited by the codecs supported by that framework. The same limitation applies for exporting video. 
 
 #### UV Tool
-The UV Tool is used to create and edit UV maps for use with the UV Player. It is geared towards creating calibrated projections on arbitrary geometry, using a structured light scan of the projected surface.
+The UV Tool is used to create and edit UV maps for use with the UV Player. It is geared towards creating calibrated projections on arbitrary geometry, using a structured light scan of the projected surface. UV Tool is being deprecated in favour of a Qt-based tool.
 
 Compiling
 ---------
