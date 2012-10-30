@@ -2,6 +2,8 @@
 #include "aboutdialog.h"
 #include "unitmapdialog.h"
 
+#include "opencv/cv.h"
+
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
