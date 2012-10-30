@@ -5,6 +5,7 @@
 #include "opencv/cv.h"
 
 #include <QDebug>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -30,6 +31,55 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
+void MainWindow::openMap( QString path )
+{
+    qDebug() << "Open map: " << path;
+    fileName = path;
+}
+
+void MainWindow::saveMap( QString path )
+{
+    qDebug() << "Save map: " << path;
+    fileName = path;
+}
+
+
+
+void MainWindow::fileRevert()
+{
+    if(fileName.isNull())
+        fileOpen();
+    else
+        openMap(fileName);
+}
+
+void MainWindow::fileOpen()
+{
+    QString path = QFileDialog::getOpenFileName( this, tr("Open UV Map file"));
+    if(path.isNull() == false)
+    {
+        openMap(path);
+    }
+}
+
+void MainWindow::fileSave()
+{
+    if(fileName.isNull())
+        fileSaveAs();
+    else
+        saveMap(fileName);
+}
+
+void MainWindow::fileSaveAs()
+{
+    QString path = QFileDialog::getSaveFileName( this, tr("Save UV Map as"));
+    if(path.isNull() == false)
+    {
+        saveMap(path);
+    }
+}
+
 void MainWindow::rotateOneStep()
 {
     if (openGL)
@@ -48,6 +98,7 @@ void MainWindow::toggleFullscreen()
         menuBar()->show();
     }
 }
+
 
 void MainWindow::showAboutDialog()
 {

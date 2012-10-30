@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Oct 19 23:35:54 2012
+** Created: Mon Oct 22 17:18:28 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -208,6 +208,10 @@ public:
         QObject::connect(actionFullscreen, SIGNAL(triggered()), MainWindow, SLOT(toggleFullscreen()));
         QObject::connect(actionAbout, SIGNAL(triggered()), MainWindow, SLOT(showAboutDialog()));
         QObject::connect(actionCreateUnit, SIGNAL(triggered()), MainWindow, SLOT(showUnitmapDialog()));
+        QObject::connect(actionFileOpen, SIGNAL(triggered()), MainWindow, SLOT(fileOpen()));
+        QObject::connect(actionFileRevert, SIGNAL(triggered()), MainWindow, SLOT(fileRevert()));
+        QObject::connect(actionFileSave, SIGNAL(triggered()), MainWindow, SLOT(fileSave()));
+        QObject::connect(actionFileSaveAs, SIGNAL(triggered()), MainWindow, SLOT(fileSaveAs()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

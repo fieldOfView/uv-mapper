@@ -26,12 +26,22 @@ private:
 
     GLWidget *openGL;
 
+    QString fileName;
+
+    void openMap( QString path );
+    void saveMap( QString path );
+
 private slots:
     void rotateOneStep();
 
     void toggleFullscreen();
     void showAboutDialog();
     void showUnitmapDialog();
+
+    void fileRevert();
+    void fileOpen();
+    void fileSave();
+    void fileSaveAs();
 };
 
 #endif // MAINWINDOW_H
