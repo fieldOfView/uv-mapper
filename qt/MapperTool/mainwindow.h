@@ -8,6 +8,9 @@
 
 #include "glwidget.h"
 
+#include "mapmanager.h"
+#include "displaytexturemanager.h"
+
 namespace Ui {
     class MainWindow;
 }
@@ -23,17 +26,13 @@ public:
 
 private:
     Ui::MainWindow *ui;
-
     GLWidget *openGL;
 
+    MapManager map;
+    DisplayTextureManager displayTexture;
     QString fileName;
 
-    void openMap( QString path );
-    void saveMap( QString path );
-
 private slots:
-    void rotateOneStep();
-
     void toggleFullscreen();
     void showAboutDialog();
     void showUnitmapDialog();
@@ -42,6 +41,8 @@ private slots:
     void fileOpen();
     void fileSave();
     void fileSaveAs();
+
+    void selectDisplayTexture( );
 };
 
 #endif // MAINWINDOW_H

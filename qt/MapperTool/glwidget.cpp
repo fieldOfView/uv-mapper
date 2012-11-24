@@ -45,12 +45,11 @@
 #include "glwidget.h"
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
-    : QGLWidget(parent, shareWidget)
+    : QGLWidget(parent, shareWidget),
+      aspectRatio(1),
+      clearColor(Qt::black),
+      xRot(0),yRot(0),zRot(0)
 {
-    clearColor = Qt::black;
-    xRot = 0;
-    yRot = 0;
-    zRot = 0;
 #ifdef QT_OPENGL_ES_2
     program = 0;
 #endif
@@ -172,24 +171,41 @@ void GLWidget::paintGL()
 
 #endif
 
-    for (int i = 0; i < 6; ++i) {
-        glBindTexture(GL_TEXTURE_2D, textures[i]);
-        glDrawArrays(GL_TRIANGLE_FAN, i * 4, 4);
-    }
+    glBindTexture(GL_TEXTURE_2D, mapTexture);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisable(GL_BLEND);
+    glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
 void GLWidget::resizeGL(int width, int height)
 {
-    int side = qMin(width, height);
-    glViewport((width - side) / 2, (height - side) / 2, side, side);
+    widgetWidth = width;
+    widgetHeight = height;
+    setViewport();
+}
+
+void GLWidget::setViewport()
+{
+    int side;
+    if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
+        side = (int)((double)widgetWidth/aspectRatio);
+        glViewport(0, (widgetHeight - side)/2, widgetWidth, side);
+    } else {
+        side = (int)((double)widgetHeight*aspectRatio);
+        glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
+    }
 
 #if !defined(QT_OPENGL_ES_2)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 #ifndef QT_OPENGL_ES
-    glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0);
+;    glOrtho(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
 #else
-    glOrthof(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0);
+    glOrthof(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
 #endif
     glMatrixMode(GL_MODELVIEW);
 #endif
@@ -220,29 +236,31 @@ void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
 
 void GLWidget::makeObject()
 {
-    static const int coords[6][4][3] = {
-        { { +1, -1, -1 }, { -1, -1, -1 }, { -1, +1, -1 }, { +1, +1, -1 } },
-        { { +1, +1, -1 }, { -1, +1, -1 }, { -1, +1, +1 }, { +1, +1, +1 } },
-        { { +1, -1, +1 }, { +1, -1, -1 }, { +1, +1, -1 }, { +1, +1, +1 } },
-        { { -1, -1, -1 }, { -1, -1, +1 }, { -1, +1, +1 }, { -1, +1, -1 } },
-        { { +1, -1, +1 }, { -1, -1, +1 }, { -1, -1, -1 }, { +1, -1, -1 } },
-        { { -1, -1, +1 }, { +1, -1, +1 }, { +1, +1, +1 }, { -1, +1, +1 } }
-    };
+    texCoords.clear();
+    vertices.clear();
 
-    /*
-    for (int j=0; j < 6; ++j) {
-        textures[j] = bindTexture
-            (QPixmap(QString(":/images/side%1.png").arg(j + 1)), GL_TEXTURE_2D);
+    for (int j = 0; j < 4; ++j) {
+        texCoords.append
+            (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
+        vertices.append
+            (QVector3D(
+                 ((j == 0 || j == 3)?1:-1),
+                 ((j == 2 || j == 3)?1:-1),
+                 0.0)
+            );
     }
-    */
+}
 
-    for (int i = 0; i < 6; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            texCoords.append
-                (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
-            vertices.append
-                (QVector3D(0.2 * coords[i][j][0], 0.2 * coords[i][j][1],
-                           0.2 * coords[i][j][2]));
-        }
+void GLWidget::setTexture(GLuint texture)
+{
+    mapTexture = texture;
+    repaint();
+}
+
+void GLWidget::setAspectRatio(double ratio)
+{
+    if(aspectRatio != ratio) {
+        aspectRatio = ratio;
+        setViewport();
     }
 }

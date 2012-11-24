@@ -2,7 +2,8 @@
 #include "aboutdialog.h"
 #include "unitmapdialog.h"
 
-#include "opencv/cv.h"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 
 #include <QDebug>
 #include <QFileDialog>
@@ -20,10 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     openGL = new GLWidget( centralWidget() );
     setCentralWidget( openGL );
 
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(rotateOneStep()));
-    timer->start(20);
-
+    //map = new MapManager();
+    //displayTexture = new DisplayTextureManager();
 }
 
 MainWindow::~MainWindow()
@@ -32,26 +31,21 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::openMap( QString path )
+void MainWindow::showUnitmapDialog()
 {
-    qDebug() << "Open map: " << path;
-    fileName = path;
-}
+    UnitmapDialog *unitmapDialog = new UnitmapDialog(this);
+    unitmapDialog->setWindowFlags(unitmapDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    if(!unitmapDialog->exec())
+        return;
 
-void MainWindow::saveMap( QString path )
-{
-    qDebug() << "Save map: " << path;
-    fileName = path;
+    qDebug() << unitmapDialog->getSizeSetting();
 }
-
 
 
 void MainWindow::fileRevert()
 {
-    if(fileName.isNull())
+    if(!map.load())
         fileOpen();
-    else
-        openMap(fileName);
 }
 
 void MainWindow::fileOpen()
@@ -59,16 +53,18 @@ void MainWindow::fileOpen()
     QString path = QFileDialog::getOpenFileName( this, tr("Open UV Map file"));
     if(path.isNull() == false)
     {
-        openMap(path);
+        if(map.load(path)) {
+            QRect rect = map.getRect();
+            openGL->setAspectRatio((double)rect.width()/(double)rect.height());
+            openGL->setTexture( map.getTexture() );
+        }
     }
 }
 
 void MainWindow::fileSave()
 {
-    if(fileName.isNull())
+    if(!map.save())
         fileSaveAs();
-    else
-        saveMap(fileName);
 }
 
 void MainWindow::fileSaveAs()
@@ -76,14 +72,8 @@ void MainWindow::fileSaveAs()
     QString path = QFileDialog::getSaveFileName( this, tr("Save UV Map as"));
     if(path.isNull() == false)
     {
-        saveMap(path);
+        map.save(path);
     }
-}
-
-void MainWindow::rotateOneStep()
-{
-    if (openGL)
-        openGL->rotateBy(+2 * 16, +2 * 16, -1 * 16);
 }
 
 void MainWindow::toggleFullscreen()
@@ -99,6 +89,21 @@ void MainWindow::toggleFullscreen()
     }
 }
 
+void MainWindow::selectDisplayTexture( )
+{
+
+    QAction *action = (QAction *)sender();
+    if( !action )
+        return;
+
+    QStringList actionNames;
+    actionNames << "actionShowUV" << "actionShowU" << "actionShowV" << "actionShowAlpha" << "actionShowGrid" << "actionShowFile";
+
+    DisplayTextureManager::DISPLAY_TYPE type = (DisplayTextureManager::DISPLAY_TYPE) actionNames.indexOf( action->objectName() );
+
+    displayTexture.makeTexture( type );
+}
+
 
 void MainWindow::showAboutDialog()
 {
@@ -107,12 +112,5 @@ void MainWindow::showAboutDialog()
     aboutDialog->exec();
 }
 
-void MainWindow::showUnitmapDialog()
-{
-    UnitmapDialog *unitmapDialog = new UnitmapDialog(this);
-    unitmapDialog->setWindowFlags(unitmapDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
-    if(!unitmapDialog->exec())
-        return;
 
-    qDebug() << unitmapDialog->getSizeSetting();
-}
+
