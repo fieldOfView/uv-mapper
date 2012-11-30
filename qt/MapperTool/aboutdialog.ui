@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
+    <width>318</width>
     <height>150</height>
    </rect>
   </property>
@@ -26,8 +26,8 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>100</y>
-     <width>261</width>
+     <y>110</y>
+     <width>281</width>
      <height>31</height>
     </rect>
    </property>
@@ -38,12 +38,12 @@
     <set>QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="text">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>90</x>
      <y>20</y>
-     <width>261</width>
+     <width>211</width>
      <height>91</height>
     </rect>
    </property>
@@ -66,8 +66,29 @@ p, li { white-space: pre-wrap; }
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QLabel" name="icon">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>64</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string notr="true"/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="resources.qrc">:/icons/icon.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

@@ -139,3 +139,6 @@ win32 {
           message("OpenCV libraries not found.")
   }
 }
+
+RESOURCES += \
+    resources.qrc

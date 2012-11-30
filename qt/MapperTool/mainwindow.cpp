@@ -111,6 +111,3 @@ void MainWindow::showAboutDialog()
     aboutDialog->setWindowFlags(aboutDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
     aboutDialog->exec();
 }
-
-
-

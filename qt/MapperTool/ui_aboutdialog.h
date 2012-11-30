@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'aboutdialog.ui'
 **
-** Created: Fri Nov 2 16:36:39 2012
+** Created: Fri Nov 30 14:22:13 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -25,26 +25,33 @@ class Ui_AboutDialog
 {
 public:
     QDialogButtonBox *buttonBox;
-    QLabel *label;
+    QLabel *text;
+    QLabel *icon;
 
     void setupUi(QDialog *AboutDialog)
     {
         if (AboutDialog->objectName().isEmpty())
             AboutDialog->setObjectName(QString::fromUtf8("AboutDialog"));
         AboutDialog->setWindowModality(Qt::ApplicationModal);
-        AboutDialog->resize(300, 150);
+        AboutDialog->resize(318, 150);
         AboutDialog->setContextMenuPolicy(Qt::NoContextMenu);
         AboutDialog->setModal(true);
         buttonBox = new QDialogButtonBox(AboutDialog);
         buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
-        buttonBox->setGeometry(QRect(20, 100, 261, 31));
+        buttonBox->setGeometry(QRect(20, 110, 281, 31));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Ok);
-        label = new QLabel(AboutDialog);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(20, 20, 261, 91));
-        label->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
-        label->setWordWrap(true);
+        text = new QLabel(AboutDialog);
+        text->setObjectName(QString::fromUtf8("text"));
+        text->setGeometry(QRect(90, 20, 211, 91));
+        text->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
+        text->setWordWrap(true);
+        icon = new QLabel(AboutDialog);
+        icon->setObjectName(QString::fromUtf8("icon"));
+        icon->setGeometry(QRect(10, 20, 64, 64));
+        icon->setText(QString::fromUtf8(""));
+        icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/icon.png")));
+        icon->setScaledContents(true);
 
         retranslateUi(AboutDialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), AboutDialog, SLOT(close()));
@@ -55,7 +62,7 @@ public:
     void retranslateUi(QDialog *AboutDialog)
     {
         AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "About Mapper Tool", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("AboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        text->setText(QApplication::translate("AboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
