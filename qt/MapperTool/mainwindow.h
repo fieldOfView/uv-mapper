@@ -42,7 +42,8 @@ private slots:
     void fileSave();
     void fileSaveAs();
 
-    void selectDisplayTexture( );
+    void selectDisplayTexture();
+    void selectTransparencyGrid();
 };
 
 #endif // MAINWINDOW_H

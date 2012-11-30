@@ -101,8 +101,18 @@
      <addaction name="actionZoomActualSize"/>
      <addaction name="actionZoomFit"/>
     </widget>
+    <widget class="QMenu" name="menuBackground">
+     <property name="title">
+      <string>Background</string>
+     </property>
+     <addaction name="actionGridNone"/>
+     <addaction name="actionGridLight"/>
+     <addaction name="actionGridDark"/>
+    </widget>
     <addaction name="actionFullscreen"/>
     <addaction name="menuZoom"/>
+    <addaction name="separator"/>
+    <addaction name="menuBackground"/>
     <addaction name="separator"/>
     <addaction name="actionShowUV"/>
     <addaction name="actionShowU"/>
@@ -363,6 +373,21 @@
     <string>Fill holes...</string>
    </property>
   </action>
+  <action name="actionGridNone">
+   <property name="text">
+    <string>Black</string>
+   </property>
+  </action>
+  <action name="actionGridLight">
+   <property name="text">
+    <string>Light grid</string>
+   </property>
+  </action>
+  <action name="actionGridDark">
+   <property name="text">
+    <string>Dark grid</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -593,6 +618,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionGridNone</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectTransparencyGrid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGridLight</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectTransparencyGrid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionGridDark</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectTransparencyGrid()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>toggleFullscreen()</slot>
@@ -603,5 +676,6 @@
   <slot>fileSave()</slot>
   <slot>fileSaveAs()</slot>
   <slot>selectDisplayTexture()</slot>
+  <slot>selectTransparencyGrid()</slot>
  </slots>
 </ui>

@@ -46,15 +46,16 @@
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
       aspectRatio(1),
-      clearColor(Qt::black),
+      transparencyGridType(GRID_LIGHT),
       xRot(0),yRot(0),zRot(0),
-      program(0)
+      uvMapProgram(0), gridProgram(0)
 {
 }
 
 GLWidget::~GLWidget()
 {
-    program->release();
+    uvMapProgram = 0;
+    gridProgram = 0;
 }
 
 QSize GLWidget::minimumSizeHint() const
@@ -75,12 +76,6 @@ void GLWidget::rotateBy(int xAngle, int yAngle, int zAngle)
     updateGL();
 }
 
-void GLWidget::setClearColor(const QColor &color)
-{
-    clearColor = color;
-    updateGL();
-}
-
 void GLWidget::initializeGL()
 {
     makeObject();
@@ -95,18 +90,23 @@ void GLWidget::initializeGL()
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/glsl/uvMap_frag.glsl");
 
-    program = new QGLShaderProgram(this);
-    program->addShader(vshader);
-    program->addShader(fshader);
-    program->link();
+    uvMapProgram = new QGLShaderProgram(this);
+    uvMapProgram->addShader(vshader);
+    uvMapProgram->addShader(fshader);
+    uvMapProgram->link();
 
-    program->bind();
-    program->setUniformValue("texture", 0);
+    fshader = new QGLShader(QGLShader::Fragment, this);
+    fshader->compileSourceFile(":/glsl/grid_frag.glsl");
+
+    gridProgram = new QGLShaderProgram(this);
+    gridProgram->addShader(vshader);
+    gridProgram->addShader(fshader);
+    gridProgram->link();
 }
 
 void GLWidget::paintGL()
 {
-    qglClearColor(clearColor);
+    qglClearColor(Qt::black);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glLoadIdentity();
@@ -122,10 +122,46 @@ void GLWidget::paintGL()
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH);
+    glDepthFunc(GL_ALWAYS);
 
+    if(transparencyGridType != GRID_NONE) {
+        glViewport(0, 0, widgetWidth, widgetHeight);
+
+        gridProgram->bind();
+        gridProgram->setUniformValue("windowSize", QVector2D((float)widgetWidth, (float)widgetHeight));
+        gridProgram->setUniformValue("gridSize", 16.0f);
+        switch(transparencyGridType) {
+        case GRID_LIGHT:
+            gridProgram->setUniformValue("colorA",QVector3D(1.0,1.0,1.0));
+            gridProgram->setUniformValue("colorB",QVector3D(0.8,0.8,0.8));
+            break;
+        case GRID_DARK:
+            gridProgram->setUniformValue("colorA",QVector3D(0.2,0.2,0.2));
+            gridProgram->setUniformValue("colorB",QVector3D(0.4,0.4,0.4));
+            break;
+        }
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        gridProgram->release();
+    }
+
+    int side;
+    if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
+        side = (int)((double)widgetWidth/aspectRatio);
+        glViewport(0, (widgetHeight - side)/2, widgetWidth, side);
+    } else {
+        side = (int)((double)widgetHeight*aspectRatio);
+        glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
+    }
+
+    uvMapProgram->bind();
+    uvMapProgram->setUniformValue("texture", 0);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    uvMapProgram->release();
 
     glDisable(GL_BLEND);
+    glDisable(GL_DEPTH);
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -137,6 +173,7 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::setViewport()
 {
+    /*
     int side;
     if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
         side = (int)((double)widgetWidth/aspectRatio);
@@ -145,6 +182,8 @@ void GLWidget::setViewport()
         side = (int)((double)widgetHeight*aspectRatio);
         glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
     }
+*/
+    glViewport(0, 0, widgetWidth, widgetHeight);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -206,3 +245,10 @@ void GLWidget::setAspectRatio(double ratio)
         setViewport();
     }
 }
+
+void GLWidget::setTransparencyGrid(TRANSPARENCYGRID_TYPE type)
+{
+    transparencyGridType = type;
+    repaint();
+}
+

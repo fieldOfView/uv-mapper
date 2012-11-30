@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Nov 30 17:27:09 2012
+** Created: Fri Nov 30 23:15:59 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -53,6 +53,9 @@ public:
     QAction *actionFilterGaussian;
     QAction *actionFilterDespeckle;
     QAction *actionFilterHoles;
+    QAction *actionGridNone;
+    QAction *actionGridLight;
+    QAction *actionGridDark;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QMenuBar *menuBar;
@@ -62,6 +65,7 @@ public:
     QMenu *menuFilter;
     QMenu *menuView;
     QMenu *menuZoom;
+    QMenu *menuBackground;
     QMenu *menuHelp;
     QStatusBar *statusBar;
 
@@ -129,6 +133,12 @@ public:
         actionFilterDespeckle->setObjectName(QString::fromUtf8("actionFilterDespeckle"));
         actionFilterHoles = new QAction(MainWindow);
         actionFilterHoles->setObjectName(QString::fromUtf8("actionFilterHoles"));
+        actionGridNone = new QAction(MainWindow);
+        actionGridNone->setObjectName(QString::fromUtf8("actionGridNone"));
+        actionGridLight = new QAction(MainWindow);
+        actionGridLight->setObjectName(QString::fromUtf8("actionGridLight"));
+        actionGridDark = new QAction(MainWindow);
+        actionGridDark->setObjectName(QString::fromUtf8("actionGridDark"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -158,6 +168,8 @@ public:
         menuView->setObjectName(QString::fromUtf8("menuView"));
         menuZoom = new QMenu(menuView);
         menuZoom->setObjectName(QString::fromUtf8("menuZoom"));
+        menuBackground = new QMenu(menuView);
+        menuBackground->setObjectName(QString::fromUtf8("menuBackground"));
         menuHelp = new QMenu(menuBar);
         menuHelp->setObjectName(QString::fromUtf8("menuHelp"));
         MainWindow->setMenuBar(menuBar);
@@ -192,6 +204,8 @@ public:
         menuView->addAction(actionFullscreen);
         menuView->addAction(menuZoom->menuAction());
         menuView->addSeparator();
+        menuView->addAction(menuBackground->menuAction());
+        menuView->addSeparator();
         menuView->addAction(actionShowUV);
         menuView->addAction(actionShowU);
         menuView->addAction(actionShowV);
@@ -204,6 +218,9 @@ public:
         menuZoom->addSeparator();
         menuZoom->addAction(actionZoomActualSize);
         menuZoom->addAction(actionZoomFit);
+        menuBackground->addAction(actionGridNone);
+        menuBackground->addAction(actionGridLight);
+        menuBackground->addAction(actionGridDark);
         menuHelp->addAction(actionAbout);
 
         retranslateUi(MainWindow);
@@ -221,6 +238,9 @@ public:
         QObject::connect(actionShowAlpha, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
         QObject::connect(actionShowGrid, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
         QObject::connect(actionShowFile, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionGridNone, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
+        QObject::connect(actionGridLight, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
+        QObject::connect(actionGridDark, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -324,12 +344,16 @@ public:
         actionFilterGaussian->setText(QApplication::translate("MainWindow", "Gaussian...", 0, QApplication::UnicodeUTF8));
         actionFilterDespeckle->setText(QApplication::translate("MainWindow", "Despeckle...", 0, QApplication::UnicodeUTF8));
         actionFilterHoles->setText(QApplication::translate("MainWindow", "Fill holes...", 0, QApplication::UnicodeUTF8));
+        actionGridNone->setText(QApplication::translate("MainWindow", "Black", 0, QApplication::UnicodeUTF8));
+        actionGridLight->setText(QApplication::translate("MainWindow", "Light grid", 0, QApplication::UnicodeUTF8));
+        actionGridDark->setText(QApplication::translate("MainWindow", "Dark grid", 0, QApplication::UnicodeUTF8));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
         menuNew->setTitle(QApplication::translate("MainWindow", "New", 0, QApplication::UnicodeUTF8));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", 0, QApplication::UnicodeUTF8));
         menuFilter->setTitle(QApplication::translate("MainWindow", "Filter", 0, QApplication::UnicodeUTF8));
         menuView->setTitle(QApplication::translate("MainWindow", "View", 0, QApplication::UnicodeUTF8));
         menuZoom->setTitle(QApplication::translate("MainWindow", "Zoom", 0, QApplication::UnicodeUTF8));
+        menuBackground->setTitle(QApplication::translate("MainWindow", "Background", 0, QApplication::UnicodeUTF8));
         menuHelp->setTitle(QApplication::translate("MainWindow", "Help", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

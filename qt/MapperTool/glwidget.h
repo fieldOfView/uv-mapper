@@ -58,7 +58,13 @@
      QSize minimumSizeHint() const;
      QSize sizeHint() const;
 
-     void setClearColor(const QColor &color);
+     enum TRANSPARENCYGRID_TYPE {
+       GRID_NONE,
+       GRID_LIGHT,
+       GRID_DARK
+     };
+
+     void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
      void setTexture(GLuint texture);
      void setAspectRatio(double ratio);
 
@@ -90,11 +96,12 @@
 
      int widgetWidth, widgetHeight;
 
-     QColor clearColor;
+     TRANSPARENCYGRID_TYPE transparencyGridType;
      QPoint lastPos;
      int xRot, yRot, zRot;
 
-     QGLShaderProgram *program;
+     QGLShaderProgram *uvMapProgram;
+     QGLShaderProgram *gridProgram;
  };
 
  #endif

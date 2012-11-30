@@ -89,9 +89,8 @@ void MainWindow::toggleFullscreen()
     }
 }
 
-void MainWindow::selectDisplayTexture( )
+void MainWindow::selectDisplayTexture()
 {
-
     QAction *action = (QAction *)sender();
     if( !action )
         return;
@@ -101,9 +100,22 @@ void MainWindow::selectDisplayTexture( )
 
     DisplayTextureManager::DISPLAY_TYPE type = (DisplayTextureManager::DISPLAY_TYPE) actionNames.indexOf( action->objectName() );
 
-    displayTexture.makeTexture( type );
+    displayTexture.makeTexture(type);
 }
 
+void MainWindow::selectTransparencyGrid()
+{
+    QAction *action = (QAction *)sender();
+    if( !action )
+        return;
+
+    QStringList actionNames;
+    actionNames << "actionGridNone" << "actionGridLight" << "actionGridDark";
+
+    GLWidget::TRANSPARENCYGRID_TYPE type = (GLWidget::TRANSPARENCYGRID_TYPE) actionNames.indexOf( action->objectName() );
+
+    openGL->setTransparencyGrid(type);
+}
 
 void MainWindow::showAboutDialog()
 {
