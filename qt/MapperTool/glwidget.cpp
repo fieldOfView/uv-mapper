@@ -183,7 +183,7 @@ void GLWidget::makeObject()
 
     for (int j = 0; j < 4; ++j) {
         texCoords.append
-            (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
+            (QVector2D(j == 0 || j == 3, j == 2 || j == 3));
         vertices.append
             (QVector3D(
                  ((j == 0 || j == 3)?1:-1),
