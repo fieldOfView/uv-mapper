@@ -4,13 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui \
+QT += \
+    core gui \
     opengl
 
 TARGET = MapperTool
 TEMPLATE = app
 
-SOURCES += main.cpp\
+SOURCES += \
+    main.cpp\
     mainwindow.cpp \
     aboutdialog.cpp \
     glwidget.cpp \
@@ -18,47 +20,18 @@ SOURCES += main.cpp\
     mapmanager.cpp \
     displaytexturemanager.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS += \
+    mainwindow.h \
     aboutdialog.h \
     glwidget.h \
     unitmapdialog.h \
     mapmanager.h \
     displaytexturemanager.h
 
-FORMS    += mainwindow.ui \
+FORMS += \
+    mainwindow.ui \
     aboutdialog.ui \
     unitmapdialog.ui
-
-
-win32 {
-  OPENCVDIR = "../../../opencv/install"
-  OPENCVLIBDIR = $${OPENCVDIR}/lib
-  exists($$OPENCVDIR) {
-          DEFINES += USEOPENCV
-          INCLUDEPATH += \
-                  $${OPENCVDIR}/include
-          DEPENDPATH += \
-                  $${OPENCVDIR}/include
-          CONFIG(release, debug|release) {
-                  LIBS += -L$${OPENCVLIBDIR} \
-                          -lopencv_core240 \
-                          -lopencv_highgui240
-                  PRE_TARGETDEPS += \
-                          $${OPENCVLIBDIR}/opencv_core240.lib \
-                          $${OPENCVLIBDIR}/opencv_highgui240.lib
-          } else {
-                  LIBS += -L$${OPENCVLIBDIR} \
-                          -lopencv_core240d \
-                          -lopencv_highgui240d
-                  PRE_TARGETDEPS += \
-                          $${OPENCVLIBDIR}/opencv_core240d.lib \
-                          $${OPENCVLIBDIR}/opencv_highgui240d.lib
-          }
-          message("OpenCV libraries found in $${OPENCVDIR}")
-  } else {
-          message("OpenCV libraries not found.")
-  }
-}
 
 RESOURCES += \
     resources.qrc
@@ -66,3 +39,78 @@ RESOURCES += \
 OTHER_FILES += \
     resources/uvMap_frag.glsl \
     resources/passThru_vert.glsl
+
+
+win32 {
+    # Copy Qt runtime
+
+    CONFIG(debug, debug|release) {
+        QtCored4.commands = copy /Y %QTDIR%\\bin\\QtCored4.dll debug
+        QtCored4.target = debug/QtCored4.dll
+        QtGuid4.commands = copy /Y %QTDIR%\\bin\\QtGuid4.dll debug
+        QtGuid4.target = debug/QtGuid4.dll
+        QtOpenGLd4.commands = copy /Y %QTDIR%\\bin\\QtOpenGLd4.dll debug
+        QtOpenGLd4.target = debug/QtOpenGLd4.dll
+
+        QMAKE_EXTRA_TARGETS += QtCored4 QtGuid4 QtOpenGLd4
+        PRE_TARGETDEPS += debug/QtCored4.dll debug/QtGuid4.dll debug/QtOpenGLd4.dll
+    } else {
+        QtCore4.commands = copy /Y %QTDIR%\\bin\\QtCore4.dll release
+        QtCore4.target = release/QtCore4.dll
+        QtGui4.commands = copy /Y %QTDIR%\\bin\\QtGui4.dll release
+        QtGui4.target = release/QtGui4.dll
+        QtOpenGL4.commands = copy /Y %QTDIR%\\bin\\QtOpenGL4.dll release
+        QtOpenGL4.target = release/QtOpenGL4.dll
+
+        QMAKE_EXTRA_TARGETS += QtCore4 QtGui4 QtOpenGL4
+        PRE_TARGETDEPS += release/QtCore4.dll release/QtGui4.dll release/QtOpenGL4.dll
+    }
+
+    # Include, link and copy opencv dependency
+
+    OPENCVDIR = "..\\..\\..\\opencv\\install"
+    OPENCVINCLUDEDIR = $${OPENCVDIR}\\include
+    OPENCVLIBDIR = $${OPENCVDIR}\\lib
+    OPENCVBINDIR = $${OPENCVDIR}\\bin
+    exists($$OPENCVDIR) {
+          DEFINES += USEOPENCV
+          INCLUDEPATH += $${OPENCVINCLUDEDIR}
+          DEPENDPATH += $${OPENCVINCLUDEDIR}
+          CONFIG(release, debug|release) {
+                  LIBS += -L$${OPENCVLIBDIR} \
+                          -lopencv_core240 \
+                          -lopencv_highgui240
+                  PRE_TARGETDEPS += \
+                          $${OPENCVLIBDIR}/opencv_core240.lib \
+                          $${OPENCVLIBDIR}/opencv_highgui240.lib
+
+                  opencv_core240.commands = copy /Y $${OPENCVBINDIR}\\opencv_core240.dll release
+                  opencv_core240.target = release/opencv_core240.dll
+                  opencv_highgui240.commands = copy /Y $${OPENCVBINDIR}\\opencv_highgui240.dll release
+                  opencv_highgui240.target = release/opencv_highgui240.dll
+
+                  QMAKE_EXTRA_TARGETS += opencv_core240 opencv_highgui240
+                  PRE_TARGETDEPS += release/opencv_core240.dll release/opencv_highgui240.dll
+
+          } else {
+                  LIBS += -L$${OPENCVLIBDIR} \
+                          -lopencv_core240d \
+                          -lopencv_highgui240d
+                  PRE_TARGETDEPS += \
+                          $${OPENCVLIBDIR}/opencv_core240d.lib \
+                          $${OPENCVLIBDIR}/opencv_highgui240d.lib
+
+                  opencv_core240d.commands = copy /Y $${OPENCVBINDIR}\\opencv_core240d.dll debug
+                  opencv_core240d.target = debug/opencv_core240d.dll
+                  opencv_highgui240d.commands = copy /Y $${OPENCVBINDIR}\\opencv_highgui240d.dll debug
+                  opencv_highgui240d.target = debug/opencv_highgui240d.dll
+
+                  QMAKE_EXTRA_TARGETS += opencv_core240d opencv_highgui240d
+                  PRE_TARGETDEPS += debug/opencv_core240d.dll debug/opencv_highgui240d.dll
+
+          }
+    } else {
+          message("OpenCV libraries not found.")
+    }
+}
+

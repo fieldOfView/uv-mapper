@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'unitmapdialog.ui'
 **
-** Created: Fri Nov 2 16:36:39 2012
+** Created: Fri Nov 30 17:27:09 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
