@@ -48,15 +48,14 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
       aspectRatio(1),
       clearColor(Qt::black),
-      xRot(0),yRot(0),zRot(0)
+      xRot(0),yRot(0),zRot(0),
+      program(0)
 {
-#ifdef QT_OPENGL_ES_2
-    program = 0;
-#endif
 }
 
 GLWidget::~GLWidget()
 {
+    program->release();
 }
 
 QSize GLWidget::minimumSizeHint() const
@@ -89,57 +88,39 @@ void GLWidget::initializeGL()
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-#ifndef QT_OPENGL_ES_2
     glEnable(GL_TEXTURE_2D);
-#endif
-
-#ifdef QT_OPENGL_ES_2
-
-#define PROGRAM_VERTEX_ATTRIBUTE 0
-#define PROGRAM_TEXCOORD_ATTRIBUTE 1
 
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
     const char *vsrc =
-        "attribute highp vec4 vertex;\n"
-        "attribute mediump vec4 texCoord;\n"
-        "varying mediump vec4 texc;\n"
-        "uniform mediump mat4 matrix;\n"
         "void main(void)\n"
         "{\n"
-        "    gl_Position = matrix * vertex;\n"
-        "    texc = texCoord;\n"
+        "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+        "    gl_Position = ftransform();\n"
         "}\n";
     vshader->compileSourceCode(vsrc);
 
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     const char *fsrc =
         "uniform sampler2D texture;\n"
-        "varying mediump vec4 texc;\n"
         "void main(void)\n"
         "{\n"
-        "    gl_FragColor = texture2D(texture, texc.st);\n"
+        "    gl_FragColor = texture2D(texture, gl_TexCoord[0].xy);\n"
         "}\n";
     fshader->compileSourceCode(fsrc);
 
     program = new QGLShaderProgram(this);
     program->addShader(vshader);
     program->addShader(fshader);
-    program->bindAttributeLocation("vertex", PROGRAM_VERTEX_ATTRIBUTE);
-    program->bindAttributeLocation("texCoord", PROGRAM_TEXCOORD_ATTRIBUTE);
     program->link();
 
     program->bind();
     program->setUniformValue("texture", 0);
-
-#endif
 }
 
 void GLWidget::paintGL()
 {
     qglClearColor(clearColor);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-#if !defined(QT_OPENGL_ES_2)
 
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -10.0f);
@@ -152,33 +133,12 @@ void GLWidget::paintGL()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-#else
-
-    QMatrix4x4 m;
-    m.ortho(-0.5f, +0.5f, +0.5f, -0.5f, 4.0f, 15.0f);
-    m.translate(0.0f, 0.0f, -10.0f);
-    m.rotate(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    m.rotate(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    m.rotate(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
-
-    program->setUniformValue("matrix", m);
-    program->enableAttributeArray(PROGRAM_VERTEX_ATTRIBUTE);
-    program->enableAttributeArray(PROGRAM_TEXCOORD_ATTRIBUTE);
-    program->setAttributeArray
-        (PROGRAM_VERTEX_ATTRIBUTE, vertices.constData());
-    program->setAttributeArray
-        (PROGRAM_TEXCOORD_ATTRIBUTE, texCoords.constData());
-
-#endif
-
-    glBindTexture(GL_TEXTURE_2D, mapTexture);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     glDisable(GL_BLEND);
-    glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
 void GLWidget::resizeGL(int width, int height)
@@ -199,16 +159,11 @@ void GLWidget::setViewport()
         glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
     }
 
-#if !defined(QT_OPENGL_ES_2)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-#ifndef QT_OPENGL_ES
-;    glOrtho(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
-#else
-    glOrthof(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
-#endif
+
+    glOrtho(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
     glMatrixMode(GL_MODELVIEW);
-#endif
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

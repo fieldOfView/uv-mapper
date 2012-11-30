@@ -94,9 +94,7 @@
      QPoint lastPos;
      int xRot, yRot, zRot;
 
-#ifdef QT_OPENGL_ES_2
      QGLShaderProgram *program;
- #endif
  };
 
  #endif
