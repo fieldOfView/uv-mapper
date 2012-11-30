@@ -142,3 +142,7 @@ win32 {
 
 RESOURCES += \
     resources.qrc
+
+OTHER_FILES += \
+    resources/uvMap_frag.glsl \
+    resources/passThru_vert.glsl

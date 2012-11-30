@@ -39,10 +39,9 @@
 **
 ****************************************************************************/
 
-#include <QtGui>
-#include <QtOpenGL>
-
 #include "glwidget.h"
+
+#include <QtOpenGL>
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
@@ -91,22 +90,10 @@ void GLWidget::initializeGL()
     glEnable(GL_TEXTURE_2D);
 
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
-    const char *vsrc =
-        "void main(void)\n"
-        "{\n"
-        "    gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-        "    gl_Position = ftransform();\n"
-        "}\n";
-    vshader->compileSourceCode(vsrc);
+    vshader->compileSourceFile(":/glsl/passThru_vert.glsl");
 
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
-    const char *fsrc =
-        "uniform sampler2D texture;\n"
-        "void main(void)\n"
-        "{\n"
-        "    gl_FragColor = texture2D(texture, gl_TexCoord[0].xy);\n"
-        "}\n";
-    fshader->compileSourceCode(fsrc);
+    fshader->compileSourceFile(":/glsl/uvMap_frag.glsl");
 
     program = new QGLShaderProgram(this);
     program->addShader(vshader);

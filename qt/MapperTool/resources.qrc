@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icon.png</file>
+        <file alias="icon.png">resources/icon.png</file>
+    </qresource>
+    <qresource prefix="/glsl">
+        <file alias="passThru_vert.glsl">resources/passThru_vert.glsl</file>
+        <file alias="uvMap_frag.glsl">resources/uvMap_frag.glsl</file>
     </qresource>
 </RCC>
