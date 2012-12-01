@@ -37,8 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     openGL = new GLWidget( centralWidget() );
     setCentralWidget( openGL );
 
-    //map = new MapManager();
-    //displayTexture = new DisplayTextureManager();
+    map = new MapManager();
+    displayTexture = new DisplayTextureManager();
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +60,7 @@ void MainWindow::showUnitmapDialog()
 
 void MainWindow::fileRevert()
 {
-    if(!map.load())
+    if(!map->load())
         fileOpen();
 }
 
@@ -69,17 +69,17 @@ void MainWindow::fileOpen()
     QString path = QFileDialog::getOpenFileName( this, tr("Open UV Map file"));
     if(path.isNull() == false)
     {
-        if(map.load(path)) {
-            QRect rect = map.getRect();
+        if(map->load(path)) {
+            QRect rect = map->getRect();
             openGL->setAspectRatio((double)rect.width()/(double)rect.height());
-            openGL->setTexture( map.getTexture() );
+            openGL->setTexture( map->getTexture() );
         }
     }
 }
 
 void MainWindow::fileSave()
 {
-    if(!map.save())
+    if(!map->save())
         fileSaveAs();
 }
 
@@ -88,7 +88,7 @@ void MainWindow::fileSaveAs()
     QString path = QFileDialog::getSaveFileName( this, tr("Save UV Map as"));
     if(path.isNull() == false)
     {
-        map.save(path);
+        map->save(path);
     }
 }
 
@@ -111,7 +111,7 @@ void MainWindow::selectDisplayTexture()
     if( !action )
         return;
 
-    displayTexture.makeTexture((DisplayTextureManager::DISPLAY_TYPE)displayActionGroup.indexOf(action));
+    displayTexture->makeTexture((DisplayTextureManager::DISPLAY_TYPE)displayActionGroup->actions().indexOf(action));
 }
 
 void MainWindow::selectTransparencyGrid()

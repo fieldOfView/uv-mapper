@@ -28,8 +28,8 @@ private:
     Ui::MainWindow *ui;
     GLWidget *openGL;
 
-    MapManager map;
-    DisplayTextureManager displayTexture;
+    MapManager *map;
+    DisplayTextureManager *displayTexture;
     QString fileName;
 
     QActionGroup *displayActionGroup;
