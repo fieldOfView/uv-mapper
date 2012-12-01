@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Nov 30 23:15:59 2012
+** Created: Sat Dec 1 12:43:43 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -43,12 +43,12 @@ public:
     QAction *actionZoomOut;
     QAction *actionZoomActualSize;
     QAction *actionZoomFit;
-    QAction *actionShowUV;
-    QAction *actionShowU;
-    QAction *actionShowV;
-    QAction *actionShowAlpha;
-    QAction *actionShowGrid;
-    QAction *actionShowFile;
+    QAction *actionDisplayUV;
+    QAction *actionDisplayU;
+    QAction *actionDisplayV;
+    QAction *actionDisplayAlpha;
+    QAction *actionDisplayGrid;
+    QAction *actionDisplayFile;
     QAction *actionFilterMedian;
     QAction *actionFilterGaussian;
     QAction *actionFilterDespeckle;
@@ -113,18 +113,25 @@ public:
         actionZoomActualSize->setObjectName(QString::fromUtf8("actionZoomActualSize"));
         actionZoomFit = new QAction(MainWindow);
         actionZoomFit->setObjectName(QString::fromUtf8("actionZoomFit"));
-        actionShowUV = new QAction(MainWindow);
-        actionShowUV->setObjectName(QString::fromUtf8("actionShowUV"));
-        actionShowU = new QAction(MainWindow);
-        actionShowU->setObjectName(QString::fromUtf8("actionShowU"));
-        actionShowV = new QAction(MainWindow);
-        actionShowV->setObjectName(QString::fromUtf8("actionShowV"));
-        actionShowAlpha = new QAction(MainWindow);
-        actionShowAlpha->setObjectName(QString::fromUtf8("actionShowAlpha"));
-        actionShowGrid = new QAction(MainWindow);
-        actionShowGrid->setObjectName(QString::fromUtf8("actionShowGrid"));
-        actionShowFile = new QAction(MainWindow);
-        actionShowFile->setObjectName(QString::fromUtf8("actionShowFile"));
+        actionDisplayUV = new QAction(MainWindow);
+        actionDisplayUV->setObjectName(QString::fromUtf8("actionDisplayUV"));
+        actionDisplayUV->setCheckable(true);
+        actionDisplayUV->setChecked(true);
+        actionDisplayU = new QAction(MainWindow);
+        actionDisplayU->setObjectName(QString::fromUtf8("actionDisplayU"));
+        actionDisplayU->setCheckable(true);
+        actionDisplayV = new QAction(MainWindow);
+        actionDisplayV->setObjectName(QString::fromUtf8("actionDisplayV"));
+        actionDisplayV->setCheckable(true);
+        actionDisplayAlpha = new QAction(MainWindow);
+        actionDisplayAlpha->setObjectName(QString::fromUtf8("actionDisplayAlpha"));
+        actionDisplayAlpha->setCheckable(true);
+        actionDisplayGrid = new QAction(MainWindow);
+        actionDisplayGrid->setObjectName(QString::fromUtf8("actionDisplayGrid"));
+        actionDisplayGrid->setCheckable(true);
+        actionDisplayFile = new QAction(MainWindow);
+        actionDisplayFile->setObjectName(QString::fromUtf8("actionDisplayFile"));
+        actionDisplayFile->setCheckable(true);
         actionFilterMedian = new QAction(MainWindow);
         actionFilterMedian->setObjectName(QString::fromUtf8("actionFilterMedian"));
         actionFilterGaussian = new QAction(MainWindow);
@@ -135,10 +142,14 @@ public:
         actionFilterHoles->setObjectName(QString::fromUtf8("actionFilterHoles"));
         actionGridNone = new QAction(MainWindow);
         actionGridNone->setObjectName(QString::fromUtf8("actionGridNone"));
+        actionGridNone->setCheckable(true);
         actionGridLight = new QAction(MainWindow);
         actionGridLight->setObjectName(QString::fromUtf8("actionGridLight"));
+        actionGridLight->setCheckable(true);
+        actionGridLight->setChecked(true);
         actionGridDark = new QAction(MainWindow);
         actionGridDark->setObjectName(QString::fromUtf8("actionGridDark"));
+        actionGridDark->setCheckable(true);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -206,13 +217,13 @@ public:
         menuView->addSeparator();
         menuView->addAction(menuBackground->menuAction());
         menuView->addSeparator();
-        menuView->addAction(actionShowUV);
-        menuView->addAction(actionShowU);
-        menuView->addAction(actionShowV);
-        menuView->addAction(actionShowAlpha);
+        menuView->addAction(actionDisplayUV);
+        menuView->addAction(actionDisplayU);
+        menuView->addAction(actionDisplayV);
+        menuView->addAction(actionDisplayAlpha);
         menuView->addSeparator();
-        menuView->addAction(actionShowGrid);
-        menuView->addAction(actionShowFile);
+        menuView->addAction(actionDisplayGrid);
+        menuView->addAction(actionDisplayFile);
         menuZoom->addAction(actionZoomIn);
         menuZoom->addAction(actionZoomOut);
         menuZoom->addSeparator();
@@ -232,12 +243,12 @@ public:
         QObject::connect(actionFileRevert, SIGNAL(triggered()), MainWindow, SLOT(fileRevert()));
         QObject::connect(actionFileSave, SIGNAL(triggered()), MainWindow, SLOT(fileSave()));
         QObject::connect(actionFileSaveAs, SIGNAL(triggered()), MainWindow, SLOT(fileSaveAs()));
-        QObject::connect(actionShowUV, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
-        QObject::connect(actionShowU, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
-        QObject::connect(actionShowV, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
-        QObject::connect(actionShowAlpha, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
-        QObject::connect(actionShowGrid, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
-        QObject::connect(actionShowFile, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayUV, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayU, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayV, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayAlpha, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayGrid, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
+        QObject::connect(actionDisplayFile, SIGNAL(triggered()), MainWindow, SLOT(selectDisplayTexture()));
         QObject::connect(actionGridNone, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
         QObject::connect(actionGridLight, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
         QObject::connect(actionGridDark, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
@@ -316,29 +327,29 @@ public:
         actionZoomFit->setToolTip(QApplication::translate("MainWindow", "Fit the current map to the window size", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         actionZoomFit->setShortcut(QApplication::translate("MainWindow", "Ctrl+0", 0, QApplication::UnicodeUTF8));
-        actionShowUV->setText(QApplication::translate("MainWindow", "UV gradient", 0, QApplication::UnicodeUTF8));
+        actionDisplayUV->setText(QApplication::translate("MainWindow", "UV gradient", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowUV->setToolTip(QApplication::translate("MainWindow", "Show the native UV gradient of the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayUV->setToolTip(QApplication::translate("MainWindow", "Show the native UV gradient of the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionShowU->setText(QApplication::translate("MainWindow", "U gradient", 0, QApplication::UnicodeUTF8));
+        actionDisplayU->setText(QApplication::translate("MainWindow", "U gradient", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowU->setToolTip(QApplication::translate("MainWindow", "Show only the U gradient of the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayU->setToolTip(QApplication::translate("MainWindow", "Show only the U gradient of the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionShowV->setText(QApplication::translate("MainWindow", "V gradient", 0, QApplication::UnicodeUTF8));
+        actionDisplayV->setText(QApplication::translate("MainWindow", "V gradient", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowV->setToolTip(QApplication::translate("MainWindow", "Show only the V gradient of the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayV->setToolTip(QApplication::translate("MainWindow", "Show only the V gradient of the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionShowAlpha->setText(QApplication::translate("MainWindow", "Alpha channel", 0, QApplication::UnicodeUTF8));
+        actionDisplayAlpha->setText(QApplication::translate("MainWindow", "Alpha channel", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowAlpha->setToolTip(QApplication::translate("MainWindow", "Show the alpha channel of the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayAlpha->setToolTip(QApplication::translate("MainWindow", "Show the alpha channel of the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionShowGrid->setText(QApplication::translate("MainWindow", "Grid", 0, QApplication::UnicodeUTF8));
+        actionDisplayGrid->setText(QApplication::translate("MainWindow", "Grid", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowGrid->setToolTip(QApplication::translate("MainWindow", "Transform a grid image with the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayGrid->setToolTip(QApplication::translate("MainWindow", "Transform a grid image with the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionShowFile->setText(QApplication::translate("MainWindow", "File...", 0, QApplication::UnicodeUTF8));
+        actionDisplayFile->setText(QApplication::translate("MainWindow", "File...", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
-        actionShowFile->setToolTip(QApplication::translate("MainWindow", "Open an image or movie and transform it with the current map", 0, QApplication::UnicodeUTF8));
+        actionDisplayFile->setToolTip(QApplication::translate("MainWindow", "Open an image or movie and transform it with the current map", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         actionFilterMedian->setText(QApplication::translate("MainWindow", "Median...", 0, QApplication::UnicodeUTF8));
         actionFilterGaussian->setText(QApplication::translate("MainWindow", "Gaussian...", 0, QApplication::UnicodeUTF8));

@@ -32,6 +32,9 @@ private:
     DisplayTextureManager displayTexture;
     QString fileName;
 
+    QActionGroup *displayActionGroup;
+    QActionGroup *transparencyGridActionGroup;
+
 private slots:
     void toggleFullscreen();
     void showAboutDialog();

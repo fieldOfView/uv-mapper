@@ -114,13 +114,13 @@
     <addaction name="separator"/>
     <addaction name="menuBackground"/>
     <addaction name="separator"/>
-    <addaction name="actionShowUV"/>
-    <addaction name="actionShowU"/>
-    <addaction name="actionShowV"/>
-    <addaction name="actionShowAlpha"/>
+    <addaction name="actionDisplayUV"/>
+    <addaction name="actionDisplayU"/>
+    <addaction name="actionDisplayV"/>
+    <addaction name="actionDisplayAlpha"/>
     <addaction name="separator"/>
-    <addaction name="actionShowGrid"/>
-    <addaction name="actionShowFile"/>
+    <addaction name="actionDisplayGrid"/>
+    <addaction name="actionDisplayFile"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -305,7 +305,13 @@
     <string>Ctrl+0</string>
    </property>
   </action>
-  <action name="actionShowUV">
+  <action name="actionDisplayUV">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>UV gradient</string>
    </property>
@@ -313,7 +319,10 @@
     <string>Show the native UV gradient of the current map</string>
    </property>
   </action>
-  <action name="actionShowU">
+  <action name="actionDisplayU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>U gradient</string>
    </property>
@@ -321,7 +330,10 @@
     <string>Show only the U gradient of the current map</string>
    </property>
   </action>
-  <action name="actionShowV">
+  <action name="actionDisplayV">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>V gradient</string>
    </property>
@@ -329,7 +341,10 @@
     <string>Show only the V gradient of the current map</string>
    </property>
   </action>
-  <action name="actionShowAlpha">
+  <action name="actionDisplayAlpha">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Alpha channel</string>
    </property>
@@ -337,7 +352,10 @@
     <string>Show the alpha channel of the current map</string>
    </property>
   </action>
-  <action name="actionShowGrid">
+  <action name="actionDisplayGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Grid</string>
    </property>
@@ -345,7 +363,10 @@
     <string>Transform a grid image with the current map</string>
    </property>
   </action>
-  <action name="actionShowFile">
+  <action name="actionDisplayFile">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>File...</string>
    </property>
@@ -374,16 +395,28 @@
    </property>
   </action>
   <action name="actionGridNone">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Black</string>
    </property>
   </action>
   <action name="actionGridLight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Light grid</string>
    </property>
   </action>
   <action name="actionGridDark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Dark grid</string>
    </property>
@@ -523,7 +556,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowUV</sender>
+   <sender>actionDisplayUV</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>
@@ -539,7 +572,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowU</sender>
+   <sender>actionDisplayU</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>
@@ -555,7 +588,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowV</sender>
+   <sender>actionDisplayV</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>
@@ -571,7 +604,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowAlpha</sender>
+   <sender>actionDisplayAlpha</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>
@@ -587,7 +620,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowGrid</sender>
+   <sender>actionDisplayGrid</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>
@@ -603,7 +636,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionShowFile</sender>
+   <sender>actionDisplayFile</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>selectDisplayTexture()</slot>

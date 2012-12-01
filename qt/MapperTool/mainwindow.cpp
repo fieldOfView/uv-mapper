@@ -14,6 +14,22 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    displayActionGroup = new QActionGroup(this);
+    displayActionGroup->addAction(ui->actionDisplayUV);
+    displayActionGroup->addAction(ui->actionDisplayU);
+    displayActionGroup->addAction(ui->actionDisplayV);
+    displayActionGroup->addAction(ui->actionDisplayAlpha);
+    displayActionGroup->addAction(ui->actionDisplayGrid);
+    displayActionGroup->addAction(ui->actionDisplayFile);
+    displayActionGroup->setExclusive(true);
+
+    transparencyGridActionGroup = new QActionGroup(this);
+    transparencyGridActionGroup->addAction(ui->actionGridNone);
+    transparencyGridActionGroup->addAction(ui->actionGridLight);
+    transparencyGridActionGroup->addAction(ui->actionGridDark);
+    transparencyGridActionGroup->setExclusive(true);
+
+
     // Connect any actions from the menubar to the root QWidget too,
     // so keyboard shortcuts work when the menuBar is hidden.
     addActions( menuBar()->actions() );
@@ -95,12 +111,7 @@ void MainWindow::selectDisplayTexture()
     if( !action )
         return;
 
-    QStringList actionNames;
-    actionNames << "actionShowUV" << "actionShowU" << "actionShowV" << "actionShowAlpha" << "actionShowGrid" << "actionShowFile";
-
-    DisplayTextureManager::DISPLAY_TYPE type = (DisplayTextureManager::DISPLAY_TYPE) actionNames.indexOf( action->objectName() );
-
-    displayTexture.makeTexture(type);
+    displayTexture.makeTexture((DisplayTextureManager::DISPLAY_TYPE)displayActionGroup.indexOf(action));
 }
 
 void MainWindow::selectTransparencyGrid()
@@ -109,12 +120,7 @@ void MainWindow::selectTransparencyGrid()
     if( !action )
         return;
 
-    QStringList actionNames;
-    actionNames << "actionGridNone" << "actionGridLight" << "actionGridDark";
-
-    GLWidget::TRANSPARENCYGRID_TYPE type = (GLWidget::TRANSPARENCYGRID_TYPE) actionNames.indexOf( action->objectName() );
-
-    openGL->setTransparencyGrid(type);
+    openGL->setTransparencyGrid((GLWidget::TRANSPARENCYGRID_TYPE)transparencyGridActionGroup->actions().indexOf(action));
 }
 
 void MainWindow::showAboutDialog()
