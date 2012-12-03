@@ -39,7 +39,7 @@ RESOURCES += \
 OTHER_FILES += \
     resources/uvMap_frag.glsl \
     resources/passThru_vert.glsl \
-    resources/grid_frag.glsl
+    resources/transparencyGrid_frag.glsl
 
 
 win32 {

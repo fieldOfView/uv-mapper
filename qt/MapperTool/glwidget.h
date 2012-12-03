@@ -95,6 +95,7 @@
      QVector<QVector2D> texCoords;
 
      int widgetWidth, widgetHeight;
+     QRect viewport;
 
      TRANSPARENCYGRID_TYPE transparencyGridType;
      QPoint lastPos;

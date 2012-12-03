@@ -80,10 +80,19 @@ void GLWidget::initializeGL()
 {
     makeObject();
 
+    // opengl settings
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glEnable(GL_TEXTURE_2D);
 
+    // transform matrices
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glOrtho(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
+    glMatrixMode(GL_MODELVIEW);
+
+    // shaders
     QGLShader *vshader = new QGLShader(QGLShader::Vertex, this);
     vshader->compileSourceFile(":/glsl/passThru_vert.glsl");
 
@@ -96,7 +105,7 @@ void GLWidget::initializeGL()
     uvMapProgram->link();
 
     fshader = new QGLShader(QGLShader::Fragment, this);
-    fshader->compileSourceFile(":/glsl/grid_frag.glsl");
+    fshader->compileSourceFile(":/glsl/transparencyGrid_frag.glsl");
 
     gridProgram = new QGLShaderProgram(this);
     gridProgram->addShader(vshader);
@@ -146,14 +155,7 @@ void GLWidget::paintGL()
         gridProgram->release();
     }
 
-    int side;
-    if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
-        side = (int)((double)widgetWidth/aspectRatio);
-        glViewport(0, (widgetHeight - side)/2, widgetWidth, side);
-    } else {
-        side = (int)((double)widgetHeight*aspectRatio);
-        glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
-    }
+    glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
 
     uvMapProgram->bind();
     uvMapProgram->setUniformValue("texture", 0);
@@ -173,23 +175,23 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::setViewport()
 {
-    /*
     int side;
     if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
         side = (int)((double)widgetWidth/aspectRatio);
-        glViewport(0, (widgetHeight - side)/2, widgetWidth, side);
+        viewport = QRect(0, (widgetHeight - side)/2, widgetWidth, side);
     } else {
         side = (int)((double)widgetHeight*aspectRatio);
-        glViewport((widgetWidth - side)/2, 0, side, widgetHeight);
+        viewport = QRect((widgetWidth - side)/2, 0, side, widgetHeight);
     }
-*/
-    glViewport(0, 0, widgetWidth, widgetHeight);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glOrtho(-1.0, +1.0, +1.0, -1.0, 4.0, 15.0);
-    glMatrixMode(GL_MODELVIEW);
+    float factor = 1.0f;
+    if(factor != 1.0f) {
+        QSize size(viewport.width(),viewport.height());
+        size *= factor;
+        QPoint offset((viewport.width()-size.width())/2, (viewport.height()-size.height())/2);
+        viewport.translate(offset);
+        viewport.setSize(size);
+    }
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
