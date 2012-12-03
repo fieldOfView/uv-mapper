@@ -79,8 +79,6 @@
      void mouseMoveEvent(QMouseEvent *event);
      void mouseReleaseEvent(QMouseEvent *event);
 
-     void rotateBy(int xAngle, int yAngle, int zAngle);
-
  private:
      void makeObject();
      void setViewport();
@@ -97,7 +95,6 @@
 
      TRANSPARENCYGRID_TYPE transparencyGridType;
      QPoint lastPos;
-     int xRot, yRot, zRot;
 
      QGLShaderProgram *uvMapProgram;
      QGLShaderProgram *gridProgram;

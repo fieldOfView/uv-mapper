@@ -47,7 +47,6 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
       mapSize(1,1),
       transparencyGridType(GRID_LIGHT),
-      xRot(0),yRot(0),zRot(0),
       uvMapProgram(0), gridProgram(0)
 {
 }
@@ -66,14 +65,6 @@ QSize GLWidget::minimumSizeHint() const
 QSize GLWidget::sizeHint() const
 {
     return QSize(200, 200);
-}
-
-void GLWidget::rotateBy(int xAngle, int yAngle, int zAngle)
-{
-    xRot += xAngle;
-    yRot += yAngle;
-    zRot += zAngle;
-    updateGL();
 }
 
 void GLWidget::initializeGL()
@@ -120,9 +111,6 @@ void GLWidget::paintGL()
 
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -10.0f);
-    glRotatef(xRot / 16.0f, 1.0f, 0.0f, 0.0f);
-    glRotatef(yRot / 16.0f, 0.0f, 1.0f, 0.0f);
-    glRotatef(zRot / 16.0f, 0.0f, 0.0f, 1.0f);
 
     glVertexPointer(3, GL_FLOAT, 0, vertices.constData());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.constData());
@@ -200,13 +188,11 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    int dx = event->x() - lastPos.x();
-    int dy = event->y() - lastPos.y();
+    //int dx = event->x() - lastPos.x();
+    //int dy = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
-        rotateBy(8 * dy, 8 * dx, 0);
-    } else if (event->buttons() & Qt::RightButton) {
-        rotateBy(8 * dy, 0, 8 * dx);
+        // handle dragging
     }
     lastPos = event->pos();
 }
