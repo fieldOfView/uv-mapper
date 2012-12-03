@@ -45,7 +45,7 @@
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
-      aspectRatio(1),
+      mapSize(1,1),
       transparencyGridType(GRID_LIGHT),
       xRot(0),yRot(0),zRot(0),
       uvMapProgram(0), gridProgram(0)
@@ -135,10 +135,10 @@ void GLWidget::paintGL()
     glDepthFunc(GL_ALWAYS);
 
     if(transparencyGridType != GRID_NONE) {
-        glViewport(0, 0, widgetWidth, widgetHeight);
+        glViewport(0, 0, widgetSize.width(), widgetSize.height());
 
         gridProgram->bind();
-        gridProgram->setUniformValue("windowSize", QVector2D((float)widgetWidth, (float)widgetHeight));
+        gridProgram->setUniformValue("windowSize", QVector2D((float)widgetSize.width(), (float)widgetSize.height()));
         gridProgram->setUniformValue("gridSize", 16.0f);
         switch(transparencyGridType) {
         case GRID_LIGHT:
@@ -168,28 +168,27 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int width, int height)
 {
-    widgetWidth = width;
-    widgetHeight = height;
+    widgetSize = QSize(width,height);
     setViewport();
 }
 
 void GLWidget::setViewport()
 {
+    double aspectRatio = (double)mapSize.width()/(double)mapSize.height();
+
     int side;
-    if(aspectRatio >= (double)widgetWidth / (double)widgetHeight) {
-        side = (int)((double)widgetWidth/aspectRatio);
-        viewport = QRect(0, (widgetHeight - side)/2, widgetWidth, side);
+    if(aspectRatio >= (double)widgetSize.width() / (double)widgetSize.height()) {
+        side = (int)((double)widgetSize.width()/aspectRatio);
+        viewport = QRect(0, (widgetSize.height() - side)/2, widgetSize.width(), side);
     } else {
-        side = (int)((double)widgetHeight*aspectRatio);
-        viewport = QRect((widgetWidth - side)/2, 0, side, widgetHeight);
+        side = (int)((double)widgetSize.height()*aspectRatio);
+        viewport = QRect((widgetSize.width() - side)/2, 0, side, widgetSize.height());
     }
 
     float factor = 1.0f;
     if(factor != 1.0f) {
-        QSize size(viewport.width(),viewport.height());
-        size *= factor;
-        QPoint offset((viewport.width()-size.width())/2, (viewport.height()-size.height())/2);
-        viewport.translate(offset);
+        QSize size = QSize(viewport.width(),viewport.height()) * factor;
+        viewport.translate(QPoint((viewport.width()-size.width())/2, (viewport.height()-size.height())/2));
         viewport.setSize(size);
     }
 }
@@ -234,18 +233,13 @@ void GLWidget::makeObject()
     }
 }
 
-void GLWidget::setTexture(GLuint texture)
+void GLWidget::setTexture(GLuint texture, QSize size)
 {
     mapTexture = texture;
-    repaint();
-}
+    mapSize = size;
+    setViewport();
 
-void GLWidget::setAspectRatio(double ratio)
-{
-    if(aspectRatio != ratio) {
-        aspectRatio = ratio;
-        setViewport();
-    }
+    repaint();
 }
 
 void GLWidget::setTransparencyGrid(TRANSPARENCYGRID_TYPE type)

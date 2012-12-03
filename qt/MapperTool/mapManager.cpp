@@ -24,9 +24,9 @@ cv::Mat MapManager::getMat()
     return m_map;
 }
 
-QRect MapManager::getRect()
+QSize MapManager::getSize()
 {
-    return QRect(0, 0, m_map.cols, m_map.rows);
+    return QSize(m_map.cols, m_map.rows);
 }
 
 GLuint MapManager::getTexture()

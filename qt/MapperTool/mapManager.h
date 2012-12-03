@@ -2,7 +2,7 @@
 #define MAPMANAGER_H
 
 #include <QVector>
-#include <QRect>
+#include <QSize>
 #include <QString>
 #include <QtOpenGL>
 
@@ -21,7 +21,7 @@ public:
     bool undo();
     bool redo();
 
-    QRect getRect();
+    QSize getSize();
 
     void setMat( cv::Mat );
     cv::Mat getMat();

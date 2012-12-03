@@ -70,9 +70,7 @@ void MainWindow::fileOpen()
     if(path.isNull() == false)
     {
         if(map->load(path)) {
-            QRect rect = map->getRect();
-            openGL->setAspectRatio((double)rect.width()/(double)rect.height());
-            openGL->setTexture( map->getTexture() );
+            openGL->setTexture( map->getTexture(),map->getSize() );
         }
     }
 }

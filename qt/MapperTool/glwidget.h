@@ -65,8 +65,7 @@
      };
 
      void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
-     void setTexture(GLuint texture);
-     void setAspectRatio(double ratio);
+     void setTexture(GLuint texture,QSize size);
 
  signals:
      void clicked();
@@ -86,15 +85,14 @@
      void makeObject();
      void setViewport();
 
-     double aspectRatio;
-
      GLuint mapTexture;
+     QSize mapSize;
      GLuint displayTexture;
 
      QVector<QVector3D> vertices;
      QVector<QVector2D> texCoords;
 
-     int widgetWidth, widgetHeight;
+     QSize widgetSize;
      QRect viewport;
 
      TRANSPARENCYGRID_TYPE transparencyGridType;
