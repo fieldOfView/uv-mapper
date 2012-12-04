@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Sat Dec 1 12:43:43 2012
+** Created: Tue Dec 4 17:55:36 2012
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -252,6 +252,10 @@ public:
         QObject::connect(actionGridNone, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
         QObject::connect(actionGridLight, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
         QObject::connect(actionGridDark, SIGNAL(triggered()), MainWindow, SLOT(selectTransparencyGrid()));
+        QObject::connect(actionZoomIn, SIGNAL(triggered()), MainWindow, SLOT(zoomIn()));
+        QObject::connect(actionZoomOut, SIGNAL(triggered()), MainWindow, SLOT(zoomOut()));
+        QObject::connect(actionZoomActualSize, SIGNAL(triggered()), MainWindow, SLOT(zoomReset()));
+        QObject::connect(actionZoomFit, SIGNAL(triggered()), MainWindow, SLOT(zoomToFit()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

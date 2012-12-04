@@ -45,6 +45,11 @@ private slots:
     void fileSave();
     void fileSaveAs();
 
+    void zoomIn();
+    void zoomOut();
+    void zoomReset();
+    void zoomToFit();
+
     void selectDisplayTexture();
     void selectTransparencyGrid();
 };

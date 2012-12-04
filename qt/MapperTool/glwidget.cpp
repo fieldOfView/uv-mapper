@@ -46,6 +46,7 @@
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
       mapSize(1,1),
+      zoomFactor(1.0),
       transparencyGridType(GRID_LIGHT),
       uvMapProgram(0), gridProgram(0)
 {
@@ -165,16 +166,19 @@ void GLWidget::setViewport()
     double aspectRatio = (double)mapSize.width()/(double)mapSize.height();
 
     int side;
+    double factor;
     if(aspectRatio >= (double)widgetSize.width() / (double)widgetSize.height()) {
         side = (int)((double)widgetSize.width()/aspectRatio);
         viewport = QRect(0, (widgetSize.height() - side)/2, widgetSize.width(), side);
+        factor = (double)mapSize.width()/(double)widgetSize.width();
     } else {
         side = (int)((double)widgetSize.height()*aspectRatio);
         viewport = QRect((widgetSize.width() - side)/2, 0, side, widgetSize.height());
+        factor = (double)mapSize.height()/(double)widgetSize.height();
     }
+    factor*=zoomFactor;
 
-    float factor = 1.0f;
-    if(factor != 1.0f) {
+    if(factor != 0.0) {
         QSize size = QSize(viewport.width(),viewport.height()) * factor;
         viewport.translate(QPoint((viewport.width()-size.width())/2, (viewport.height()-size.height())/2));
         viewport.setSize(size);
@@ -223,8 +227,8 @@ void GLWidget::setTexture(GLuint texture, QSize size)
 {
     mapTexture = texture;
     mapSize = size;
-    setViewport();
 
+    setViewport();
     repaint();
 }
 
@@ -233,4 +237,21 @@ void GLWidget::setTransparencyGrid(TRANSPARENCYGRID_TYPE type)
     transparencyGridType = type;
     repaint();
 }
+
+void GLWidget::setZoom(double zoom)
+{
+    zoomFactor = zoom;
+    setViewport();
+
+    repaint();
+}
+
+void GLWidget::zoomInOut(bool in)
+{
+    zoomFactor *= (out)?1.25:0.8;
+    setViewport();
+
+    repaint();
+}
+
 

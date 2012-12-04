@@ -67,6 +67,9 @@
      void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
      void setTexture(GLuint texture,QSize size);
 
+     void setZoom(double zoom);
+     void zoomInOut(bool in);
+
  signals:
      void clicked();
 
@@ -92,6 +95,7 @@
 
      QSize widgetSize;
      QRect viewport;
+     double zoomFactor;
 
      TRANSPARENCYGRID_TYPE transparencyGridType;
      QPoint lastPos;

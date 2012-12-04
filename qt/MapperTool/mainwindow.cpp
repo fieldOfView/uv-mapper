@@ -103,6 +103,26 @@ void MainWindow::toggleFullscreen()
     }
 }
 
+void MainWindow::zoomIn()
+{
+    openGL->zoomInOut(true);
+}
+
+void MainWindow::zoomOut()
+{
+    openGL->zoomInOut(false);
+}
+
+void MainWindow::zoomReset()
+{
+    openGL->setZoom(1.0);
+}
+
+void MainWindow::zoomToFit()
+{
+    openGL->setZoom(0.0);
+}
+
 void MainWindow::selectDisplayTexture()
 {
     QAction *action = (QAction *)sender();
