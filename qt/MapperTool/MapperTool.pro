@@ -41,6 +41,7 @@ OTHER_FILES += \
     resources/passThru_vert.glsl \
     resources/transparencyGrid_frag.glsl
 
+unix:LIBS += -I/usr/include/opencv  -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_flann
 
 win32 {
     # Copy Qt runtime

@@ -248,7 +248,7 @@ void GLWidget::setZoom(double zoom)
 
 void GLWidget::zoomInOut(bool in)
 {
-    zoomFactor *= (out)?1.25:0.8;
+    zoomFactor *= (in)?1.25:0.8;
     setViewport();
 
     repaint();
