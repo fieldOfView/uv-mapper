@@ -6,5 +6,6 @@
         <file alias="passThru_vert.glsl">resources/passThru_vert.glsl</file>
         <file alias="uvMap_frag.glsl">resources/uvMap_frag.glsl</file>
         <file alias="transparencyGrid_frag.glsl">resources/transparencyGrid_frag.glsl</file>
+        <file alias="gradient_frag.glsl">resources/gradient_frag.glsl</file>
     </qresource>
 </RCC>
