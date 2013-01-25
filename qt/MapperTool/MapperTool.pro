@@ -44,7 +44,11 @@ OTHER_FILES += \
     resources/transparencyGrid_frag.glsl \
     resources/gradient_frag.glsl
 
-unix:LIBS += -I/usr/include/opencv  -lopencv_core -lopencv_imgproc -lopencv_highgui -lopencv_ml -lopencv_video -lopencv_features2d -lopencv_calib3d -lopencv_objdetect -lopencv_contrib -lopencv_legacy -lopencv_flann
+unix {
+	LIBS += -I/usr/include/opencv  
+		-lopencv_core 
+		-lopencv_highgui 
+}
 
 win32 {
     # Copy Qt runtime
