@@ -18,7 +18,8 @@ SOURCES += \
     glwidget.cpp \
     unitmapdialog.cpp \
     mapmanager.cpp \
-    displaytexturemanager.cpp
+    displaytexturemanager.cpp \
+    generatedimage.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -26,7 +27,8 @@ HEADERS += \
     glwidget.h \
     unitmapdialog.h \
     mapmanager.h \
-    displaytexturemanager.h
+    displaytexturemanager.h \
+    generatedimage.h
 
 FORMS += \
     mainwindow.ui \
@@ -39,7 +41,8 @@ RESOURCES += \
 OTHER_FILES += \
     resources/uvMap_frag.glsl \
     resources/passThru_vert.glsl \
-    resources/transparencyGrid_frag.glsl
+    resources/transparencyGrid_frag.glsl \
+    resources/gradient_frag.glsl
 
 
 win32 {
