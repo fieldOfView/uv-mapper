@@ -1,20 +1,18 @@
 #include "displaytexturemanager.h"
 
-#include <QDebug>
-
 DisplayTextureManager::DisplayTextureManager()
 {
-    glGenTextures( 1, &m_texture );
+
 }
 
 DisplayTextureManager::~DisplayTextureManager()
 {
-    glDeleteTextures( 1, &m_texture );
+
 }
 
 GLuint DisplayTextureManager::getTexture()
 {
-    return NULL;
+    return texture;
 }
 
 void DisplayTextureManager::makeTexture( DISPLAY_TYPE type )

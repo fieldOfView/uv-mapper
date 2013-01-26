@@ -15,8 +15,8 @@ public:
     MapManager();
     ~MapManager();
 
-    bool load( QString fileName = NULL );
-    bool save( QString fileName = NULL );
+    bool load( QString newFileName = NULL );
+    bool save( QString newFileName = NULL );
 
     bool undo();
     bool redo();
@@ -31,13 +31,13 @@ public:
     void createFromTexture( GLuint );
     
 private:
-    QString m_fileName;
+    QString fileName;
 
-    cv::Mat m_map;
-    GLuint m_texture;
+    cv::Mat map;
+    GLuint texture;
 
-    QVector<cv::Mat> m_history;
-    int m_historyIndex;
+    QVector<cv::Mat> history;
+    int historyIndex;
 
     void resetHistory( int fromIndex = 0 );
     void addHistoryState();

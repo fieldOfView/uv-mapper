@@ -45,8 +45,6 @@
  #include <QtGui>
  #include <QGLWidget>
 
- #include "generatedimage.h"
-
  class QGLShaderProgram;
 
  class GLWidget : public QGLWidget
@@ -68,6 +66,7 @@
 
      void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
      void setMapTexture(GLuint texture);
+     void setDisplayTexture(GLuint texture);
 
      void setZoom(double zoom);
      void zoomInOut(bool in);
@@ -104,8 +103,6 @@
 
      QGLShaderProgram *uvMapProgram;
      QGLShaderProgram *gridProgram;
-
-     GeneratedImage *test;
  };
 
  #endif

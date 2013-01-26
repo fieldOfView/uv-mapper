@@ -146,9 +146,12 @@ void GLWidget::paintGL()
     glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
 
     glBindTexture(GL_TEXTURE_2D, mapTexture);
+    glBindTexture(GL_TEXTURE_2D, displayTexture);
 
     uvMapProgram->bind();
-    uvMapProgram->setUniformValue("texture", 0);
+    uvMapProgram->setUniformValue("mapTex", 0);
+    uvMapProgram->setUniformValue("dispayTex", 1);
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     uvMapProgram->release();
 
@@ -235,6 +238,12 @@ void GLWidget::setMapTexture(GLuint texture)
     mapSize = QSize(width, height);
 
     setViewport();
+    repaint();
+}
+
+void GLWidget::setDisplayTexture(GLuint texture)
+{
+    displayTexture = texture;
     repaint();
 }
 

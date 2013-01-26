@@ -2,18 +2,18 @@
 
 MapManager::MapManager()
 {
-    glGenTextures( 1, &m_texture );
+    glGenTextures( 1, &texture );
 }
 
 MapManager::~MapManager()
 {
-    glDeleteTextures( 1, &m_texture );
+    glDeleteTextures( 1, &texture );
 }
 
 
 void MapManager::setMat( cv::Mat newMat )
 {
-    m_map = newMat.clone();
+    map = newMat.clone();
 
     addHistoryState();
     updateTexture();
@@ -21,17 +21,17 @@ void MapManager::setMat( cv::Mat newMat )
 
 cv::Mat MapManager::getMat()
 {
-    return m_map;
+    return map;
 }
 
 QSize MapManager::getSize()
 {
-    return QSize(m_map.cols, m_map.rows);
+    return QSize(map.cols, map.rows);
 }
 
 GLuint MapManager::getTexture()
 {
-    return m_texture;
+    return texture;
 }
 
 void MapManager::createFromTexture( GLuint texture )
@@ -77,67 +77,67 @@ void MapManager::createFromTexture( GLuint texture )
                  (depth == CV_8U)?GL_UNSIGNED_BYTE:GL_UNSIGNED_SHORT,
                  newMat.data);
 
-    m_fileName.clear();
+    fileName.clear();
     resetHistory();
 
     setMat(newMat);
 }
 
-bool MapManager::load( QString fileName )
+bool MapManager::load( QString newFileName )
 {
-    if( fileName.isNull() ) {
-        fileName = m_fileName;
-        if( fileName.isNull() ) {
+    if( newFileName.isNull() ) {
+        newFileName = fileName;
+        if( newFileName.isNull() ) {
             return false;
         }
     }
 
-    cv::Mat loadedMat = cv::imread( fileName.toStdString(), CV_LOAD_IMAGE_UNCHANGED );
+    cv::Mat loadedMat = cv::imread( newFileName.toStdString(), CV_LOAD_IMAGE_UNCHANGED );
     if( !loadedMat.data ) {
-        qDebug() << "Could not load map from '" << fileName << "'.";
+        qDebug() << "Could not load map from '" << newFileName << "'.";
         return false;
     }
 
     resetHistory();
-    m_map = loadedMat;
+    map = loadedMat;
 
     addHistoryState();
     updateTexture();
 
-    m_fileName = fileName;
+    fileName = newFileName;
     return true;
 }
 
-bool MapManager::save( QString fileName )
+bool MapManager::save( QString newFileName )
 {
-    if( fileName.isNull() ) {
-        fileName = m_fileName;
-        if( fileName.isNull() ) {
+    if( newFileName.isNull() ) {
+        newFileName = fileName;
+        if( newFileName.isNull() ) {
             return false;
         }
     }
 
-    if( !cv::imwrite( fileName.toStdString(), m_map )) {
-        qDebug() << "Could not save map to '" << fileName << "'.";
+    if( !cv::imwrite( newFileName.toStdString(), map )) {
+        qDebug() << "Could not save map to '" << newFileName << "'.";
         return false;
     }
 
-    m_fileName = fileName;
+    fileName = newFileName;
     return true;
 }
 
 bool MapManager::undo()
 {
-    if( m_historyIndex == 0 ) {
+    if( historyIndex == 0 ) {
         return false;
     }
 
-    m_historyIndex--;
-    m_map = m_history.at(m_historyIndex);
+    historyIndex--;
+    map = history.at(historyIndex);
 
     updateTexture();
 
-    if( m_historyIndex == 0 ) {
+    if( historyIndex == 0 ) {
         // no more undos available
         return false;
     }
@@ -147,16 +147,16 @@ bool MapManager::undo()
 
 bool MapManager::redo()
 {
-    if( m_historyIndex == m_history.count()-1 ) {
+    if( historyIndex == history.count()-1 ) {
         return false;
     }
 
-    m_historyIndex++;
-    m_map = m_history.at(m_historyIndex);
+    historyIndex++;
+    map = history.at(historyIndex);
 
     updateTexture();
 
-    if( m_historyIndex == m_history.count()-1 ) {
+    if( historyIndex == history.count()-1 ) {
         // no more redos available
         return false;
     }
@@ -166,21 +166,21 @@ bool MapManager::redo()
 
 void MapManager::addHistoryState()
 {
-    if( m_historyIndex < (m_history.count()-1) )
-        resetHistory( m_historyIndex );
+    if( historyIndex < (history.count()-1) )
+        resetHistory( historyIndex );
 
-    m_history.push_back( m_map );
-    m_historyIndex = m_history.count()-1;
+    history.push_back( map );
+    historyIndex = history.count()-1;
 }
 
 void MapManager::resetHistory( int fromIndex )
 {
-    QVectorIterator<cv::Mat> historyItr(m_history);
+    QVectorIterator<cv::Mat> historyItr(history);
     historyItr.toBack();
-    while( historyItr.hasPrevious() && m_history.count() > fromIndex ) {
+    while( historyItr.hasPrevious() && history.count() > fromIndex ) {
         cv::Mat mat = historyItr.previous();
         mat.release();
-        m_history.pop_back();
+        history.pop_back();
     }
 }
 
@@ -188,7 +188,7 @@ void MapManager::updateTexture()
 {
     GLenum type, format;
 
-    switch (m_map.depth()) {
+    switch (map.depth()) {
     case CV_8U:
         format = GL_UNSIGNED_BYTE;
         break;
@@ -197,7 +197,7 @@ void MapManager::updateTexture()
         break;
     }
 
-    switch (m_map.channels()) {
+    switch (map.channels()) {
     case 3:
         type = GL_BGR_EXT;
         break;
@@ -210,11 +210,11 @@ void MapManager::updateTexture()
                 ((format == GL_UNSIGNED_BYTE)?GL_RGB8:GL_RGB16):
                 ((format == GL_UNSIGNED_BYTE)?GL_RGBA8:GL_RGBA16);
 
-    glBindTexture( GL_TEXTURE_2D, m_texture );
+    glBindTexture( GL_TEXTURE_2D, texture );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, m_map.cols, m_map.rows, 0, type, format, m_map.data);
+    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, map.cols, map.rows, 0, type, format, map.data);
 }

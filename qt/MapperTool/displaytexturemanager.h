@@ -5,6 +5,8 @@
 #include <QString>
 #include <QtOpenGL>
 
+#include "generatedimage.h"
+
 class DisplayTextureManager
 {
 public:
@@ -25,10 +27,10 @@ public:
 
     bool load( QString fileName );
 
-
-
 private:
-    GLuint m_texture;
+    GLuint texture;
+
+    GeneratedImage generatedImage;
 };
 
 #endif // DISPLAYTEXTUREMANAGER_H

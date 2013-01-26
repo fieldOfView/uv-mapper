@@ -1,5 +1,9 @@
 #include "generatedimage.h"
 
+GeneratedImage::GeneratedImage()
+{
+}
+
 GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
 {
     // fbo and painter

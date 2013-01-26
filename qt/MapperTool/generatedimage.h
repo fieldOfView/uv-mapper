@@ -11,6 +11,7 @@
 class GeneratedImage
 {
 public:
+    GeneratedImage();
     GeneratedImage( QSize size, GLenum internalFormat = GL_RGBA8 );
     ~GeneratedImage();
 
