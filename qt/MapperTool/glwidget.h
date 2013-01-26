@@ -67,7 +67,7 @@
      };
 
      void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
-     void setTexture(GLuint texture,QSize size);
+     void setMapTexture(GLuint texture);
 
      void setZoom(double zoom);
      void zoomInOut(bool in);

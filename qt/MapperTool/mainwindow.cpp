@@ -70,7 +70,7 @@ void MainWindow::fileOpen()
     if(path.isNull() == false)
     {
         if(map->load(path)) {
-            openGL->setTexture( map->getTexture(),map->getSize() );
+            openGL->setMapTexture( map->getTexture() );
         }
     }
 }

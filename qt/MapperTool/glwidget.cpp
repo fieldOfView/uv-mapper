@@ -107,7 +107,7 @@ void GLWidget::initializeGL()
     test = new GeneratedImage(QSize(512, 512));
     test->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
 
-    setTexture(test->getTexture(), QSize(512, 512));
+    setMapTexture(test->getTexture());
 }
 
 void GLWidget::paintGL()
@@ -150,6 +150,8 @@ void GLWidget::paintGL()
     }
 
     glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
+
+    glBindTexture(GL_TEXTURE_2D, mapTexture);
 
     uvMapProgram->bind();
     uvMapProgram->setUniformValue("texture", 0);
@@ -228,12 +230,15 @@ void GLWidget::makeObject()
     }
 }
 
-void GLWidget::setTexture(GLuint texture, QSize size)
+void GLWidget::setMapTexture(GLuint texture)
 {
-    mapTexture = texture;
-    mapSize = size;
+    GLint width, height;
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_WIDTH,&width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_HEIGHT,&height);
 
-    glBindTexture(GL_TEXTURE_2D, mapTexture);
+    mapTexture = texture;
+    mapSize = QSize(width, height);
 
     setViewport();
     repaint();
