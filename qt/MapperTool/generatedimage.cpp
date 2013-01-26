@@ -3,11 +3,7 @@
 GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
 {
     // fbo and painter
-    qDebug()<<"Test";
     fbo = new QGLFramebufferObject(size, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, internalFormat);
-
-    qDebug()<<"Test2";
-    painter = new QPainter(fbo);
 
     // shaders
     QGLShader *vshader = new QGLShader(QGLShader::Vertex);
@@ -23,11 +19,12 @@ GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
 
     delete fshader;
     delete vshader;
+
+    makeObject();
 }
 
 GeneratedImage::~GeneratedImage()
 {
-    delete painter;
     delete fbo;
     delete gradientProgram;
 }
@@ -44,8 +41,22 @@ cv::Mat GeneratedImage::getMat()
 }
 
 void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight ) {
+    saveGLState();
 
-    fbo->bind();
+    // test: clear to red
+    glClearColor(1.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glViewport(0, 0, fbo->size().width(), fbo->size().height());
+
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -10.0f);
+
+    glVertexPointer(3, GL_FLOAT, 0, vertices.constData());
+    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.constData());
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
     gradientProgram->bind();
 
     gradientProgram->setUniformValue("colorTL",QVector3D( topLeft.redF(), topLeft.greenF(), topLeft.blueF() ));
@@ -53,8 +64,46 @@ void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor botto
     gradientProgram->setUniformValue("colorBL",QVector3D( bottomLeft.redF(), bottomLeft.greenF(), bottomLeft.blueF() ));
     gradientProgram->setUniformValue("colorBR",QVector3D( bottomRight.redF(), bottomRight.greenF(), bottomRight.blueF() ));
 
-    painter->drawRect(QRect(QPoint(0,0),fbo->size()));
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     gradientProgram->release();
     fbo->release();
+
+    restoreGLState();
 }
+
+void GeneratedImage::makeObject()
+{
+    texCoords.clear();
+    vertices.clear();
+
+    for (int j = 0; j < 4; ++j) {
+        texCoords.append
+            (QVector2D(j == 0 || j == 3, j == 2 || j == 3));
+        vertices.append
+            (QVector3D(
+                 ((j == 0 || j == 3)?1:-1),
+                 ((j == 2 || j == 3)?1:-1),
+                 0.0)
+            );
+    }
+}
+
+void GeneratedImage::saveGLState()
+{
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+}
+
+void GeneratedImage::restoreGLState()
+{
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glPopAttrib();
+}
+

@@ -40,7 +40,6 @@
 ****************************************************************************/
 
 #include "glwidget.h"
-
 #include <QtOpenGL>
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
@@ -103,6 +102,12 @@ void GLWidget::initializeGL()
     gridProgram->addShader(vshader);
     gridProgram->addShader(fshader);
     gridProgram->link();
+
+    // create test fbo
+    test = new GeneratedImage(QSize(512, 512));
+    test->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
+
+    setTexture(test->getTexture(), QSize(512, 512));
 }
 
 void GLWidget::paintGL()

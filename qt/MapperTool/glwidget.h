@@ -45,6 +45,8 @@
  #include <QtGui>
  #include <QGLWidget>
 
+ #include "generatedimage.h"
+
  class QGLShaderProgram;
 
  class GLWidget : public QGLWidget
@@ -102,6 +104,8 @@
 
      QGLShaderProgram *uvMapProgram;
      QGLShaderProgram *gridProgram;
+
+     GeneratedImage *test;
  };
 
  #endif

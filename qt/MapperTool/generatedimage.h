@@ -21,9 +21,15 @@ public:
     void drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight );
 
 private:
-    QPainter *painter;
     QGLFramebufferObject *fbo;
     QGLShaderProgram *gradientProgram;
+
+    QVector<QVector3D> vertices;
+    QVector<QVector2D> texCoords;
+
+    void makeObject();
+    void saveGLState();
+    void restoreGLState();
 };
 
 #endif // GENERATEDIMAGE_H
