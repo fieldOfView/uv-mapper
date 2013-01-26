@@ -41,10 +41,8 @@ cv::Mat GeneratedImage::getMat()
 }
 
 void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight ) {
-    saveGLState();
+    fbo->bind();
 
-    // test: clear to red
-    glClearColor(1.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glViewport(0, 0, fbo->size().width(), fbo->size().height());
@@ -67,9 +65,8 @@ void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor botto
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     gradientProgram->release();
-    fbo->release();
 
-    restoreGLState();
+    fbo->release();
 }
 
 void GeneratedImage::makeObject()
@@ -78,8 +75,10 @@ void GeneratedImage::makeObject()
     vertices.clear();
 
     for (int j = 0; j < 4; ++j) {
+        // Note that the texturecoordinates are upside down, because
+        // frambufferobjects are somehow drawn to upside down in opengl
         texCoords.append
-            (QVector2D(j == 0 || j == 3, j == 2 || j == 3));
+            (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
         vertices.append
             (QVector3D(
                  ((j == 0 || j == 3)?1:-1),
@@ -88,22 +87,3 @@ void GeneratedImage::makeObject()
             );
     }
 }
-
-void GeneratedImage::saveGLState()
-{
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-}
-
-void GeneratedImage::restoreGLState()
-{
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-    glPopAttrib();
-}
-

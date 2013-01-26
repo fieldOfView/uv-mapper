@@ -233,6 +233,8 @@ void GLWidget::setTexture(GLuint texture, QSize size)
     mapTexture = texture;
     mapSize = size;
 
+    glBindTexture(GL_TEXTURE_2D, mapTexture);
+
     setViewport();
     repaint();
 }

@@ -28,8 +28,6 @@ private:
     QVector<QVector2D> texCoords;
 
     void makeObject();
-    void saveGLState();
-    void restoreGLState();
 };
 
 #endif // GENERATEDIMAGE_H
