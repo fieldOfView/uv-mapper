@@ -102,12 +102,6 @@ void GLWidget::initializeGL()
     gridProgram->addShader(vshader);
     gridProgram->addShader(fshader);
     gridProgram->link();
-
-    // create test fbo
-    test = new GeneratedImage(QSize(512, 512));
-    test->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
-
-    setMapTexture(test->getTexture());
 }
 
 void GLWidget::paintGL()

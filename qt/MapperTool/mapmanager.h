@@ -27,6 +27,8 @@ public:
     cv::Mat getMat();
 
     GLuint getTexture();
+
+    void createFromTexture( GLuint );
     
 private:
     QString m_fileName;

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>250</width>
-    <height>166</height>
+    <height>137</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>120</y>
+     <y>90</y>
      <width>211</width>
      <height>32</height>
     </rect>
@@ -65,19 +65,6 @@
    </property>
    <property name="maxLength">
     <number>4</number>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="checkBoxCropped">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>90</y>
-     <width>211</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Cropped Unit map</string>
    </property>
   </widget>
   <widget class="QLabel" name="labelPresets">

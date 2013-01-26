@@ -54,7 +54,12 @@ void MainWindow::showUnitmapDialog()
     if(!unitmapDialog->exec())
         return;
 
-    qDebug() << unitmapDialog->getSizeSetting();
+    GeneratedImage* newMap = new GeneratedImage(unitmapDialog->getSizeSetting(), GL_RGBA16);
+    newMap->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
+    map->createFromTexture(newMap->getTexture());
+    openGL->setMapTexture(map->getTexture());
+
+    delete newMap;
 }
 
 

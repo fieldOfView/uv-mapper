@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'unitmapdialog.ui'
 **
-** Created: Fri Nov 30 17:27:09 2012
+** Created: Sat Jan 26 18:14:03 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,7 +14,6 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
 #include <QtGui/QComboBox>
 #include <QtGui/QDialog>
 #include <QtGui/QDialogButtonBox>
@@ -30,7 +29,6 @@ public:
     QDialogButtonBox *buttonBox;
     QLineEdit *lineEditWidth;
     QLineEdit *lineEditHeight;
-    QCheckBox *checkBoxCropped;
     QLabel *labelPresets;
     QLabel *labelWidth;
     QLabel *labelHeight;
@@ -41,11 +39,11 @@ public:
         if (UnitmapDialog->objectName().isEmpty())
             UnitmapDialog->setObjectName(QString::fromUtf8("UnitmapDialog"));
         UnitmapDialog->setWindowModality(Qt::ApplicationModal);
-        UnitmapDialog->resize(250, 166);
+        UnitmapDialog->resize(250, 137);
         UnitmapDialog->setModal(true);
         buttonBox = new QDialogButtonBox(UnitmapDialog);
         buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
-        buttonBox->setGeometry(QRect(20, 120, 211, 32));
+        buttonBox->setGeometry(QRect(20, 90, 211, 32));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         lineEditWidth = new QLineEdit(UnitmapDialog);
@@ -56,9 +54,6 @@ public:
         lineEditHeight->setObjectName(QString::fromUtf8("lineEditHeight"));
         lineEditHeight->setGeometry(QRect(180, 56, 51, 20));
         lineEditHeight->setMaxLength(4);
-        checkBoxCropped = new QCheckBox(UnitmapDialog);
-        checkBoxCropped->setObjectName(QString::fromUtf8("checkBoxCropped"));
-        checkBoxCropped->setGeometry(QRect(20, 90, 211, 17));
         labelPresets = new QLabel(UnitmapDialog);
         labelPresets->setObjectName(QString::fromUtf8("labelPresets"));
         labelPresets->setGeometry(QRect(20, 20, 46, 13));
@@ -85,7 +80,6 @@ public:
         UnitmapDialog->setWindowTitle(QApplication::translate("UnitmapDialog", "Create unit-map", 0, QApplication::UnicodeUTF8));
         lineEditWidth->setInputMask(QString());
         lineEditHeight->setInputMask(QString());
-        checkBoxCropped->setText(QApplication::translate("UnitmapDialog", "Cropped Unit map", 0, QApplication::UnicodeUTF8));
         labelPresets->setText(QApplication::translate("UnitmapDialog", "Preset:", 0, QApplication::UnicodeUTF8));
         labelWidth->setText(QApplication::translate("UnitmapDialog", "Width:", 0, QApplication::UnicodeUTF8));
         labelHeight->setText(QApplication::translate("UnitmapDialog", "Height:", 0, QApplication::UnicodeUTF8));

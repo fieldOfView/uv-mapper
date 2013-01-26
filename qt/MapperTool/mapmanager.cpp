@@ -34,6 +34,55 @@ GLuint MapManager::getTexture()
     return m_texture;
 }
 
+void MapManager::createFromTexture( GLuint texture )
+{
+    GLint width, height, glFormat;
+    int depth=0, channels=0, type;
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &glFormat);
+
+    switch(glFormat) {
+    case GL_RGB8:
+        depth = CV_8U;
+        channels = 3;
+        break;
+    case GL_RGBA8:
+        depth = CV_8U;
+        channels = 4;
+        break;
+    case GL_RGB16:
+        depth = CV_16U;
+        channels = 3;
+        break;
+    case GL_RGBA16:
+        depth = CV_16U;
+        channels = 4;
+        break;
+    default:
+        qDebug() << "Unsupported texture format";
+        return;
+        break;
+    }
+
+    type = (depth == CV_8U)?
+                ((channels == 3)?CV_8UC3:CV_8UC4):
+                ((channels == 3)?CV_16UC3:CV_16UC4);
+    cv::Mat newMat(height, width, type);
+
+    glGetTexImage(GL_TEXTURE_2D,0,
+                 (channels == 3)?GL_BGR_EXT:GL_BGRA_EXT,
+                 (depth == CV_8U)?GL_UNSIGNED_BYTE:GL_UNSIGNED_SHORT,
+                 newMat.data);
+
+    m_fileName.clear();
+    resetHistory();
+
+    setMat(newMat);
+}
+
 bool MapManager::load( QString fileName )
 {
     if( fileName.isNull() ) {
@@ -157,11 +206,15 @@ void MapManager::updateTexture()
         break;
     }
 
+    GLint glFormat = (type == GL_BGR_EXT)?
+                ((format == GL_UNSIGNED_BYTE)?GL_RGB8:GL_RGB16):
+                ((format == GL_UNSIGNED_BYTE)?GL_RGBA8:GL_RGBA16);
+
     glBindTexture( GL_TEXTURE_2D, m_texture );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16, m_map.cols, m_map.rows, 0, type, format, m_map.data);
+    glTexImage2D( GL_TEXTURE_2D, 0, glFormat, m_map.cols, m_map.rows, 0, type, format, m_map.data);
 }
