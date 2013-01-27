@@ -3,5 +3,8 @@ uniform sampler2D displayTex;
 
 void main()
 {
-    gl_FragColor = texture2D(mapTex, gl_TexCoord[0].xy);
+    vec4 uv = texture2D(mapTex, gl_TexCoord[0].xy);
+
+    gl_FragColor.rgb = texture2D(displayTex, uv.xy).rgb;
+    gl_FragColor.a = uv.a;
 }

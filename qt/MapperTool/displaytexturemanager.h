@@ -19,7 +19,8 @@ public:
         DISPLAY_TYPE_V,
         DISPLAY_TYPE_A,
         DISPLAY_TYPE_GRID,
-        DISPLAY_TYPE_FILE
+        DISPLAY_TYPE_FILE,
+        DISPLAY_TYPE_NULL
     };
 
     GLuint getTexture();
@@ -30,7 +31,8 @@ public:
 private:
     GLuint texture;
 
-    GeneratedImage generatedImage;
+    GeneratedImage* generatedImage;
+    DISPLAY_TYPE displayType;
 };
 
 #endif // DISPLAYTEXTUREMANAGER_H

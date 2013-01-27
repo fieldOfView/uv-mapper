@@ -44,6 +44,7 @@
 
  #include <QtGui>
  #include <QGLWidget>
+ #include <QGLFunctions>
 
  class QGLShaderProgram;
 
@@ -73,6 +74,7 @@
 
  signals:
      void clicked();
+     void initialized();
 
  protected:
      void initializeGL();
@@ -86,6 +88,8 @@
  private:
      void makeObject();
      void setViewport();
+
+     QGLFunctions glFunctions;
 
      GLuint mapTexture;
      QSize mapSize;

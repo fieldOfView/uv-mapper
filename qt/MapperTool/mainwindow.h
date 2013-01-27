@@ -26,9 +26,9 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    GLWidget *openGL;
+    GLWidget *glWidget;
 
-    MapManager *map;
+    MapManager *uvMap;
     DisplayTextureManager *displayTexture;
     QString fileName;
 
@@ -36,6 +36,8 @@ private:
     QActionGroup *transparencyGridActionGroup;
 
 private slots:
+    void initializeApp();
+
     void toggleFullscreen();
     void showAboutDialog();
     void showUnitmapDialog();

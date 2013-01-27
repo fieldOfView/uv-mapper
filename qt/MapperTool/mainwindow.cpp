@@ -34,16 +34,34 @@ MainWindow::MainWindow(QWidget *parent) :
     // so keyboard shortcuts work when the menuBar is hidden.
     addActions( menuBar()->actions() );
 
-    openGL = new GLWidget( centralWidget() );
-    setCentralWidget( openGL );
-
-    map = new MapManager();
+    uvMap = new MapManager();
     displayTexture = new DisplayTextureManager();
+
+    glWidget = new GLWidget( centralWidget() );
+    connect(glWidget,SIGNAL(initialized()),this,SLOT(initializeApp()));
+    setCentralWidget( glWidget );
 }
 
 MainWindow::~MainWindow()
 {
+    delete glWidget;
+    delete uvMap;
+    delete displayTexture;
     delete ui;
+}
+
+void MainWindow::initializeApp()
+{
+    displayTexture->makeTexture(DisplayTextureManager::DISPLAY_TYPE_UV);
+    glWidget->setDisplayTexture(displayTexture->getTexture());
+
+    QRect screenSize = QApplication::desktop()->screenGeometry();
+    GeneratedImage* newMap = new GeneratedImage(QSize(screenSize.width(), screenSize.height()), GL_RGBA16);
+    newMap->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
+    uvMap->createFromTexture(newMap->getTexture());
+    glWidget->setMapTexture(uvMap->getTexture());
+
+    delete newMap;
 }
 
 
@@ -56,8 +74,8 @@ void MainWindow::showUnitmapDialog()
 
     GeneratedImage* newMap = new GeneratedImage(unitmapDialog->getSizeSetting(), GL_RGBA16);
     newMap->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
-    map->createFromTexture(newMap->getTexture());
-    openGL->setMapTexture(map->getTexture());
+    uvMap->createFromTexture(newMap->getTexture());
+    glWidget->setMapTexture(uvMap->getTexture());
 
     delete newMap;
 }
@@ -65,7 +83,7 @@ void MainWindow::showUnitmapDialog()
 
 void MainWindow::fileRevert()
 {
-    if(!map->load())
+    if(!uvMap->load())
         fileOpen();
 }
 
@@ -74,15 +92,15 @@ void MainWindow::fileOpen()
     QString path = QFileDialog::getOpenFileName( this, tr("Open UV Map file"));
     if(path.isNull() == false)
     {
-        if(map->load(path)) {
-            openGL->setMapTexture( map->getTexture() );
+        if(uvMap->load(path)) {
+            glWidget->setMapTexture( uvMap->getTexture() );
         }
     }
 }
 
 void MainWindow::fileSave()
 {
-    if(!map->save())
+    if(!uvMap->save())
         fileSaveAs();
 }
 
@@ -91,7 +109,7 @@ void MainWindow::fileSaveAs()
     QString path = QFileDialog::getSaveFileName( this, tr("Save UV Map as"));
     if(path.isNull() == false)
     {
-        map->save(path);
+        uvMap->save(path);
     }
 }
 
@@ -110,22 +128,22 @@ void MainWindow::toggleFullscreen()
 
 void MainWindow::zoomIn()
 {
-    openGL->zoomInOut(true);
+    glWidget->zoomInOut(true);
 }
 
 void MainWindow::zoomOut()
 {
-    openGL->zoomInOut(false);
+    glWidget->zoomInOut(false);
 }
 
 void MainWindow::zoomReset()
 {
-    openGL->setZoom(1.0);
+    glWidget->setZoom(1.0);
 }
 
 void MainWindow::zoomToFit()
 {
-    openGL->setZoom(0.0);
+    glWidget->setZoom(0.0);
 }
 
 void MainWindow::selectDisplayTexture()
@@ -135,6 +153,7 @@ void MainWindow::selectDisplayTexture()
         return;
 
     displayTexture->makeTexture((DisplayTextureManager::DISPLAY_TYPE)displayActionGroup->actions().indexOf(action));
+    glWidget->setDisplayTexture(displayTexture->getTexture());
 }
 
 void MainWindow::selectTransparencyGrid()
@@ -143,7 +162,7 @@ void MainWindow::selectTransparencyGrid()
     if( !action )
         return;
 
-    openGL->setTransparencyGrid((GLWidget::TRANSPARENCYGRID_TYPE)transparencyGridActionGroup->actions().indexOf(action));
+    glWidget->setTransparencyGrid((GLWidget::TRANSPARENCYGRID_TYPE)transparencyGridActionGroup->actions().indexOf(action));
 }
 
 void MainWindow::showAboutDialog()

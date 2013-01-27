@@ -102,6 +102,10 @@ void GLWidget::initializeGL()
     gridProgram->addShader(vshader);
     gridProgram->addShader(fshader);
     gridProgram->link();
+
+    glFunctions.initializeGLFunctions(QGLContext::currentContext());
+
+    emit initialized();
 }
 
 void GLWidget::paintGL()
@@ -145,12 +149,15 @@ void GLWidget::paintGL()
 
     glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
 
+    glFunctions.glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, mapTexture);
+
+    glFunctions.glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, displayTexture);
 
     uvMapProgram->bind();
     uvMapProgram->setUniformValue("mapTex", 0);
-    uvMapProgram->setUniformValue("dispayTex", 1);
+    uvMapProgram->setUniformValue("displayTex", 1);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     uvMapProgram->release();
@@ -196,13 +203,15 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    //int dx = event->x() - lastPos.x();
-    //int dy = event->y() - lastPos.y();
+    /*
+    int dx = event->x() - lastPos.x();
+    int dy = event->y() - lastPos.y();
 
     if (event->buttons() & Qt::LeftButton) {
         // handle dragging
     }
     lastPos = event->pos();
+    */
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
