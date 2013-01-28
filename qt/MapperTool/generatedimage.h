@@ -18,16 +18,18 @@ public:
     cv::Mat getMat();
     GLuint getTexture();
 
-    void drawGrid();
     void drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight );
+    void drawGrid( QColor background, QColor lineColor, int cells, float lineWidth );
 
 private:
     QGLFramebufferObject *fbo;
     QGLShaderProgram *gradientProgram;
+    QGLShaderProgram *gridProgram;
 
     QVector<QVector3D> vertices;
     QVector<QVector2D> texCoords;
 
+    void drawRect();
     void makeObject();
 };
 

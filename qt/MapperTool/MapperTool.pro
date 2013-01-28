@@ -42,7 +42,8 @@ OTHER_FILES += \
     resources/uvMap_frag.glsl \
     resources/passThru_vert.glsl \
     resources/transparencyGrid_frag.glsl \
-    resources/gradient_frag.glsl
+    resources/gradient_frag.glsl \
+    resources/testGrid_frag.glsl
 
 unix {
 	LIBS += -I/usr/include/opencv  

@@ -7,5 +7,6 @@
         <file alias="uvMap_frag.glsl">resources/uvMap_frag.glsl</file>
         <file alias="transparencyGrid_frag.glsl">resources/transparencyGrid_frag.glsl</file>
         <file alias="gradient_frag.glsl">resources/gradient_frag.glsl</file>
+        <file alias="testGrid_frag.glsl">resources/testGrid_frag.glsl</file>
     </qresource>
 </RCC>

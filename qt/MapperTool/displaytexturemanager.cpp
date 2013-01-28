@@ -44,9 +44,8 @@ void DisplayTextureManager::makeTexture( DISPLAY_TYPE type )
         generatedImage->drawGradient(QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"));
         break;
     case DISPLAY_TYPE_GRID:
-        // TODO
         generatedImage = new GeneratedImage(QSize(1024, 1024));
-        //generatedImage->drawGrid();
+        generatedImage->drawGrid(QColor("#000000"),QColor("#ffffff"),32,(float)1/8);
         break;
     case DISPLAY_TYPE_FILE:
         // TODO

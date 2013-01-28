@@ -21,6 +21,13 @@ GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
     gradientProgram->addShader(fshader);
     gradientProgram->link();
 
+    fshader->compileSourceFile(":/glsl/testGrid_frag.glsl");
+
+    gridProgram = new QGLShaderProgram();
+    gridProgram->addShader(vshader);
+    gridProgram->addShader(fshader);
+    gridProgram->link();
+
     delete fshader;
     delete vshader;
 
@@ -31,6 +38,7 @@ GeneratedImage::~GeneratedImage()
 {
     delete fbo;
     delete gradientProgram;
+    delete gridProgram;
 }
 
 GLuint GeneratedImage::getTexture()
@@ -44,7 +52,36 @@ cv::Mat GeneratedImage::getMat()
     return cv::Mat();
 }
 
-void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight ) {
+void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight )
+{
+    gradientProgram->bind();
+
+    gradientProgram->setUniformValue("colorTL",QVector3D( topLeft.redF(), topLeft.greenF(), topLeft.blueF() ));
+    gradientProgram->setUniformValue("colorTR",QVector3D( topRight.redF(), topRight.greenF(), topRight.blueF() ));
+    gradientProgram->setUniformValue("colorBL",QVector3D( bottomLeft.redF(), bottomLeft.greenF(), bottomLeft.blueF() ));
+    gradientProgram->setUniformValue("colorBR",QVector3D( bottomRight.redF(), bottomRight.greenF(), bottomRight.blueF() ));
+
+    drawRect();
+
+    gradientProgram->release();
+}
+
+void GeneratedImage::drawGrid( QColor background, QColor lineColor, int cells, float lineWidth )
+{
+    gridProgram->bind();
+
+    gridProgram->setUniformValue("colorBG",QVector3D( background.redF(), background.greenF(), background.blueF() ));
+    gridProgram->setUniformValue("colorFG",QVector3D( lineColor.redF(), lineColor.greenF(), lineColor.blueF() ));
+    gridProgram->setUniformValue("width", lineWidth);
+    gridProgram->setUniformValue("cells", (float)cells);
+
+    drawRect();
+
+    gradientProgram->release();
+}
+
+void GeneratedImage::drawRect()
+{
     fbo->bind();
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -59,16 +96,8 @@ void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor botto
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    gradientProgram->bind();
-
-    gradientProgram->setUniformValue("colorTL",QVector3D( topLeft.redF(), topLeft.greenF(), topLeft.blueF() ));
-    gradientProgram->setUniformValue("colorTR",QVector3D( topRight.redF(), topRight.greenF(), topRight.blueF() ));
-    gradientProgram->setUniformValue("colorBL",QVector3D( bottomLeft.redF(), bottomLeft.greenF(), bottomLeft.blueF() ));
-    gradientProgram->setUniformValue("colorBR",QVector3D( bottomRight.redF(), bottomRight.greenF(), bottomRight.blueF() ));
-
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-    gradientProgram->release();
 
     fbo->release();
 }
