@@ -92,9 +92,20 @@ bool MapManager::load( QString newFileName )
         }
     }
 
+    QMessageBox msgBox;
+    msgBox.setText("This document does not seem to be a valid UV-map.");
+    msgBox.setIcon(QMessageBox::Critical);
+
     cv::Mat loadedMat = cv::imread( newFileName.toStdString(), CV_LOAD_IMAGE_UNCHANGED );
     if( !loadedMat.data ) {
-        qDebug() << "Could not load map from '" << newFileName << "'.";
+        msgBox.setInformativeText("The document is not an image or could not be read.");
+        msgBox.exec();
+        return false;
+    }
+
+    if( loadedMat.depth() != CV_16U ) {
+        msgBox.setInformativeText("UV-map documents should be 16 bit per color channel.");
+        msgBox.exec();
         return false;
     }
 
