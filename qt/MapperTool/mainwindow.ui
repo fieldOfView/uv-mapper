@@ -52,16 +52,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuNew">
-     <property name="title">
-      <string>New</string>
-     </property>
-     <addaction name="actionCreateUnit"/>
-     <addaction name="actionCreateFromPatterns"/>
-     <addaction name="actionCreateInverse"/>
-    </widget>
-    <addaction name="menuNew"/>
-    <addaction name="separator"/>
     <addaction name="actionFileOpen"/>
     <addaction name="actionFileRevert"/>
     <addaction name="separator"/>
@@ -128,8 +118,19 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuCreate">
+    <property name="title">
+     <string>Create</string>
+    </property>
+    <addaction name="actionCreateUnit"/>
+    <addaction name="actionCreateFromPatterns"/>
+    <addaction name="actionCreateFromModel"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreateInverse"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuCreate"/>
    <addaction name="menuFilter"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
@@ -138,39 +139,6 @@
   <action name="actionAbout">
    <property name="text">
     <string>About...</string>
-   </property>
-  </action>
-  <action name="actionCreateUnit">
-   <property name="text">
-    <string>Unit map...</string>
-   </property>
-   <property name="toolTip">
-    <string>Create a new &quot;Unit Map&quot;</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
-  <action name="actionCreateFromPatterns">
-   <property name="text">
-    <string>From patterns...</string>
-   </property>
-   <property name="toolTip">
-    <string>Create a map from a series of captured patters</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+O</string>
-   </property>
-  </action>
-  <action name="actionCreateInverse">
-   <property name="text">
-    <string>Inverse from current</string>
-   </property>
-   <property name="toolTip">
-    <string>Create a inverse map from the currently open map</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actionFileOpen">
@@ -186,7 +154,7 @@
   </action>
   <action name="actionFileRevert">
    <property name="text">
-    <string>Revert to saved</string>
+    <string>Reload</string>
    </property>
    <property name="toolTip">
     <string>Revert to the version saved to disk</string>
@@ -251,6 +219,47 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionCreateUnit">
+   <property name="text">
+    <string>Unit map...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a new &quot;Unit Map&quot;</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionCreateFromPatterns">
+   <property name="text">
+    <string>From patterns...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a map from a series of captured patters</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionCreateFromModel">
+   <property name="text">
+    <string>From 3d model...</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a map from a 3d model and camera/projector positions</string>
+   </property>
+  </action>
+  <action name="actionCreateInverse">
+   <property name="text">
+    <string>Inverse from current</string>
+   </property>
+   <property name="toolTip">
+    <string>Create a inverse map from the currently open map</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
   <action name="actionFullscreen">

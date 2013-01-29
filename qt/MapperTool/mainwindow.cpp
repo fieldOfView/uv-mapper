@@ -64,6 +64,16 @@ void MainWindow::initializeApp()
     delete newMap;
 }
 
+void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    if(event->key() == Qt::Key_Escape) {
+        if(isFullScreen()) {
+            showNormal();
+            statusBar()->show();
+            menuBar()->show();
+        }
+    }
+}
 
 void MainWindow::showUnitmapDialog()
 {
