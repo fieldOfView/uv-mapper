@@ -4,8 +4,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setApplicationName("mappertool");
-    a.setOrganizationName("fieldofview");
+    a.setApplicationName("MapperTool");
+    a.setOrganizationName("fieldOfView");
     a.setOrganizationDomain("fieldofview.com");
 
     MainWindow w;

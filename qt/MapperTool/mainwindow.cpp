@@ -12,6 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    dataPath = settings.value("DataPath").toString();
+
     ui->setupUi(this);
 
     displayActionGroup = new QActionGroup(this);
@@ -99,10 +101,13 @@ void MainWindow::fileRevert()
 
 void MainWindow::fileOpen()
 {
-    QString path = QFileDialog::getOpenFileName( this, tr("Open UV Map file"));
-    if(path.isNull() == false)
+    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath );
+    if(fileName.isNull() == false)
     {
-        if(uvMap->load(path)) {
+        dataPath = QFileInfo(fileName).path();
+        settings.setValue("DataPath", dataPath);
+
+        if(uvMap->load(fileName)) {
             glWidget->setMapTexture( uvMap->getTexture() );
         }
     }
@@ -116,10 +121,12 @@ void MainWindow::fileSave()
 
 void MainWindow::fileSaveAs()
 {
-    QString path = QFileDialog::getSaveFileName( this, tr("Save UV Map as"));
-    if(path.isNull() == false)
+    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath );
+    if(fileName.isNull() == false)
     {
-        uvMap->save(path);
+        uvMap->save(fileName);
+        dataPath = QFileInfo(fileName).path();
+        settings.setValue("DataPath", dataPath);
     }
 }
 

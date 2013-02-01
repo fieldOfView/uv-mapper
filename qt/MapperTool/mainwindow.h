@@ -27,12 +27,15 @@ protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
+    QSettings settings;
+
     Ui::MainWindow *ui;
     GLWidget *glWidget;
 
     MapManager *uvMap;
     DisplayTextureManager *displayTexture;
-    QString fileName;
+
+    QString dataPath;
 
     QActionGroup *displayActionGroup;
     QActionGroup *transparencyGridActionGroup;
