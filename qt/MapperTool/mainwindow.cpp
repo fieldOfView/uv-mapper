@@ -111,7 +111,7 @@ void MainWindow::fileRevert()
 
 void MainWindow::fileOpen()
 {
-    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath );
+    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath, "UV Maps (*.tif *.png)" );
     if(fileName.isNull() == false)
     {
         dataPath = QFileInfo(fileName).path();
@@ -131,7 +131,7 @@ void MainWindow::fileSave()
 
 void MainWindow::fileSaveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath );
+    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath, "UV Maps (*.tif *.png)" );
     if(fileName.isNull() == false)
     {
         uvMap->save(fileName);
