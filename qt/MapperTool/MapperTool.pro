@@ -19,7 +19,10 @@ SOURCES += \
     unitmapdialog.cpp \
     mapmanager.cpp \
     displaytexturemanager.cpp \
-    generatedimage.cpp
+    generatedimage.cpp \
+    patternmanager.cpp \
+    qt_graydecoder.cpp \
+    mt_graydecoder.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -28,7 +31,11 @@ HEADERS += \
     unitmapdialog.h \
     mapmanager.h \
     displaytexturemanager.h \
-    generatedimage.h
+    generatedimage.h \
+    threadSafeQueue.h \
+    patternmanager.h \
+    qt_graydecoder.h \
+    mt_graydecoder.h
 
 FORMS += \
     mainwindow.ui \
@@ -46,9 +53,7 @@ OTHER_FILES += \
     resources/testGrid_frag.glsl
 
 unix {
-	LIBS += -I/usr/include/opencv  
-		-lopencv_core 
-		-lopencv_highgui 
+        LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui
 }
 
 win32 {
