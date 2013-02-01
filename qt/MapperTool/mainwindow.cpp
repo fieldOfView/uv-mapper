@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addActions( menuBar()->actions() );
 
     uvMap = new MapManager();
+    patManager = new PatternManager();
     displayTexture = new DisplayTextureManager();
 
     glWidget = new GLWidget( centralWidget() );
