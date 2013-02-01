@@ -13,7 +13,7 @@ PatternManager::PatternManager()
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3896.tif");
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3882.tif");
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3903.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photoglTexCoord2fs/_DSC3887.tif");
+    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3887.tif");
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3898.tif");
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3894.tif");
     m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3891.tif");
