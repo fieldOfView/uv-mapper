@@ -190,7 +190,7 @@ void GLWidget::setViewport()
     factor*=zoomFactor;
 
     if(factor != 0.0) {
-        QSize size = QSize(viewport.width(),viewport.height()) * factor;
+        QSize size = viewport.size() * factor;
         viewport.translate(QPoint((viewport.width()-size.width())/2, (viewport.height()-size.height())/2));
         viewport.setSize(size);
     }
@@ -272,6 +272,9 @@ void GLWidget::setZoom(double zoom)
 
 void GLWidget::zoomInOut(bool in)
 {
+    if(zoomFactor == 0) {
+        zoomFactor = 1;
+    }
     zoomFactor *= (in)?1.25:0.8;
     setViewport();
 
