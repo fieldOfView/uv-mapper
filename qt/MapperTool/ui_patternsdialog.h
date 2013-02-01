@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Fri Feb 1 16:56:03 2013
+** Created: Fri Feb 1 21:19:02 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -31,7 +31,7 @@ QT_BEGIN_NAMESPACE
 class Ui_PatternsDialog
 {
 public:
-    QHBoxLayout *horizontalLayout_2;
+    QHBoxLayout *horizontalLayout;
     QListWidget *listWidget;
     QVBoxLayout *verticalLayout;
     QPushButton *selectPatternsButton;
@@ -58,16 +58,19 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(PatternsDialog->sizePolicy().hasHeightForWidth());
         PatternsDialog->setSizePolicy(sizePolicy);
-        PatternsDialog->setAutoFillBackground(false);
         PatternsDialog->setSizeGripEnabled(true);
         PatternsDialog->setModal(true);
-        horizontalLayout_2 = new QHBoxLayout(PatternsDialog);
-        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        horizontalLayout = new QHBoxLayout(PatternsDialog);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         listWidget = new QListWidget(PatternsDialog);
+        new QListWidgetItem(listWidget);
         listWidget->setObjectName(QString::fromUtf8("listWidget"));
-        listWidget->setAcceptDrops(true);
+        listWidget->setEnabled(false);
+        listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        listWidget->setAlternatingRowColors(true);
+        listWidget->setTextElideMode(Qt::ElideMiddle);
 
-        horizontalLayout_2->addWidget(listWidget);
+        horizontalLayout->addWidget(listWidget);
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
@@ -146,7 +149,7 @@ public:
         verticalLayout->addWidget(rejectButton);
 
 
-        horizontalLayout_2->addLayout(verticalLayout);
+        horizontalLayout->addLayout(verticalLayout);
 
 
         retranslateUi(PatternsDialog);

@@ -7,9 +7,9 @@ PatternsDialog::PatternsDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::PatternsDialog)
 {
-    dataPath = settings.value("DataPath").toString();
-
     ui->setupUi(this);
+
+    dataPath = "";  // TODO: get from settings
 }
 
 PatternsDialog::~PatternsDialog()
@@ -20,5 +20,8 @@ PatternsDialog::~PatternsDialog()
 void PatternsDialog::selectPatterns()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open pattern images"), dataPath, "Images (*.jpg *.tif)");
-    qDebug()<<fileNames;
+
+    ui->listWidget->clear();
+    ui->listWidget->addItems(fileNames);
+    ui->listWidget->setEnabled(true);
 }

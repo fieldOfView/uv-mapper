@@ -19,21 +19,32 @@
   <property name="windowTitle">
    <string>Create uv map from patterns</string>
   </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
-  </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QListWidget" name="listWidget">
-     <property name="acceptDrops">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="horizontalScrollBarPolicy">
+      <enum>Qt::ScrollBarAlwaysOff</enum>
+     </property>
+     <property name="alternatingRowColors">
       <bool>true</bool>
      </property>
+     <property name="textElideMode">
+      <enum>Qt::ElideMiddle</enum>
+     </property>
+     <item>
+      <property name="text">
+       <string>&lt;no patterns loaded&gt;</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>
