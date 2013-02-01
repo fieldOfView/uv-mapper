@@ -9,7 +9,6 @@
 #include "glwidget.h"
 
 #include "mapmanager.h"
-#include "patternmanager.h"
 #include "displaytexturemanager.h"
 
 namespace Ui {
@@ -34,7 +33,6 @@ private:
     GLWidget *glWidget;
 
     MapManager *uvMap;
-    PatternManager *patManager;
     DisplayTextureManager *displayTexture;
 
     QString dataPath;

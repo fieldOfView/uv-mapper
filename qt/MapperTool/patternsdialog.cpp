@@ -10,11 +10,14 @@ PatternsDialog::PatternsDialog(QWidget *parent) :
     ui->setupUi(this);
 
     dataPath = "";  // TODO: get from settings
+
+    patternManager = new PatternManager();
 }
 
 PatternsDialog::~PatternsDialog()
 {
     delete ui;
+    delete patternManager;
 }
 
 void PatternsDialog::selectPatterns()

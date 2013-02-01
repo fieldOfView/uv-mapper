@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include "patternmanager.h"
+
 namespace Ui {
 class PatternsDialog;
 }
@@ -17,6 +19,8 @@ public:
     
 private:
     Ui::PatternsDialog *ui;
+
+    PatternManager *patternManager;
 
     QString dataPath;
 
