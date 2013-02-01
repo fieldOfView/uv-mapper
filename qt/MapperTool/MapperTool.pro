@@ -22,7 +22,8 @@ SOURCES += \
     generatedimage.cpp \
     patternmanager.cpp \
     qt_graydecoder.cpp \
-    mt_graydecoder.cpp
+    mt_graydecoder.cpp \
+    patternsdialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -35,12 +36,14 @@ HEADERS += \
     threadSafeQueue.h \
     patternmanager.h \
     qt_graydecoder.h \
-    mt_graydecoder.h
+    mt_graydecoder.h \
+    patternsdialog.h
 
 FORMS += \
     mainwindow.ui \
     aboutdialog.ui \
-    unitmapdialog.ui
+    unitmapdialog.ui \
+    patternsdialog.ui
 
 RESOURCES += \
     resources.qrc

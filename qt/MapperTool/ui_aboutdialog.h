@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'aboutdialog.ui'
 **
-** Created: Fri Nov 30 17:27:09 2012
+** Created: Fri Feb 1 14:34:58 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -34,6 +34,13 @@ public:
             AboutDialog->setObjectName(QString::fromUtf8("AboutDialog"));
         AboutDialog->setWindowModality(Qt::ApplicationModal);
         AboutDialog->resize(318, 150);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(AboutDialog->sizePolicy().hasHeightForWidth());
+        AboutDialog->setSizePolicy(sizePolicy);
+        AboutDialog->setMinimumSize(QSize(318, 150));
+        AboutDialog->setMaximumSize(QSize(318, 150));
         AboutDialog->setContextMenuPolicy(Qt::NoContextMenu);
         AboutDialog->setModal(true);
         buttonBox = new QDialogButtonBox(AboutDialog);

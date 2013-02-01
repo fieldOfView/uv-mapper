@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'unitmapdialog.ui'
 **
-** Created: Sat Jan 26 18:14:03 2013
+** Created: Fri Feb 1 14:36:16 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -40,6 +40,13 @@ public:
             UnitmapDialog->setObjectName(QString::fromUtf8("UnitmapDialog"));
         UnitmapDialog->setWindowModality(Qt::ApplicationModal);
         UnitmapDialog->resize(250, 137);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(UnitmapDialog->sizePolicy().hasHeightForWidth());
+        UnitmapDialog->setSizePolicy(sizePolicy);
+        UnitmapDialog->setMinimumSize(QSize(250, 137));
+        UnitmapDialog->setMaximumSize(QSize(250, 137));
         UnitmapDialog->setModal(true);
         buttonBox = new QDialogButtonBox(UnitmapDialog);
         buttonBox->setObjectName(QString::fromUtf8("buttonBox"));

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue Jan 29 21:13:27 2013
+** Created: Fri Feb 1 14:31:38 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -260,6 +260,7 @@ public:
         QObject::connect(actionZoomOut, SIGNAL(triggered()), MainWindow, SLOT(zoomOut()));
         QObject::connect(actionZoomActualSize, SIGNAL(triggered()), MainWindow, SLOT(zoomReset()));
         QObject::connect(actionZoomFit, SIGNAL(triggered()), MainWindow, SLOT(zoomToFit()));
+        QObject::connect(actionCreateFromPatterns, SIGNAL(triggered()), MainWindow, SLOT(showPatternsDialog()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
