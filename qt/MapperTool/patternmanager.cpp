@@ -43,7 +43,7 @@ PatternManager::PatternManager()
 }
 
 bool PatternManager::loadFiles(QString fileName) {
-
+    return true;
 }
 
 void PatternManager::fileLoaded(cv::Mat *file) {

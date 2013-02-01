@@ -24,16 +24,22 @@ cv::Mat* mt_grayDecoder::loadFile(std::string filepath)
 cv::Mat* mt_grayDecoder::findExtremePixels(std::vector<cv::Mat *> *originals) {
 
     std::cout << "Do findExtremePixels\n";
+    cv::Mat *dummy;
+    return dummy;
 }
 
 cv::Mat* mt_grayDecoder::thresholdImage(cv::Mat *img) {
 
     std::cout << "Do thresholdImage\n";
+    cv::Mat *dummy;
+    return dummy;
 }
 
 cv::Mat* mt_grayDecoder::thresholdedImagesToGrayCode(std::vector<cv::Mat *> *thresholded) {
 
     std::cout << "Do thresholdedImagesToGrayCode\n";
+    cv::Mat *dummy;
+    return dummy;
 }
 
 void mt_grayDecoder::failed() {
