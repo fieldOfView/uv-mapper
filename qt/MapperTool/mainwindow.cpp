@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "aboutdialog.h"
 #include "unitmapdialog.h"
+#include "patternsdialog.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -90,6 +91,15 @@ void MainWindow::showUnitmapDialog()
     glWidget->setMapTexture(uvMap->getTexture());
 
     delete newMap;
+}
+
+void MainWindow::showPatternsDialog()
+{
+    PatternsDialog *patternsDialog = new PatternsDialog(this);
+    patternsDialog->setWindowFlags(patternsDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    if(!patternsDialog->exec())
+        return;
+
 }
 
 

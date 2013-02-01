@@ -19,7 +19,8 @@ SOURCES += \
     unitmapdialog.cpp \
     mapmanager.cpp \
     displaytexturemanager.cpp \
-    generatedimage.cpp
+    generatedimage.cpp \
+    patternsdialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -28,12 +29,14 @@ HEADERS += \
     unitmapdialog.h \
     mapmanager.h \
     displaytexturemanager.h \
-    generatedimage.h
+    generatedimage.h \
+    patternsdialog.h
 
 FORMS += \
     mainwindow.ui \
     aboutdialog.ui \
-    unitmapdialog.ui
+    unitmapdialog.ui \
+    patternsdialog.ui
 
 RESOURCES += \
     resources.qrc

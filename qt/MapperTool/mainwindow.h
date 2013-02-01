@@ -46,6 +46,7 @@ private slots:
     void toggleFullscreen();
     void showAboutDialog();
     void showUnitmapDialog();
+    void showPatternsDialog();
 
     void fileRevert();
     void fileOpen();
