@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Fri Feb 1 15:58:41 2013
+** Created: Fri Feb 1 16:56:03 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -151,6 +151,7 @@ public:
 
         retranslateUi(PatternsDialog);
         QObject::connect(rejectButton, SIGNAL(clicked()), PatternsDialog, SLOT(reject()));
+        QObject::connect(selectPatternsButton, SIGNAL(clicked()), PatternsDialog, SLOT(selectPatterns()));
 
         channelList->setCurrentIndex(0);
 
@@ -162,7 +163,7 @@ public:
     {
         PatternsDialog->setWindowTitle(QApplication::translate("PatternsDialog", "Create uv map from patterns", 0, QApplication::UnicodeUTF8));
         selectPatternsButton->setText(QApplication::translate("PatternsDialog", "Load patterns...", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("PatternsDialog", "Options", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("PatternsDialog", "Options:", 0, QApplication::UnicodeUTF8));
         depthList->setSuffix(QApplication::translate("PatternsDialog", " bits", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("PatternsDialog", "Depth", 0, QApplication::UnicodeUTF8));
         channelList->clear();

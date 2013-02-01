@@ -2,6 +2,7 @@
 #define PATTERNSDIALOG_H
 
 #include <QDialog>
+#include <QSettings>
 
 namespace Ui {
 class PatternsDialog;
@@ -17,6 +18,12 @@ public:
     
 private:
     Ui::PatternsDialog *ui;
+
+    QSettings settings;
+    QString dataPath;
+
+private slots:
+    void selectPatterns();
 };
 
 #endif // PATTERNSDIALOG_H

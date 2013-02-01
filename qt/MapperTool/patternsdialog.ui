@@ -48,7 +48,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Options</string>
+        <string>Options:</string>
        </property>
       </widget>
      </item>
@@ -213,5 +213,24 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>selectPatternsButton</sender>
+   <signal>clicked()</signal>
+   <receiver>PatternsDialog</receiver>
+   <slot>selectPatterns()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>260</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>164</x>
+     <y>149</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>selectPatterns()</slot>
+ </slots>
 </ui>
