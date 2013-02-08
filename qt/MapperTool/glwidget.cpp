@@ -44,10 +44,12 @@
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
-      mapSize(1,1),
+      mapSize(1,1),rawSize(1,1),
+      mapTexture(0),rawTexture(0),
       zoomFactor(1.0),
       transparencyGridType(GRID_LIGHT),
-      uvMapProgram(0), gridProgram(0)
+      uvMapProgram(0), gridProgram(0),
+      displayMode(MODE_UV)
 {
 }
 
