@@ -22,7 +22,7 @@ public:
     mt_grayDecoder();
 
     void setState(MTGD_STATE state);
-    cv::Mat* loadFile(std::string filepath);
+    static cv::Mat* loadFile(std::string filepath);
     cv::Mat* findExtremePixels(std::vector<cv::Mat*>* originalsPtr);
     cv::Mat* thresholdImage(cv::Mat* imgPtr);
     cv::Mat* thresholdedImagesToGrayCode(std::vector<cv::Mat*>* thresholdedPtr);
