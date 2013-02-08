@@ -37,7 +37,8 @@ HEADERS += \
     patternmanager.h \
     qt_graydecoder.h \
     mt_graydecoder.h \
-    patternsdialog.h
+    patternsdialog.h \
+    texturefrommat.h
 
 FORMS += \
     mainwindow.ui \

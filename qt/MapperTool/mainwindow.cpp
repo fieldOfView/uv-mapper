@@ -50,7 +50,7 @@ MainWindow::~MainWindow()
     delete glWidget;
     delete uvMap;
     delete displayTexture;
-    delete ui;
+    //delete ui;
 }
 
 void MainWindow::initializeApp()
@@ -95,11 +95,13 @@ void MainWindow::showUnitmapDialog()
 
 void MainWindow::showPatternsDialog()
 {
-    PatternsDialog *patternsDialog = new PatternsDialog(this);
+    PatternsDialog *patternsDialog = new PatternsDialog(this, glWidget);
     patternsDialog->setWindowFlags(patternsDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
-    if(!patternsDialog->exec())
-        return;
+    int dialogResult = patternsDialog->exec();
+    delete patternsDialog;
 
+    if(!dialogResult)
+        return;
 }
 
 
@@ -111,7 +113,7 @@ void MainWindow::fileRevert()
 
 void MainWindow::fileOpen()
 {
-    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath, "UV Maps (*.tif *.png)" );
+    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath, "UV Maps (*.png *.tif)" );
     if(fileName.isNull() == false)
     {
         dataPath = QFileInfo(fileName).path();
@@ -131,7 +133,7 @@ void MainWindow::fileSave()
 
 void MainWindow::fileSaveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath, "UV Maps (*.tif *.png)" );
+    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath, "UV Maps (*.png *.tif)" );
     if(fileName.isNull() == false)
     {
         uvMap->save(fileName);

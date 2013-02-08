@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Fri Feb 1 21:19:02 2013
+** Created: Fri Feb 8 19:23:44 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -155,6 +155,7 @@ public:
         retranslateUi(PatternsDialog);
         QObject::connect(rejectButton, SIGNAL(clicked()), PatternsDialog, SLOT(reject()));
         QObject::connect(selectPatternsButton, SIGNAL(clicked()), PatternsDialog, SLOT(selectPatterns()));
+        QObject::connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), PatternsDialog, SLOT(selectPatternFromList(QListWidgetItem*)));
 
         channelList->setCurrentIndex(0);
 
@@ -165,6 +166,13 @@ public:
     void retranslateUi(QDialog *PatternsDialog)
     {
         PatternsDialog->setWindowTitle(QApplication::translate("PatternsDialog", "Create uv map from patterns", 0, QApplication::UnicodeUTF8));
+
+        const bool __sortingEnabled = listWidget->isSortingEnabled();
+        listWidget->setSortingEnabled(false);
+        QListWidgetItem *___qlistwidgetitem = listWidget->item(0);
+        ___qlistwidgetitem->setText(QApplication::translate("PatternsDialog", "<no patterns loaded>", 0, QApplication::UnicodeUTF8));
+        listWidget->setSortingEnabled(__sortingEnabled);
+
         selectPatternsButton->setText(QApplication::translate("PatternsDialog", "Load patterns...", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("PatternsDialog", "Options:", 0, QApplication::UnicodeUTF8));
         depthList->setSuffix(QApplication::translate("PatternsDialog", " bits", 0, QApplication::UnicodeUTF8));
