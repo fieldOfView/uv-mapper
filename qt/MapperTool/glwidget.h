@@ -59,6 +59,11 @@
      QSize minimumSizeHint() const;
      QSize sizeHint() const;
 
+     enum DISPLAY_MODE {
+       MODE_UV,
+       MODE_RAW
+     };
+
      enum TRANSPARENCYGRID_TYPE {
        GRID_NONE,
        GRID_LIGHT,
@@ -71,6 +76,9 @@
 
      void setZoom(double zoom);
      void zoomInOut(bool in);
+
+     void setMode(DISPLAY_MODE mode);
+     void setRawTexture(GLuint texture);
 
  signals:
      void clicked();
@@ -90,6 +98,10 @@
      void setViewport();
 
      QGLFunctions glFunctions;
+
+     DISPLAY_MODE displayMode;
+     GLuint rawTexture;
+     QSize rawSize;
 
      GLuint mapTexture;
      QSize mapSize;
