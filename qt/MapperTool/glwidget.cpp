@@ -71,6 +71,7 @@ QSize GLWidget::sizeHint() const
 
 void GLWidget::initializeGL()
 {
+    initializeGLFunctions();
     makeObject();
 
     // opengl settings
@@ -104,8 +105,6 @@ void GLWidget::initializeGL()
     gridProgram->addShader(vshader);
     gridProgram->addShader(fshader);
     gridProgram->link();
-
-    glFunctions.initializeGLFunctions(QGLContext::currentContext());
 
     emit initialized();
 }
@@ -153,10 +152,10 @@ void GLWidget::paintGL()
 
     switch(displayMode) {
     case MODE_UV:
-        glFunctions.glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mapTexture);
 
-        glFunctions.glActiveTexture(GL_TEXTURE1);
+        glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, displayTexture);
 
         uvMapProgram->bind();
@@ -164,7 +163,7 @@ void GLWidget::paintGL()
         uvMapProgram->setUniformValue("displayTex", 1);
         break;
     case MODE_RAW:
-        glFunctions.glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, rawTexture);
     }
 

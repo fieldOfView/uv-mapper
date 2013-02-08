@@ -48,7 +48,7 @@
 
  class QGLShaderProgram;
 
- class GLWidget : public QGLWidget
+ class GLWidget : public QGLWidget, protected QGLFunctions
  {
      Q_OBJECT
 
@@ -96,8 +96,6 @@
  private:
      void makeObject();
      void setViewport();
-
-     QGLFunctions glFunctions;
 
      DISPLAY_MODE displayMode;
      GLuint rawTexture;
