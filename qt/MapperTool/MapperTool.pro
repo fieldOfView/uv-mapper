@@ -23,7 +23,8 @@ SOURCES += \
     patternmanager.cpp \
     qt_graydecoder.cpp \
     mt_graydecoder.cpp \
-    patternsdialog.cpp
+    patternsdialog.cpp \
+    texturefrommat.cpp
 
 HEADERS += \
     mainwindow.h \
