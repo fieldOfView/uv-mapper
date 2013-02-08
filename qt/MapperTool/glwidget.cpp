@@ -149,18 +149,27 @@ void GLWidget::paintGL()
 
     glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
 
-    glFunctions.glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mapTexture);
+    switch(displayMode) {
+    case MODE_UV:
+        glFunctions.glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, mapTexture);
 
-    glFunctions.glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, displayTexture);
+        glFunctions.glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, displayTexture);
 
-    uvMapProgram->bind();
-    uvMapProgram->setUniformValue("mapTex", 0);
-    uvMapProgram->setUniformValue("displayTex", 1);
+        uvMapProgram->bind();
+        uvMapProgram->setUniformValue("mapTex", 0);
+        uvMapProgram->setUniformValue("displayTex", 1);
+        break;
+    case MODE_RAW:
+        glFunctions.glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, rawTexture);
+    }
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    uvMapProgram->release();
+    if(displayMode == MODE_UV) {
+        uvMapProgram->release();
+    }
 
     glDisable(GL_BLEND);
     glDisable(GL_DEPTH);
@@ -174,18 +183,20 @@ void GLWidget::resizeGL(int width, int height)
 
 void GLWidget::setViewport()
 {
-    double aspectRatio = (double)mapSize.width()/(double)mapSize.height();
+    QSize textureSize = (displayMode == MODE_UV)?mapSize:rawSize;
+
+    double aspectRatio = (double)textureSize.width()/(double)textureSize.height();
 
     int side;
     double factor;
     if(aspectRatio >= (double)widgetSize.width() / (double)widgetSize.height()) {
         side = (int)((double)widgetSize.width()/aspectRatio);
         viewport = QRect(0, (widgetSize.height() - side)/2, widgetSize.width(), side);
-        factor = (double)mapSize.width()/(double)widgetSize.width();
+        factor = (double)textureSize.width()/(double)widgetSize.width();
     } else {
         side = (int)((double)widgetSize.height()*aspectRatio);
         viewport = QRect((widgetSize.width() - side)/2, 0, side, widgetSize.height());
-        factor = (double)mapSize.height()/(double)widgetSize.height();
+        factor = (double)textureSize.height()/(double)widgetSize.height();
     }
     factor*=zoomFactor;
 
@@ -260,6 +271,27 @@ void GLWidget::setTransparencyGrid(TRANSPARENCYGRID_TYPE type)
 {
     transparencyGridType = type;
     repaint();
+}
+
+void GLWidget::setMode(DISPLAY_MODE mode)
+{
+    displayMode = mode;
+
+    setViewport();
+    paintGL();
+}
+
+void GLWidget::setRawTexture(GLuint texture)
+{
+    GLint width, height;
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_WIDTH,&width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_HEIGHT,&height);
+
+    rawTexture = texture;
+    rawSize = QSize(width, height);
+
+    setMode(MODE_RAW);
 }
 
 void GLWidget::setZoom(double zoom)
