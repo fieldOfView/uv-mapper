@@ -59,6 +59,29 @@ unix {
         LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui
 }
 
+macx {
+    # Include and link opencv dependency
+
+    OPENCVDIR = "../../../opencv/install"
+    OPENCVINCLUDEDIR = $${OPENCVDIR}/include
+    OPENCVLIBDIR = $${OPENCVDIR}/lib
+    exists($$OPENCVDIR) {
+          DEFINES += USEOPENCV
+          INCLUDEPATH += $${OPENCVINCLUDEDIR}
+          CONFIG(release, debug|release) {
+                  LIBS += -L$${OPENCVLIBDIR} \
+                          -lopencv_core240 \
+                          -lopencv_highgui240
+          } else {
+                  LIBS += -L$${OPENCVLIBDIR} \
+                          -lopencv_core240d \
+                          -lopencv_highgui240d
+          }
+    } else {
+          message("OpenCV libraries not found.")
+    }
+}
+
 win32 {
     # Copy Qt runtime
 
