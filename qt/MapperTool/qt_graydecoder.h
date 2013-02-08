@@ -20,14 +20,26 @@ public:
 signals:
     void readyForDuty(int id);
     void fileLoaded(cv::Mat* file);
-    
+    void imageThresholded(cv::Mat* file);
+    void extremeMinPixelsFound(cv::Mat* extremeMinPixelsImgPtr);
+    void extremeMaxPixelsFound(cv::Mat* extremeMaxPixelsImgPtr);
+    void ThresholdedImagesGraycoded(cv::Mat* graycode);
+
 public slots:
     void prepareFileLoad(std::string filepath);
+    void prepareImageThreshold(cv::Mat* imgPtr);
+    void prepareExtremePixelsFind(std::vector<cv::Mat*>* originalsPtr);
+    void prepareThresholdedImagesToGraycode(std::vector<cv::Mat*>* thresholdedPtr);
     void run();
 
 private:
     ThreadSafeQueue<std::string>& queue;
+    //these are all set by the prepare methods
     std::string filepath;
+    cv::Mat* imgPtr;
+    std::vector<cv::Mat*>* originalsPtr;
+    std::vector<cv::Mat*>* thresholdedPtr;
+
     void loadFile();
 };
 

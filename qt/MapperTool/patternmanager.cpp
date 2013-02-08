@@ -1,55 +1,88 @@
 #include "patternmanager.h"
 #include <QVectorIterator>
+#include <QStringListIterator>
+#include <QFuture>
 
 PatternManager::PatternManager()
 {
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3899.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3890.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3888.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3904.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3901.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3884.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3885.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3896.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3882.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3903.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3887.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3898.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3894.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3891.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3886.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3893.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3905.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3897.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3895.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3892.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3902.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3889.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3900.tif");
-    m_fileNames.push_back("/home/arnaud/Downloads/1 - raw photos/_DSC3883.tif");
-
-    QVectorIterator<QString> it(m_fileNames);
+    /*QVectorIterator<QString> it(m_fileNames);
     while(it.hasNext()) {
 
         m_filesToLoad.enqueue(it.next().toStdString());
-    }
-
-    for(int i=0;i<m_fileNames.size();i++) {
-        qt_grayDecoder* decoder = new qt_grayDecoder(m_filesToLoad);
-        m_decoders.push_back(decoder);
-        connect(decoder, SIGNAL(fileLoaded(cv::Mat*)), this, SLOT(fileLoaded(cv::Mat*)));
-        decoder->start();
-    }
+    }*/
 }
 
-bool PatternManager::loadFiles(QString fileName) {
+bool PatternManager::loadFiles(QStringList fileNames) {
+
+    if (!m_mtWatchers.isEmpty()) {
+        qDebug("Error: the watchers queue is not empty!");
+        return false;
+    }
+
+    QStringListIterator it(fileNames);
+    while ( it.hasNext() ) {
+        QString fileName = it.next();
+        QFutureWatcher<cv::Mat*>* mtWatcher = new QFutureWatcher<cv::Mat*>();
+        //this doesn't work because of the while loop at the end
+        QObject::connect(mtWatcher, SIGNAL(finished()), this, SLOT(fileLoaded()));
+
+        //class method only works with internal member methods (not static so you need an instance)
+        //see thresholdImage
+        //mt_grayDecoder decoder;// = new mt_grayDecoder();
+        //QFuture<cv::Mat*> fileLoader = QtConcurrent::run(decoder, &mt_grayDecoder::loadFile, fileName.toStdString());
+
+        //static method only works with static methods in the class(simple)
+        QFuture<cv::Mat*> fileLoader = QtConcurrent::run(mt_grayDecoder::loadFile, fileName.toStdString());
+
+        mtWatcher->setFuture(fileLoader);
+        m_mtWatchers.enqueue(mtWatcher);
+        qDebug() << "file "<< fileName << " loading";
+    }
+
+    //This while loop is blocking any signalling QT wants to do so no Signals are parsed
+    while(!m_mtWatchers.isEmpty()) {
+        QFutureWatcher<cv::Mat*>* watch = m_mtWatchers.dequeue();
+        qDebug() << watch->isRunning();
+        cv::Mat* t = watch->result();
+        this->m_originalPatterns.push_back(watch->result());
+        qDebug("file loaded");
+        delete watch;
+    }
     return true;
 }
 
-void PatternManager::fileLoaded(cv::Mat *file) {
+void PatternManager::fileLoaded() {//cv::Mat *file) {
+    //this->m_originalPatterns.push_back(file);
+    qDebug("file loaded signal");
+}
 
-    this->m_originalPatterns.push_back(file);
-    qDebug("file loaded");
+bool PatternManager::thresholdImages()
+{
+    qDebug() << "img thresholding";
+    if (!m_mtWatchers.isEmpty()) {
+        qDebug("Error: the watchers queue is not empty!");
+        return false;
+    }
+
+    QVectorIterator<cv::Mat*> it(m_originalPatterns);
+    while ( it.hasNext() ) {
+        cv::Mat* origPtr = it.next();
+        QFutureWatcher<cv::Mat*>* mtWatcher = new QFutureWatcher<cv::Mat*>();
+        //QObject::connect(mtWatcher, SIGNAL(finished)), this, SLOT(fileLoaded(cv::Mat*))
+        mt_grayDecoder decoder;
+        QFuture<cv::Mat*> thresholder = QtConcurrent::run(decoder, &mt_grayDecoder::thresholdImage, origPtr);
+        mtWatcher->setFuture(thresholder);
+        m_mtWatchers.enqueue(mtWatcher);
+        qDebug() << "img thresholding";
+    }
+
+    while(!m_mtWatchers.isEmpty()) {
+        QFutureWatcher<cv::Mat*>* watch = m_mtWatchers.dequeue();
+        this->m_thresholdedPatterns.push_back(watch->result());
+        qDebug("Image thresholded");
+        delete watch;
+    }
+    return true;
 }
 
 GLuint PatternManager::getTexture(int index)

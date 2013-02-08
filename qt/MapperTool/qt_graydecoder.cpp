@@ -39,8 +39,6 @@ void qt_grayDecoder::prepareFileLoad(std::string filepath) {
     qDebug("Prepare fileload %s", filepath.c_str());
     this->filepath = filepath;
     decoder.setState(decoder.MTGD_STATE_LOADFILES);
-    workScheduled.wakeAll();
-    //this->yieldCurrentThread();
 }
 
 void qt_grayDecoder::loadFile() {
