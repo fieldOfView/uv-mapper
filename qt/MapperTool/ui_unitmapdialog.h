@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'unitmapdialog.ui'
 **
-** Created: Fri Feb 1 14:36:16 2013
+** Created: Sat Feb 9 19:07:01 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -39,18 +39,18 @@ public:
         if (UnitmapDialog->objectName().isEmpty())
             UnitmapDialog->setObjectName(QString::fromUtf8("UnitmapDialog"));
         UnitmapDialog->setWindowModality(Qt::ApplicationModal);
-        UnitmapDialog->resize(250, 137);
+        UnitmapDialog->resize(275, 137);
         QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(UnitmapDialog->sizePolicy().hasHeightForWidth());
         UnitmapDialog->setSizePolicy(sizePolicy);
-        UnitmapDialog->setMinimumSize(QSize(250, 137));
-        UnitmapDialog->setMaximumSize(QSize(250, 137));
+        UnitmapDialog->setMinimumSize(QSize(275, 137));
+        UnitmapDialog->setMaximumSize(QSize(275, 137));
         UnitmapDialog->setModal(true);
         buttonBox = new QDialogButtonBox(UnitmapDialog);
         buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
-        buttonBox->setGeometry(QRect(20, 90, 211, 32));
+        buttonBox->setGeometry(QRect(20, 90, 241, 32));
         buttonBox->setOrientation(Qt::Horizontal);
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         lineEditWidth = new QLineEdit(UnitmapDialog);
@@ -59,7 +59,7 @@ public:
         lineEditWidth->setMaxLength(4);
         lineEditHeight = new QLineEdit(UnitmapDialog);
         lineEditHeight->setObjectName(QString::fromUtf8("lineEditHeight"));
-        lineEditHeight->setGeometry(QRect(180, 56, 51, 20));
+        lineEditHeight->setGeometry(QRect(205, 56, 51, 20));
         lineEditHeight->setMaxLength(4);
         labelPresets = new QLabel(UnitmapDialog);
         labelPresets->setObjectName(QString::fromUtf8("labelPresets"));
@@ -69,10 +69,10 @@ public:
         labelWidth->setGeometry(QRect(20, 60, 46, 13));
         labelHeight = new QLabel(UnitmapDialog);
         labelHeight->setObjectName(QString::fromUtf8("labelHeight"));
-        labelHeight->setGeometry(QRect(130, 60, 46, 13));
+        labelHeight->setGeometry(QRect(145, 60, 46, 13));
         comboPresets = new QComboBox(UnitmapDialog);
         comboPresets->setObjectName(QString::fromUtf8("comboPresets"));
-        comboPresets->setGeometry(QRect(70, 16, 161, 22));
+        comboPresets->setGeometry(QRect(70, 16, 191, 22));
 
         retranslateUi(UnitmapDialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), UnitmapDialog, SLOT(accept()));

@@ -15,8 +15,8 @@ public:
     MapManager();
     ~MapManager();
 
-    bool load( QString newFileName = NULL );
-    bool save( QString newFileName = NULL );
+    bool load( QString newFileName = "" );
+    bool save( QString newFileName = "" );
 
     bool undo();
     bool redo();

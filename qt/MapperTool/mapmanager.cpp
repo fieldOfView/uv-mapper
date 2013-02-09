@@ -91,7 +91,7 @@ void MapManager::createFromTexture( GLuint texture )
 
 bool MapManager::load( QString newFileName )
 {
-    if( newFileName.isNull() ) {
+    if( newFileName.isEmpty() ) {
         newFileName = fileName;
         if( newFileName.isNull() ) {
             return false;
@@ -127,7 +127,7 @@ bool MapManager::load( QString newFileName )
 
 bool MapManager::save( QString newFileName )
 {
-    if( newFileName.isNull() ) {
+    if( newFileName.isEmpty() ) {
         newFileName = fileName;
         if( newFileName.isNull() ) {
             return false;

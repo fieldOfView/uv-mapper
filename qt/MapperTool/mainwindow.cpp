@@ -37,9 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // so keyboard shortcuts work when the menuBar is hidden.
     addActions( menuBar()->actions() );
 
-    uvMap = new MapManager();
-    displayTexture = new DisplayTextureManager();
-
     glWidget = new GLWidget( centralWidget() );
     connect(glWidget,SIGNAL(initialized()),this,SLOT(initializeApp()));
     setCentralWidget( glWidget );
@@ -55,6 +52,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::initializeApp()
 {
+    uvMap = new MapManager();
+    displayTexture = new DisplayTextureManager();
+
     displayTexture->makeTexture(DisplayTextureManager::DISPLAY_TYPE_UV);
     glWidget->setDisplayTexture(displayTexture->getTexture());
 
@@ -107,7 +107,7 @@ void MainWindow::showPatternsDialog()
 
 void MainWindow::fileRevert()
 {
-    if(!uvMap->load())
+    if(!uvMap->load(""))
         fileOpen();
 }
 
@@ -127,7 +127,7 @@ void MainWindow::fileOpen()
 
 void MainWindow::fileSave()
 {
-    if(!uvMap->save())
+    if(!uvMap->save(""))
         fileSaveAs();
 }
 

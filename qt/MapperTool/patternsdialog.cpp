@@ -43,7 +43,6 @@ void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
     QString fileName = listItem->text();
     cv::Mat loadedMat = cv::imread(fileName.toStdString(),CV_LOAD_IMAGE_UNCHANGED);
     texture = makeTextureFromMat(loadedMat, texture);
-    loadedMat = 0;
 
     glWidget->setRawTexture(texture);
     glWidget->repaint();

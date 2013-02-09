@@ -60,26 +60,7 @@ unix {
 }
 
 macx {
-    # Include and link opencv dependency
-
-    OPENCVDIR = "../../../opencv/install"
-    OPENCVINCLUDEDIR = $${OPENCVDIR}/include
-    OPENCVLIBDIR = $${OPENCVDIR}/lib
-    exists($$OPENCVDIR) {
-          DEFINES += USEOPENCV
-          INCLUDEPATH += $${OPENCVINCLUDEDIR}
-          CONFIG(release, debug|release) {
-                  LIBS += -L$${OPENCVLIBDIR} \
-                          -lopencv_core240 \
-                          -lopencv_highgui240
-          } else {
-                  LIBS += -L$${OPENCVLIBDIR} \
-                          -lopencv_core240d \
-                          -lopencv_highgui240d
-          }
-    } else {
-          message("OpenCV libraries not found.")
-    }
+    QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
 }
 
 win32 {

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Fri Feb 8 19:23:44 2013
+** Created: Sat Feb 9 19:07:01 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -52,7 +52,7 @@ public:
     {
         if (PatternsDialog->objectName().isEmpty())
             PatternsDialog->setObjectName(QString::fromUtf8("PatternsDialog"));
-        PatternsDialog->resize(329, 300);
+        PatternsDialog->resize(389, 311);
         QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
