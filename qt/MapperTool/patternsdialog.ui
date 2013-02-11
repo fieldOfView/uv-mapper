@@ -27,28 +27,42 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="textElideMode">
-      <enum>Qt::ElideMiddle</enum>
-     </property>
+    <layout class="QVBoxLayout" name="verticalLayout_1">
      <item>
-      <property name="text">
-       <string>&lt;no patterns loaded&gt;</string>
-      </property>
+      <widget class="QListWidget" name="listWidget">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAlwaysOff</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="textElideMode">
+        <enum>Qt::ElideMiddle</enum>
+       </property>
+       <item>
+        <property name="text">
+         <string>&lt;no patterns loaded&gt;</string>
+        </property>
+       </item>
+      </widget>
      </item>
-    </widget>
+     <item>
+      <widget class="QProgressBar" name="progressBar">
+       <property name="value">
+        <number>0</number>
+       </property>
+       <property name="textVisible">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QPushButton" name="selectPatternsButton">
        <property name="text">

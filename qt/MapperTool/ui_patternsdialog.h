@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Sat Feb 9 19:07:01 2013
+** Created: Mon Feb 11 17:10:20 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -21,6 +21,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QListWidget>
+#include <QtGui/QProgressBar>
 #include <QtGui/QPushButton>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QSpinBox>
@@ -32,8 +33,10 @@ class Ui_PatternsDialog
 {
 public:
     QHBoxLayout *horizontalLayout;
+    QVBoxLayout *verticalLayout_1;
     QListWidget *listWidget;
-    QVBoxLayout *verticalLayout;
+    QProgressBar *progressBar;
+    QVBoxLayout *verticalLayout_2;
     QPushButton *selectPatternsButton;
     QLabel *label;
     QFormLayout *formLayout;
@@ -62,6 +65,8 @@ public:
         PatternsDialog->setModal(true);
         horizontalLayout = new QHBoxLayout(PatternsDialog);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        verticalLayout_1 = new QVBoxLayout();
+        verticalLayout_1->setObjectName(QString::fromUtf8("verticalLayout_1"));
         listWidget = new QListWidget(PatternsDialog);
         new QListWidgetItem(listWidget);
         listWidget->setObjectName(QString::fromUtf8("listWidget"));
@@ -70,19 +75,29 @@ public:
         listWidget->setAlternatingRowColors(true);
         listWidget->setTextElideMode(Qt::ElideMiddle);
 
-        horizontalLayout->addWidget(listWidget);
+        verticalLayout_1->addWidget(listWidget);
 
-        verticalLayout = new QVBoxLayout();
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        progressBar = new QProgressBar(PatternsDialog);
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
+        progressBar->setValue(0);
+        progressBar->setTextVisible(false);
+
+        verticalLayout_1->addWidget(progressBar);
+
+
+        horizontalLayout->addLayout(verticalLayout_1);
+
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         selectPatternsButton = new QPushButton(PatternsDialog);
         selectPatternsButton->setObjectName(QString::fromUtf8("selectPatternsButton"));
 
-        verticalLayout->addWidget(selectPatternsButton);
+        verticalLayout_2->addWidget(selectPatternsButton);
 
         label = new QLabel(PatternsDialog);
         label->setObjectName(QString::fromUtf8("label"));
 
-        verticalLayout->addWidget(label);
+        verticalLayout_2->addWidget(label);
 
         formLayout = new QFormLayout();
         formLayout->setObjectName(QString::fromUtf8("formLayout"));
@@ -113,27 +128,27 @@ public:
         formLayout->setWidget(1, QFormLayout::LabelRole, label_3);
 
 
-        verticalLayout->addLayout(formLayout);
+        verticalLayout_2->addLayout(formLayout);
 
         verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout->addItem(verticalSpacer_2);
+        verticalLayout_2->addItem(verticalSpacer_2);
 
         extractLightButton = new QPushButton(PatternsDialog);
         extractLightButton->setObjectName(QString::fromUtf8("extractLightButton"));
         extractLightButton->setEnabled(false);
 
-        verticalLayout->addWidget(extractLightButton);
+        verticalLayout_2->addWidget(extractLightButton);
 
         extractDarkButton = new QPushButton(PatternsDialog);
         extractDarkButton->setObjectName(QString::fromUtf8("extractDarkButton"));
         extractDarkButton->setEnabled(false);
 
-        verticalLayout->addWidget(extractDarkButton);
+        verticalLayout_2->addWidget(extractDarkButton);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout->addItem(verticalSpacer);
+        verticalLayout_2->addItem(verticalSpacer);
 
         acceptButton = new QPushButton(PatternsDialog);
         acceptButton->setObjectName(QString::fromUtf8("acceptButton"));
@@ -141,15 +156,15 @@ public:
         acceptButton->setDefault(true);
         acceptButton->setFlat(false);
 
-        verticalLayout->addWidget(acceptButton);
+        verticalLayout_2->addWidget(acceptButton);
 
         rejectButton = new QPushButton(PatternsDialog);
         rejectButton->setObjectName(QString::fromUtf8("rejectButton"));
 
-        verticalLayout->addWidget(rejectButton);
+        verticalLayout_2->addWidget(rejectButton);
 
 
-        horizontalLayout->addLayout(verticalLayout);
+        horizontalLayout->addLayout(verticalLayout_2);
 
 
         retranslateUi(PatternsDialog);
