@@ -18,7 +18,7 @@ PatternsDialog::PatternsDialog(QWidget *parent, GLWidget *parentGlWidget) :
     dataPath = "";  // TODO: get from settings
 
     glGenTextures(1, &texture);
-    //patternManager = new PatternManager();
+    patternManager = new PatternManager();
 }
 
 PatternsDialog::~PatternsDialog()
@@ -36,6 +36,9 @@ void PatternsDialog::selectPatterns()
     ui->listWidget->clear();
     ui->listWidget->addItems(fileNames);
     ui->listWidget->setEnabled(true);
+
+    patternManager->loadFiles(fileNames);
+    patternManager->thresholdImages();
 }
 
 void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
