@@ -97,6 +97,12 @@ void MainWindow::showPatternsDialog()
 {
     PatternsDialog *patternsDialog = new PatternsDialog(this, glWidget);
     patternsDialog->setWindowFlags(patternsDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    patternsDialog->addAction(ui->actionFullscreen);
+    patternsDialog->addAction(ui->actionZoomActualSize);
+    patternsDialog->addAction(ui->actionZoomFit);
+    patternsDialog->addAction(ui->actionZoomIn);
+    patternsDialog->addAction(ui->actionZoomOut);
+
     int dialogResult = patternsDialog->exec();
     delete patternsDialog;
 
