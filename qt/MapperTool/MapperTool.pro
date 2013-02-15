@@ -18,6 +18,7 @@ SOURCES += \
     glwidget.cpp \
     unitmapdialog.cpp \
     mapmanager.cpp \
+    mapoperations.cpp \
     displaytexturemanager.cpp \
     generatedimage.cpp \
     patternmanager.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     glwidget.h \
     unitmapdialog.h \
     mapmanager.h \
+    mapoperations.h \
     displaytexturemanager.h \
     generatedimage.h \
     threadSafeQueue.h \
