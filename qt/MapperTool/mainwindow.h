@@ -47,6 +47,7 @@ private slots:
     void showAboutDialog();
     void showUnitmapDialog();
     void showPatternsDialog();
+    void showInverseDialog();
 
     void fileRevert();
     void fileOpen();

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InverseDialog</class>
+ <widget class="QDialog" name="InverseDialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>275</width>
+    <height>167</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>275</width>
+    <height>167</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>275</width>
+    <height>167</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Create inverse from current map</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>120</y>
+     <width>241</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditWidth">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>56</y>
+     <width>51</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="maxLength">
+    <number>4</number>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditHeight">
+   <property name="geometry">
+    <rect>
+     <x>205</x>
+     <y>56</y>
+     <width>51</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="maxLength">
+    <number>4</number>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelPresets">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Preset:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelWidth">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>60</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Width:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelHeight">
+   <property name="geometry">
+    <rect>
+     <x>145</x>
+     <y>60</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Height:</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboPresets">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>16</y>
+     <width>191</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string comment="auto">Current screen resolution</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="800x600">SGA (800 x 600)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="1024x768">XGA (1024 x 768)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="1280x800">WXGA (1280 x 800)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="1280x720">720p (1280 x 720)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="1920x1080">1080p (1920 x 1080)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="2048x768">Dual XGA (2048 x 768)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="3072x768">Triple XGA (3072 x 768)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="2560x800">Dual WXGA (2560 x 800)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string comment="3840x800">Triple WXGA (3840 x 800)</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QCheckBox" name="checkCentered">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>95</y>
+     <width>241</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Centered patterns</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>InverseDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>InverseDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboPresets</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>InverseDialog</receiver>
+   <slot>selectPreset(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>26</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>124</x>
+     <y>82</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>selectPreset(int)</slot>
+ </slots>
+</ui>

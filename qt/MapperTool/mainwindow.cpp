@@ -2,6 +2,7 @@
 #include "aboutdialog.h"
 #include "unitmapdialog.h"
 #include "patternsdialog.h"
+#include "inversedialog.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -110,6 +111,13 @@ void MainWindow::showPatternsDialog()
         return;
 }
 
+void MainWindow::showInverseDialog()
+{
+    InverseDialog *inverseDialog = new InverseDialog(this);
+    inverseDialog->setWindowFlags(inverseDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    if(!inverseDialog->exec())
+        return;
+}
 
 void MainWindow::fileRevert()
 {

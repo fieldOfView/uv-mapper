@@ -1,11 +1,11 @@
-#include "unitmapdialog.h"
-#include "ui_unitmapdialog.h"
+#include "inversedialog.h"
+#include "ui_inversedialog.h"
 
 #include <QDesktopWidget>
 
-UnitmapDialog::UnitmapDialog(QWidget *parent) :
+InverseDialog::InverseDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::UnitmapDialog)
+    ui(new Ui::InverseDialog)
 {
     ui->setupUi(this);
     ui->lineEditWidth->setValidator(new QIntValidator(1, 8192, this));
@@ -14,12 +14,12 @@ UnitmapDialog::UnitmapDialog(QWidget *parent) :
     selectPreset(0);
 }
 
-UnitmapDialog::~UnitmapDialog()
-{;
+InverseDialog::~InverseDialog()
+{
     delete ui;
 }
 
-void UnitmapDialog::selectPreset(int presetNr)
+void InverseDialog::selectPreset(int presetNr)
 {
     switch(presetNr)
     {
@@ -66,7 +66,7 @@ void UnitmapDialog::selectPreset(int presetNr)
     }
 }
 
-QSize UnitmapDialog::getSizeSetting()
+QSize InverseDialog::getSizeSetting()
 {
     return QSize( ui->lineEditWidth->text().toInt(), ui->lineEditHeight->text().toInt() );
 }

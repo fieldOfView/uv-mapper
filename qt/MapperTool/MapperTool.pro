@@ -23,7 +23,8 @@ SOURCES += \
     patternmanager.cpp \
     mt_graydecoder.cpp \
     patternsdialog.cpp \
-    texturefrommat.cpp
+    texturefrommat.cpp \
+    inversedialog.cpp
 
 HEADERS += \
     mainwindow.h \
@@ -37,13 +38,15 @@ HEADERS += \
     patternmanager.h \
     mt_graydecoder.h \
     patternsdialog.h \
-    texturefrommat.h
+    texturefrommat.h \
+    inversedialog.h
 
 FORMS += \
     mainwindow.ui \
     aboutdialog.ui \
     unitmapdialog.ui \
-    patternsdialog.ui
+    patternsdialog.ui \
+    inversedialog.ui
 
 RESOURCES += \
     resources.qrc

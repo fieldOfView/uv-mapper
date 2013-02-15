@@ -788,6 +788,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCreateInverse</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>showInverseDialog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>toggleFullscreen()</slot>
@@ -804,5 +820,6 @@
   <slot>zoomReset()</slot>
   <slot>zoomToFit()</slot>
   <slot>showPatternsDialog()</slot>
+  <slot>showInverseDialog()</slot>
  </slots>
 </ui>
