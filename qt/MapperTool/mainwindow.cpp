@@ -4,6 +4,8 @@
 #include "patternsdialog.h"
 #include "inversedialog.h"
 
+#include "mapoperations.h"
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
@@ -117,6 +119,12 @@ void MainWindow::showInverseDialog()
     inverseDialog->setWindowFlags(inverseDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
     if(!inverseDialog->exec())
         return;
+
+    MapOperations *mapOperation = new MapOperations(uvMap->getMat());
+    uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), true));
+
+    delete mapOperation;
+    delete inverseDialog;
 }
 
 void MainWindow::fileRevert()

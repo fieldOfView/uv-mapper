@@ -13,11 +13,11 @@ public:
     MapOperations(cv::Mat initialMap);
     ~MapOperations();
 
-    cv::Mat Inverse(QSize size, bool centered);
+    cv::Mat inverse(QSize size, bool centered);
 
-    cv::Mat GuassianBlur(double radius);
-    cv::Mat MedianBlur(int radius);
-    cv::Mat Despeckle();
+    cv::Mat guassianBlur(double radius);
+    cv::Mat medianBlur(int radius);
+    cv::Mat despeckle();
 
 private:
     cv::Mat map;
