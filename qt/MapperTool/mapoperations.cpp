@@ -12,36 +12,47 @@ MapOperations::~MapOperations()
 
 cv::Mat MapOperations::inverse(QSize size, bool centered)
 {
-    cv::Mat newMap(size.width(), size.height(), map.type());
-
+    cv::Mat newMap = cv::Mat::zeros(size.height(), size.width(), CV_16UC4);
 
     const int channels = map.channels();
+    const uint mapCols = map.cols;
+    const uint mapRows = map.rows;
 
     uint x,y;
-    uint mapCols = map.cols;
-    uint mapRows = map.rows;
 
-    for(x=0; x<mapCols; x++) {
-        for (y=0; y<mapRows; y++) {
-            qDebug() << x << " | " << y;
-            uint u,v,a;
+    for (y=0; y<mapRows; y++) {
+        for(x=0; x<mapCols; x++) {
+            int u,v,a;
             if(channels == 3) {
                 cv::Vec3s mapPixel = map.at<cv::Vec3s>(x,y);
-                u = mapPixel[0]*size.width()/65536;
-                v = mapPixel[1]*size.height()/65536;
+                // CV stores pixels in BGR order
+                u = ((unsigned long)mapPixel[2]*(unsigned long)size.width()) >> 16;
+                v = ((unsigned long)mapPixel[1]*(unsigned long)size.height()) >> 16;
                 a = -1;
             } else {
-                cv::Vec4s mapPixel = map.at<cv::Vec4s>(x,y);
-                u = mapPixel[0]*size.width()/65536;
-                v = mapPixel[1]*size.height()/65536;
+                cv::Vec4s mapPixel = map.at<cv::Vec4s>(y,x);
+                // CV stores pixels in BGR order
+                u = mapPixel[2]*size.width() >> 16;
+                v = mapPixel[1]*size.height() >> 16;
                 a = mapPixel[3];
             }
-            /*
-            cv::Vec4s newMapPixel = newMap.at<cv::Vec4s>(u,v);
+            if(u<0) u=size.width()+u;
+            if(v<0) v=size.height()+v;
+
+            cv::Vec4s &newMapPixel = newMap.at<cv::Vec4s>(v,u);
             if((uint)newMapPixel[3] < a) {
-                newMap.at<cv::Vec4s>(u,v) = cv::Vec4s(x*65536/mapCols, y*65536/mapRows, 0, a);
+                int newX = (x << 16) / mapCols;
+                int newY = (y << 16) / mapRows;
+
+                if(newX<0) newX=mapCols+newX;
+                if(newY<0) newY=mapRows+newY;
+
+                newMapPixel[0] = 0;
+                newMapPixel[1] = newY;
+                newMapPixel[2] = newX;
+                newMapPixel[3] = a;
             }
-            */
+
         }
     }
 

@@ -122,6 +122,7 @@ void MainWindow::showInverseDialog()
 
     MapOperations *mapOperation = new MapOperations(uvMap->getMat());
     uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), true));
+    glWidget->setMapTexture(uvMap->getTexture());
 
     delete mapOperation;
     delete inverseDialog;
