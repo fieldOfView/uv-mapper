@@ -47,6 +47,8 @@ kernel uvmapper <
 	// and sample the color at that coordinate
 	void evaluatePixel(){ 
 		pixel4 uv = sampleNearest( map, outCoord() ); 
+		// Fix for PixelBender Kernel Accelerator, which has red and blue channels swapped
+		uv.r = max( uv.r, uv.b );
 		
 		result = sampleLinear( texture, uv.rg * ( textureSize - pixelSize( texture )));
 		result.a *= uv.a;

@@ -6,6 +6,11 @@ The UV Mapper Tools were created to provide an alternative to classic projection
 
 An Adobe Pixel Bender kernel which can be used to apply UV Maps to video content in Adobe After Effects. Given sufficiently capable hardware, the Pixel Bender kernel is executed on the GPU with realtime performance. Pixel Bender support requires After Effects CS4 or newer.
 
+Adobe has abandoned Pixel Bender in After Effects CS6. Fortunately there's a third party plugin available that converts Pixel Bender kernels to GLSL on the fly so you can still use them in After Effects, with hardware acceleration:
+http://aescripts.com/pixel-bender-kernel-accelerator/
+
+Note that the After Effects composition must be set to use 16 bit per channel colordepth, or imported UV maps will loose their 16 bit precision and the results will look pixelated. 
+
 Installation
 ------------
 * Copy the uv-mapper.pbk file to [your profile folder]/Documents/Adobe/Pixel Bender
