@@ -8,20 +8,25 @@
 #include "mt_graydecoder.h"
 #include "threadSafeQueue.h"
 
-class PatternManager : QObject
+class PatternManager : public QObject
 {
     Q_OBJECT
 public:
     PatternManager();
+    void clearOriginalPatterns();
     bool loadFiles( QStringList fileNames);
     bool thresholdImages();
     //bool save( QString fileName = NULL );
 
+    cv::Mat* getMat(int index);
     GLuint getTexture(int index);
 
 public slots:
-    void fileLoaded();
+    void fileLoadFinished();
 
+signals:
+    void fileLoaded(int index);
+    void patternSetSizeSet(int index);
 
 private:
 
