@@ -22,14 +22,14 @@ signals:
 
     
 private:
-    Ui::PatternsDialog *ui;
+    Ui::PatternsDialog *m_ui;
 
-    GLWidget *glWidget;
-    PatternManager *patternManager;
+    GLWidget *m_glWidget;
+    PatternManager *m_patternManager;
 
-    QString dataPath;
+    QString m_dataPath;
 
-    GLuint texture;
+    GLuint m_texture;
 
 private slots:
     void selectPatterns();

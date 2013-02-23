@@ -7,7 +7,7 @@ GeneratedImage::GeneratedImage()
 GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
 {
     // fbo and painter
-    fbo = new QGLFramebufferObject(size, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, internalFormat);
+    m_fbo = new QGLFramebufferObject(size, QGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, internalFormat);
 
     // shaders
     QGLShader *vshader = new QGLShader(QGLShader::Vertex);
@@ -16,17 +16,17 @@ GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
     QGLShader *fshader = new QGLShader(QGLShader::Fragment);
     fshader->compileSourceFile(":/glsl/gradient_frag.glsl");
 
-    gradientProgram = new QGLShaderProgram();
-    gradientProgram->addShader(vshader);
-    gradientProgram->addShader(fshader);
-    gradientProgram->link();
+    m_gradientProgram = new QGLShaderProgram();
+    m_gradientProgram->addShader(vshader);
+    m_gradientProgram->addShader(fshader);
+    m_gradientProgram->link();
 
     fshader->compileSourceFile(":/glsl/testGrid_frag.glsl");
 
-    gridProgram = new QGLShaderProgram();
-    gridProgram->addShader(vshader);
-    gridProgram->addShader(fshader);
-    gridProgram->link();
+    m_gridProgram = new QGLShaderProgram();
+    m_gridProgram->addShader(vshader);
+    m_gridProgram->addShader(fshader);
+    m_gridProgram->link();
 
     delete fshader;
     delete vshader;
@@ -36,14 +36,14 @@ GeneratedImage::GeneratedImage(QSize size, GLenum internalFormat)
 
 GeneratedImage::~GeneratedImage()
 {
-    delete fbo;
-    delete gradientProgram;
-    delete gridProgram;
+    delete m_fbo;
+    delete m_gradientProgram;
+    delete m_gridProgram;
 }
 
 GLuint GeneratedImage::getTexture()
 {
-    return fbo->texture();
+    return m_fbo->texture();
 }
 
 cv::Mat GeneratedImage::getMat()
@@ -54,65 +54,65 @@ cv::Mat GeneratedImage::getMat()
 
 void GeneratedImage::drawGradient( QColor topLeft, QColor topRight, QColor bottomLeft, QColor bottomRight )
 {
-    gradientProgram->bind();
+    m_gradientProgram->bind();
 
-    gradientProgram->setUniformValue("colorTL",QVector3D( topLeft.redF(), topLeft.greenF(), topLeft.blueF() ));
-    gradientProgram->setUniformValue("colorTR",QVector3D( topRight.redF(), topRight.greenF(), topRight.blueF() ));
-    gradientProgram->setUniformValue("colorBL",QVector3D( bottomLeft.redF(), bottomLeft.greenF(), bottomLeft.blueF() ));
-    gradientProgram->setUniformValue("colorBR",QVector3D( bottomRight.redF(), bottomRight.greenF(), bottomRight.blueF() ));
+    m_gradientProgram->setUniformValue("colorTL",QVector3D( topLeft.redF(), topLeft.greenF(), topLeft.blueF() ));
+    m_gradientProgram->setUniformValue("colorTR",QVector3D( topRight.redF(), topRight.greenF(), topRight.blueF() ));
+    m_gradientProgram->setUniformValue("colorBL",QVector3D( bottomLeft.redF(), bottomLeft.greenF(), bottomLeft.blueF() ));
+    m_gradientProgram->setUniformValue("colorBR",QVector3D( bottomRight.redF(), bottomRight.greenF(), bottomRight.blueF() ));
 
     drawRect();
 
-    gradientProgram->release();
+    m_gradientProgram->release();
 }
 
 void GeneratedImage::drawGrid( QColor background, QColor lineColor, int cells, float lineWidth )
 {
-    gridProgram->bind();
+    m_gridProgram->bind();
 
-    gridProgram->setUniformValue("colorBG",QVector3D( background.redF(), background.greenF(), background.blueF() ));
-    gridProgram->setUniformValue("colorFG",QVector3D( lineColor.redF(), lineColor.greenF(), lineColor.blueF() ));
-    gridProgram->setUniformValue("width", lineWidth);
-    gridProgram->setUniformValue("cells", (float)cells);
+    m_gridProgram->setUniformValue("colorBG",QVector3D( background.redF(), background.greenF(), background.blueF() ));
+    m_gridProgram->setUniformValue("colorFG",QVector3D( lineColor.redF(), lineColor.greenF(), lineColor.blueF() ));
+    m_gridProgram->setUniformValue("width", lineWidth);
+    m_gridProgram->setUniformValue("cells", (float)cells);
 
     drawRect();
 
-    gradientProgram->release();
+    m_gradientProgram->release();
 }
 
 void GeneratedImage::drawRect()
 {
-    fbo->bind();
+    m_fbo->bind();
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glViewport(0, 0, fbo->size().width(), fbo->size().height());
+    glViewport(0, 0, m_fbo->size().width(), m_fbo->size().height());
 
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -10.0f);
 
-    glVertexPointer(3, GL_FLOAT, 0, vertices.constData());
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.constData());
+    glVertexPointer(3, GL_FLOAT, 0, m_vertices.constData());
+    glTexCoordPointer(2, GL_FLOAT, 0, m_texCoords.constData());
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 
-    fbo->release();
+    m_fbo->release();
 }
 
 void GeneratedImage::makeObject()
 {
-    texCoords.clear();
-    vertices.clear();
+    m_texCoords.clear();
+    m_vertices.clear();
 
     for (int j = 0; j < 4; ++j) {
         // Note that the texturecoordinates are upside down, because
         // frambufferobjects are somehow drawn to upside down in opengl
-        texCoords.append
+        m_texCoords.append
             (QVector2D(j == 0 || j == 3, j == 0 || j == 1));
-        vertices.append
+        m_vertices.append
             (QVector3D(
                  ((j == 0 || j == 3)?1:-1),
                  ((j == 2 || j == 3)?1:-1),

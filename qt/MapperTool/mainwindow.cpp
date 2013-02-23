@@ -14,58 +14,58 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    m_ui(new Ui::MainWindow)
 {
-    dataPath = settings.value("DataPath").toString();
+    m_dataPath = m_settings.value("DataPath").toString();
 
-    ui->setupUi(this);
+    m_ui->setupUi(this);
 
-    displayActionGroup = new QActionGroup(this);
-    displayActionGroup->addAction(ui->actionDisplayUV);
-    displayActionGroup->addAction(ui->actionDisplayU);
-    displayActionGroup->addAction(ui->actionDisplayV);
-    displayActionGroup->addAction(ui->actionDisplayAlpha);
-    displayActionGroup->addAction(ui->actionDisplayGrid);
-    displayActionGroup->addAction(ui->actionDisplayFile);
-    displayActionGroup->setExclusive(true);
+    m_displayActionGroup = new QActionGroup(this);
+    m_displayActionGroup->addAction(m_ui->actionDisplayUV);
+    m_displayActionGroup->addAction(m_ui->actionDisplayU);
+    m_displayActionGroup->addAction(m_ui->actionDisplayV);
+    m_displayActionGroup->addAction(m_ui->actionDisplayAlpha);
+    m_displayActionGroup->addAction(m_ui->actionDisplayGrid);
+    m_displayActionGroup->addAction(m_ui->actionDisplayFile);
+    m_displayActionGroup->setExclusive(true);
 
-    transparencyGridActionGroup = new QActionGroup(this);
-    transparencyGridActionGroup->addAction(ui->actionGridNone);
-    transparencyGridActionGroup->addAction(ui->actionGridLight);
-    transparencyGridActionGroup->addAction(ui->actionGridDark);
-    transparencyGridActionGroup->setExclusive(true);
+    m_transparencyGridActionGroup = new QActionGroup(this);
+    m_transparencyGridActionGroup->addAction(m_ui->actionGridNone);
+    m_transparencyGridActionGroup->addAction(m_ui->actionGridLight);
+    m_transparencyGridActionGroup->addAction(m_ui->actionGridDark);
+    m_transparencyGridActionGroup->setExclusive(true);
 
 
     // Connect any actions from the menubar to the root QWidget too,
     // so keyboard shortcuts work when the menuBar is hidden.
     addActions( menuBar()->actions() );
 
-    glWidget = new GLWidget( centralWidget() );
-    connect(glWidget,SIGNAL(initialized()),this,SLOT(initializeApp()));
-    setCentralWidget( glWidget );
+    m_glWidget = new GLWidget( centralWidget() );
+    connect(m_glWidget,SIGNAL(initialized()),this,SLOT(initializeApp()));
+    setCentralWidget( m_glWidget );
 }
 
 MainWindow::~MainWindow()
 {
-    delete glWidget;
-    delete uvMap;
-    delete displayTexture;
-    //delete ui;
+    delete m_glWidget;
+    delete m_uvMap;
+    delete m_displayTexture;
+    delete m_ui;
 }
 
 void MainWindow::initializeApp()
 {
-    uvMap = new MapManager();
-    displayTexture = new DisplayTextureManager();
+    m_uvMap = new MapManager();
+    m_displayTexture = new DisplayTextureManager();
 
-    displayTexture->makeTexture(DisplayTextureManager::DISPLAY_TYPE_UV);
-    glWidget->setDisplayTexture(displayTexture->getTexture());
+    m_displayTexture->makeTexture(DisplayTextureManager::DISPLAY_TYPE_UV);
+    m_glWidget->setDisplayTexture(m_displayTexture->getTexture());
 
     QRect screenSize = QApplication::desktop()->screenGeometry();
     GeneratedImage* newMap = new GeneratedImage(QSize(screenSize.width(), screenSize.height()), GL_RGBA16);
     newMap->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
-    uvMap->createFromTexture(newMap->getTexture());
-    glWidget->setMapTexture(uvMap->getTexture());
+    m_uvMap->createFromTexture(newMap->getTexture());
+    m_glWidget->setMapTexture(m_uvMap->getTexture());
 
     delete newMap;
 }
@@ -90,21 +90,21 @@ void MainWindow::showUnitmapDialog()
 
     GeneratedImage* newMap = new GeneratedImage(unitmapDialog->getSizeSetting(), GL_RGBA16);
     newMap->drawGradient(QColor("#000000"), QColor("#ff0000"), QColor("#00ff00"), QColor("#ffff00"));
-    uvMap->createFromTexture(newMap->getTexture());
-    glWidget->setMapTexture(uvMap->getTexture());
+    m_uvMap->createFromTexture(newMap->getTexture());
+    m_glWidget->setMapTexture(m_uvMap->getTexture());
 
     delete newMap;
 }
 
 void MainWindow::showPatternsDialog()
 {
-    PatternsDialog *patternsDialog = new PatternsDialog(this, glWidget);
+    PatternsDialog *patternsDialog = new PatternsDialog(this, m_glWidget);
     patternsDialog->setWindowFlags(patternsDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
-    patternsDialog->addAction(ui->actionFullscreen);
-    patternsDialog->addAction(ui->actionZoomActualSize);
-    patternsDialog->addAction(ui->actionZoomFit);
-    patternsDialog->addAction(ui->actionZoomIn);
-    patternsDialog->addAction(ui->actionZoomOut);
+    patternsDialog->addAction(m_ui->actionFullscreen);
+    patternsDialog->addAction(m_ui->actionZoomActualSize);
+    patternsDialog->addAction(m_ui->actionZoomFit);
+    patternsDialog->addAction(m_ui->actionZoomIn);
+    patternsDialog->addAction(m_ui->actionZoomOut);
 
     int dialogResult = patternsDialog->exec();
     delete patternsDialog;
@@ -120,9 +120,9 @@ void MainWindow::showInverseDialog()
     if(!inverseDialog->exec())
         return;
 
-    MapOperations *mapOperation = new MapOperations(uvMap->getMat());
-    uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), true));
-    glWidget->setMapTexture(uvMap->getTexture());
+    MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
+    m_uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), true));
+    m_glWidget->setMapTexture(m_uvMap->getTexture());
 
     delete mapOperation;
     delete inverseDialog;
@@ -130,38 +130,38 @@ void MainWindow::showInverseDialog()
 
 void MainWindow::fileRevert()
 {
-    if(!uvMap->load(""))
+    if(!m_uvMap->load(""))
         fileOpen();
 }
 
 void MainWindow::fileOpen()
 {
-    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), dataPath, "UV Maps (*.png *.tif)" );
+    QString fileName = QFileDialog::getOpenFileName( this, tr("Open UV Map file"), m_dataPath, "UV Maps (*.png *.tif)" );
     if(fileName.isNull() == false)
     {
-        dataPath = QFileInfo(fileName).path();
-        settings.setValue("DataPath", dataPath);
+        m_dataPath = QFileInfo(fileName).path();
+        m_settings.setValue("DataPath", m_dataPath);
 
-        if(uvMap->load(fileName)) {
-            glWidget->setMapTexture( uvMap->getTexture() );
+        if(m_uvMap->load(fileName)) {
+            m_glWidget->setMapTexture( m_uvMap->getTexture() );
         }
     }
 }
 
 void MainWindow::fileSave()
 {
-    if(!uvMap->save(""))
+    if(!m_uvMap->save(""))
         fileSaveAs();
 }
 
 void MainWindow::fileSaveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), dataPath, "UV Maps (*.png *.tif)" );
+    QString fileName = QFileDialog::getSaveFileName( this, tr("Save UV Map as"), m_dataPath, "UV Maps (*.png *.tif)" );
     if(fileName.isNull() == false)
     {
-        uvMap->save(fileName);
-        dataPath = QFileInfo(fileName).path();
-        settings.setValue("DataPath", dataPath);
+        m_uvMap->save(fileName);
+        m_dataPath = QFileInfo(fileName).path();
+        m_settings.setValue("DataPath", m_dataPath);
     }
 }
 
@@ -180,22 +180,22 @@ void MainWindow::toggleFullscreen()
 
 void MainWindow::zoomIn()
 {
-    glWidget->zoomInOut(true);
+    m_glWidget->zoomInOut(true);
 }
 
 void MainWindow::zoomOut()
 {
-    glWidget->zoomInOut(false);
+    m_glWidget->zoomInOut(false);
 }
 
 void MainWindow::zoomReset()
 {
-    glWidget->setZoom(1.0);
+    m_glWidget->setZoom(1.0);
 }
 
 void MainWindow::zoomToFit()
 {
-    glWidget->setZoom(0.0);
+    m_glWidget->setZoom(0.0);
 }
 
 void MainWindow::selectDisplayTexture()
@@ -204,8 +204,8 @@ void MainWindow::selectDisplayTexture()
     if( !action )
         return;
 
-    displayTexture->makeTexture((DisplayTextureManager::DISPLAY_TYPE)displayActionGroup->actions().indexOf(action));
-    glWidget->setDisplayTexture(displayTexture->getTexture());
+    m_displayTexture->makeTexture((DisplayTextureManager::DISPLAY_TYPE)m_displayActionGroup->actions().indexOf(action));
+    m_glWidget->setDisplayTexture(m_displayTexture->getTexture());
 }
 
 void MainWindow::selectTransparencyGrid()
@@ -214,7 +214,7 @@ void MainWindow::selectTransparencyGrid()
     if( !action )
         return;
 
-    glWidget->setTransparencyGrid((GLWidget::TRANSPARENCYGRID_TYPE)transparencyGridActionGroup->actions().indexOf(action));
+    m_glWidget->setTransparencyGrid((GLWidget::TRANSPARENCYGRID_TYPE)m_transparencyGridActionGroup->actions().indexOf(action));
 }
 
 void MainWindow::showAboutDialog()

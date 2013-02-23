@@ -31,13 +31,13 @@ public:
     void createFromTexture( GLuint );
     
 private:
-    QString fileName;
+    QString m_fileName;
 
-    cv::Mat map;
-    GLuint texture;
+    cv::Mat m_map;
+    GLuint m_texture;
 
-    QVector<cv::Mat> history;
-    int historyIndex;
+    QVector<cv::Mat> m_history;
+    int m_historyIndex;
 
     void resetHistory( int fromIndex = 0 );
     void addHistoryState();

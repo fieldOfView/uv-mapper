@@ -3,18 +3,18 @@
 
 MapManager::MapManager()
 {
-    glGenTextures( 1, &texture );
+    glGenTextures( 1, &m_texture );
 }
 
 MapManager::~MapManager()
 {
-    glDeleteTextures( 1, &texture );
+    glDeleteTextures( 1, &m_texture );
 }
 
 
 void MapManager::setMat( cv::Mat newMat )
 {
-    map = newMat.clone();
+    m_map = newMat.clone();
 
     addHistoryState();
     updateTexture();
@@ -22,22 +22,22 @@ void MapManager::setMat( cv::Mat newMat )
 
 cv::Mat MapManager::getMat()
 {
-    return map;
+    return m_map;
 }
 
 QSize MapManager::getSize()
 {
-    return QSize(map.cols, map.rows);
+    return QSize(m_map.cols, m_map.rows);
 }
 
 GLuint MapManager::getTexture()
 {
-    return texture;
+    return m_texture;
 }
 
 void MapManager::updateTexture()
 {
-    makeTextureFromMat(map, texture);
+    makeTextureFromMat(m_map, m_texture);
 }
 
 void MapManager::createFromTexture( GLuint texture )
@@ -83,7 +83,7 @@ void MapManager::createFromTexture( GLuint texture )
                  (depth == CV_8U)?GL_UNSIGNED_BYTE:GL_UNSIGNED_SHORT,
                  newMat.data);
 
-    fileName.clear();
+    m_fileName.clear();
     resetHistory();
 
     setMat(newMat);
@@ -92,8 +92,8 @@ void MapManager::createFromTexture( GLuint texture )
 bool MapManager::load( QString newFileName )
 {
     if( newFileName.isEmpty() ) {
-        newFileName = fileName;
-        if( newFileName.isNull() ) {
+        newFileName = m_fileName;
+        if( newFileName.isEmpty() ) {
             return false;
         }
     }
@@ -116,45 +116,45 @@ bool MapManager::load( QString newFileName )
     }
 
     resetHistory();
-    map = loadedMat;
+    m_map = loadedMat;
 
     addHistoryState();
     updateTexture();
 
-    fileName = newFileName;
+    m_fileName = newFileName;
     return true;
 }
 
 bool MapManager::save( QString newFileName )
 {
     if( newFileName.isEmpty() ) {
-        newFileName = fileName;
-        if( newFileName.isNull() ) {
+        newFileName = m_fileName;
+        if( newFileName.isEmpty() ) {
             return false;
         }
     }
 
-    if( !cv::imwrite( newFileName.toStdString(), map )) {
+    if( !cv::imwrite( newFileName.toStdString(), m_map )) {
         qDebug() << "Could not save map to '" << newFileName << "'.";
         return false;
     }
 
-    fileName = newFileName;
+    m_fileName = newFileName;
     return true;
 }
 
 bool MapManager::undo()
 {
-    if( historyIndex == 0 ) {
+    if( m_historyIndex == 0 ) {
         return false;
     }
 
-    historyIndex--;
-    map = history.at(historyIndex);
+    m_historyIndex--;
+    m_map = m_history.at(m_historyIndex);
 
     updateTexture();
 
-    if( historyIndex == 0 ) {
+    if( m_historyIndex == 0 ) {
         // no more undos available
         return false;
     }
@@ -164,16 +164,16 @@ bool MapManager::undo()
 
 bool MapManager::redo()
 {
-    if( historyIndex == history.count()-1 ) {
+    if( m_historyIndex == m_history.count()-1 ) {
         return false;
     }
 
-    historyIndex++;
-    map = history.at(historyIndex);
+    m_historyIndex++;
+    m_map = m_history.at(m_historyIndex);
 
     updateTexture();
 
-    if( historyIndex == history.count()-1 ) {
+    if( m_historyIndex == m_history.count()-1 ) {
         // no more redos available
         return false;
     }
@@ -183,20 +183,20 @@ bool MapManager::redo()
 
 void MapManager::addHistoryState()
 {
-    if( historyIndex < (history.count()-1) )
-        resetHistory( historyIndex );
+    if( m_historyIndex < (m_history.count()-1) )
+        resetHistory( m_historyIndex );
 
-    history.push_back( map );
-    historyIndex = history.count()-1;
+    m_history.push_back( m_map );
+    m_historyIndex = m_history.count()-1;
 }
 
 void MapManager::resetHistory( int fromIndex )
 {
-    QVectorIterator<cv::Mat> historyItr(history);
+    QVectorIterator<cv::Mat> historyItr(m_history);
     historyItr.toBack();
-    while( historyItr.hasPrevious() && history.count() > fromIndex ) {
+    while( historyItr.hasPrevious() && m_history.count() > fromIndex ) {
         cv::Mat mat = historyItr.previous();
         mat.release();
-        history.pop_back();
+        m_history.pop_back();
     }
 }

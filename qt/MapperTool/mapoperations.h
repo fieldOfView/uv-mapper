@@ -20,7 +20,7 @@ public:
     cv::Mat despeckle();
 
 private:
-    cv::Mat map;
+    cv::Mat m_map;
 };
 
 #endif // MAPOPERATIONS_H

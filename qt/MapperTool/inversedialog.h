@@ -18,7 +18,7 @@ public:
     QSize getSizeSetting();
     
 private:
-    Ui::InverseDialog *ui;
+    Ui::InverseDialog *m_ui;
 
 private slots:
     void selectPreset(int);

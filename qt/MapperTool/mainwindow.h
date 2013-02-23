@@ -27,18 +27,18 @@ protected:
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    QSettings settings;
+    QSettings m_settings;
 
-    Ui::MainWindow *ui;
-    GLWidget *glWidget;
+    Ui::MainWindow *m_ui;
+    GLWidget *m_glWidget;
 
-    MapManager *uvMap;
-    DisplayTextureManager *displayTexture;
+    MapManager *m_uvMap;
+    DisplayTextureManager *m_displayTexture;
 
-    QString dataPath;
+    QString m_dataPath;
 
-    QActionGroup *displayActionGroup;
-    QActionGroup *transparencyGridActionGroup;
+    QActionGroup *m_displayActionGroup;
+    QActionGroup *m_transparencyGridActionGroup;
 
 private slots:
     void initializeApp();

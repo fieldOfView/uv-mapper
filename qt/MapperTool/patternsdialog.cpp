@@ -10,73 +10,73 @@
 
 PatternsDialog::PatternsDialog(QWidget *parent, GLWidget *parentGlWidget) :
     QDialog(parent),
-    ui(new Ui::PatternsDialog),
-    glWidget(parentGlWidget)
+    m_ui(new Ui::PatternsDialog),
+    m_glWidget(parentGlWidget)
 {
-    ui->setupUi(this);
-    connect(ui->listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(selectPatternFromList(int)));
+    m_ui->setupUi(this);
+    connect(m_ui->listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(selectPatternFromList(int)));
 
-    dataPath = "";  // TODO: get from settings
+    m_dataPath = "";  // TODO: get from settings
 
-    glGenTextures(1, &texture);
-    patternManager = new PatternManager();
-    connect(patternManager, SIGNAL(fileLoaded(int)), this, SLOT(fileLoadProgress(int)));
-    connect(patternManager, SIGNAL(patternSetSizeSet(int)), this, SLOT(setProgressDialogMax(int)));
+    glGenTextures(1, &m_texture);
+    m_patternManager = new PatternManager();
+    connect(m_patternManager, SIGNAL(fileLoaded(int)), this, SLOT(fileLoadProgress(int)));
+    connect(m_patternManager, SIGNAL(patternSetSizeSet(int)), this, SLOT(setProgressDialogMax(int)));
 }
 
 PatternsDialog::~PatternsDialog()
 {
-    glWidget->setMode(GLWidget::MODE_UV);
+    m_glWidget->setMode(GLWidget::MODE_UV);
 
-    glDeleteTextures(1, &texture);
-    //delete patternManager;
+    glDeleteTextures(1, &m_texture);
+    //delete m_patternManager;
 }
 
 void PatternsDialog::selectPatterns()
 {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open pattern images"), dataPath, "Images (*.jpg *.tif)");
+    QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open pattern images"), m_dataPath, "Images (*.jpg *.tif)");
 
-    ui->listWidget->clear();
-    ui->listWidget->addItems(fileNames);
-    ui->listWidget->setEnabled(true);
+    m_ui->listWidget->clear();
+    m_ui->listWidget->addItems(fileNames);
+    m_ui->listWidget->setEnabled(true);
 
-    patternManager->clearOriginalPatterns();
-    patternManager->loadFiles(fileNames);
-    patternManager->thresholdImages();
+    m_patternManager->clearOriginalPatterns();
+    m_patternManager->loadFiles(fileNames);
+    m_patternManager->thresholdImages();
 }
 
 void PatternsDialog::selectPatternFromList(int index)
 {
-    texture = makeTextureFromMat(*patternManager->getMat(index), texture);
+    m_texture = makeTextureFromMat(*m_patternManager->getMat(index), m_texture);
 
-    glWidget->setRawTexture(texture);
-    glWidget->repaint();
+    m_glWidget->setRawTexture(m_texture);
+    m_glWidget->repaint();
 }
 
 void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
 {
     QString fileName = listItem->text();
     cv::Mat loadedMat = cv::imread(fileName.toStdString(),CV_LOAD_IMAGE_UNCHANGED);
-    texture = makeTextureFromMat(loadedMat, texture);
+    m_texture = makeTextureFromMat(loadedMat, m_texture);
 
-    glWidget->setRawTexture(texture);
-    glWidget->repaint();
+    m_glWidget->setRawTexture(m_texture);
+    m_glWidget->repaint();
 }
 
 void PatternsDialog::fileLoadProgress(int index) {
     if ( index == 1 ) {
-        ui->progressBar->setEnabled(true);
+        m_ui->progressBar->setEnabled(true);
     }
-    ui->progressBar->setValue(index);
+    m_ui->progressBar->setValue(index);
 
-    if ( index >= ui->progressBar->maximum() ) {
+    if ( index >= m_ui->progressBar->maximum() ) {
 
-        ui->progressBar->setEnabled(false);
+        m_ui->progressBar->setEnabled(false);
     }
     selectPatternFromList(index-1);
 }
 
 void PatternsDialog::setProgressDialogMax(int max) {
     qDebug() << "Max=" << max;
-    ui->progressBar->setMaximum(max);
+    m_ui->progressBar->setMaximum(max);
 }

@@ -18,7 +18,7 @@ public:
     QSize getSizeSetting();
     
 private:
-    Ui::UnitmapDialog *ui;
+    Ui::UnitmapDialog *m_ui;
 
 private slots:
     void selectPreset(int);

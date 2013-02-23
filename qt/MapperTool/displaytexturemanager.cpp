@@ -1,9 +1,9 @@
 #include "displaytexturemanager.h"
 
 DisplayTextureManager::DisplayTextureManager()
-    : generatedImage(0),
-      texture(0),
-      displayType(DISPLAY_TYPE_NULL)
+    : m_generatedImage(0),
+      m_texture(0),
+      m_displayType(DISPLAY_TYPE_NULL)
 {
 }
 
@@ -13,47 +13,47 @@ DisplayTextureManager::~DisplayTextureManager()
 
 GLuint DisplayTextureManager::getTexture()
 {
-    return texture;
+    return m_texture;
 }
 
 void DisplayTextureManager::makeTexture( DISPLAY_TYPE type )
 {
-    if(displayType == type)
+    if(m_displayType == type)
         return;
 
-    displayType = type;
-    if(generatedImage){
-        delete generatedImage;
+    m_displayType = type;
+    if(m_generatedImage){
+        delete m_generatedImage;
     }
 
-    switch(type) {
+    switch(m_displayType) {
     case DISPLAY_TYPE_UV:
-        generatedImage = new GeneratedImage(QSize(256, 256));
-        generatedImage->drawGradient(QColor("#000000"),QColor("#ff0000"),QColor("#00ff00"),QColor("#ffff00"));
+        m_generatedImage = new GeneratedImage(QSize(256, 256));
+        m_generatedImage->drawGradient(QColor("#000000"),QColor("#ff0000"),QColor("#00ff00"),QColor("#ffff00"));
         break;
     case DISPLAY_TYPE_U:
-        generatedImage = new GeneratedImage(QSize(256, 2));
-        generatedImage->drawGradient(QColor("#000000"),QColor("#ffffff"),QColor("#000000"),QColor("#ffffff"));
+        m_generatedImage = new GeneratedImage(QSize(256, 2));
+        m_generatedImage->drawGradient(QColor("#000000"),QColor("#ffffff"),QColor("#000000"),QColor("#ffffff"));
         break;
     case DISPLAY_TYPE_V:
-        generatedImage = new GeneratedImage(QSize(2, 256));
-        generatedImage->drawGradient(QColor("#000000"),QColor("#000000"),QColor("#ffffff"),QColor("#ffffff"));
+        m_generatedImage = new GeneratedImage(QSize(2, 256));
+        m_generatedImage->drawGradient(QColor("#000000"),QColor("#000000"),QColor("#ffffff"),QColor("#ffffff"));
         break;
     case DISPLAY_TYPE_A:
-        generatedImage = new GeneratedImage(QSize(2, 2));
-        generatedImage->drawGradient(QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"));
+        m_generatedImage = new GeneratedImage(QSize(2, 2));
+        m_generatedImage->drawGradient(QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"),QColor("#ffffff"));
         break;
     case DISPLAY_TYPE_GRID:
-        generatedImage = new GeneratedImage(QSize(1024, 1024));
-        generatedImage->drawGrid(QColor("#000000"),QColor("#ffffff"),32,(float)1/8);
+        m_generatedImage = new GeneratedImage(QSize(1024, 1024));
+        m_generatedImage->drawGrid(QColor("#000000"),QColor("#ffffff"),32,(float)1/8);
         break;
     case DISPLAY_TYPE_FILE:
         // TODO
-        //generatedImage = new GeneratedImage(QSize(1024, 1024));
+        //m_generatedImage = new GeneratedImage(QSize(1024, 1024));
         break;
     }
-    if(generatedImage) {
-        texture = generatedImage->getTexture();
+    if(m_generatedImage) {
+        m_texture = m_generatedImage->getTexture();
     }
 }
 

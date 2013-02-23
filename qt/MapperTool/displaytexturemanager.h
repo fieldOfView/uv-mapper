@@ -29,10 +29,10 @@ public:
     bool load( QString fileName );
 
 private:
-    GLuint texture;
+    GLuint m_texture;
 
-    GeneratedImage* generatedImage;
-    DISPLAY_TYPE displayType;
+    GeneratedImage* m_generatedImage;
+    DISPLAY_TYPE m_displayType;
 };
 
 #endif // DISPLAYTEXTUREMANAGER_H

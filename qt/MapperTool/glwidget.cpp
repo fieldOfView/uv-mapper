@@ -44,19 +44,19 @@
 
 GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
     : QGLWidget(parent, shareWidget),
-      mapSize(1,1),rawSize(1,1),
-      mapTexture(0),rawTexture(0),
-      zoomFactor(1.0),
-      transparencyGridType(GRID_LIGHT),
-      uvMapProgram(0), gridProgram(0),
-      displayMode(MODE_UV)
+      m_mapSize(1,1),m_rawSize(1,1),
+      m_mapTexture(0),m_rawTexture(0),
+      m_zoomFactor(1.0),
+      m_transparencyGridType(GRID_LIGHT),
+      m_uvMapProgram(0), m_gridProgram(0),
+      m_displayMode(MODE_UV)
 {
 }
 
 GLWidget::~GLWidget()
 {
-    uvMapProgram = 0;
-    gridProgram = 0;
+    m_uvMapProgram = 0;
+    m_gridProgram = 0;
 }
 
 QSize GLWidget::minimumSizeHint() const
@@ -93,18 +93,18 @@ void GLWidget::initializeGL()
     QGLShader *fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/glsl/uvMap_frag.glsl");
 
-    uvMapProgram = new QGLShaderProgram(this);
-    uvMapProgram->addShader(vshader);
-    uvMapProgram->addShader(fshader);
-    uvMapProgram->link();
+    m_uvMapProgram = new QGLShaderProgram(this);
+    m_uvMapProgram->addShader(vshader);
+    m_uvMapProgram->addShader(fshader);
+    m_uvMapProgram->link();
 
     fshader = new QGLShader(QGLShader::Fragment, this);
     fshader->compileSourceFile(":/glsl/transparencyGrid_frag.glsl");
 
-    gridProgram = new QGLShaderProgram(this);
-    gridProgram->addShader(vshader);
-    gridProgram->addShader(fshader);
-    gridProgram->link();
+    m_gridProgram = new QGLShaderProgram(this);
+    m_gridProgram->addShader(vshader);
+    m_gridProgram->addShader(fshader);
+    m_gridProgram->link();
 
     emit initialized();
 }
@@ -117,8 +117,8 @@ void GLWidget::paintGL()
     glLoadIdentity();
     glTranslatef(0.0f, 0.0f, -10.0f);
 
-    glVertexPointer(3, GL_FLOAT, 0, vertices.constData());
-    glTexCoordPointer(2, GL_FLOAT, 0, texCoords.constData());
+    glVertexPointer(3, GL_FLOAT, 0, m_vertices.constData());
+    glTexCoordPointer(2, GL_FLOAT, 0, m_texCoords.constData());
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -127,49 +127,49 @@ void GLWidget::paintGL()
     glEnable(GL_DEPTH);
     glDepthFunc(GL_ALWAYS);
 
-    if(transparencyGridType != GRID_NONE) {
-        glViewport(0, 0, widgetSize.width(), widgetSize.height());
+    if(m_transparencyGridType != GRID_NONE) {
+        glViewport(0, 0, m_widgetSize.width(), m_widgetSize.height());
 
-        gridProgram->bind();
-        gridProgram->setUniformValue("windowSize", QVector2D((float)widgetSize.width(), (float)widgetSize.height()));
-        gridProgram->setUniformValue("gridSize", 16.0f);
-        switch(transparencyGridType) {
+        m_gridProgram->bind();
+        m_gridProgram->setUniformValue("windowSize", QVector2D((float)m_widgetSize.width(), (float)m_widgetSize.height()));
+        m_gridProgram->setUniformValue("gridSize", 16.0f);
+        switch(m_transparencyGridType) {
         case GRID_LIGHT:
-            gridProgram->setUniformValue("colorA",QVector3D(1.0,1.0,1.0));
-            gridProgram->setUniformValue("colorB",QVector3D(0.8,0.8,0.8));
+            m_gridProgram->setUniformValue("colorA",QVector3D(1.0,1.0,1.0));
+            m_gridProgram->setUniformValue("colorB",QVector3D(0.8,0.8,0.8));
             break;
         case GRID_DARK:
-            gridProgram->setUniformValue("colorA",QVector3D(0.2,0.2,0.2));
-            gridProgram->setUniformValue("colorB",QVector3D(0.4,0.4,0.4));
+            m_gridProgram->setUniformValue("colorA",QVector3D(0.2,0.2,0.2));
+            m_gridProgram->setUniformValue("colorB",QVector3D(0.4,0.4,0.4));
             break;
         }
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        gridProgram->release();
+        m_gridProgram->release();
     }
 
-    glViewport(viewport.left(), viewport.top(), viewport.width(), viewport.height());
+    glViewport(m_viewport.left(), m_viewport.top(), m_viewport.width(), m_viewport.height());
 
-    switch(displayMode) {
+    switch(m_displayMode) {
     case MODE_UV:
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, mapTexture);
+        glBindTexture(GL_TEXTURE_2D, m_mapTexture);
 
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, displayTexture);
+        glBindTexture(GL_TEXTURE_2D, m_displayTexture);
 
-        uvMapProgram->bind();
-        uvMapProgram->setUniformValue("mapTex", 0);
-        uvMapProgram->setUniformValue("displayTex", 1);
+        m_uvMapProgram->bind();
+        m_uvMapProgram->setUniformValue("mapTex", 0);
+        m_uvMapProgram->setUniformValue("displayTex", 1);
         break;
     case MODE_RAW:
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, rawTexture);
+        glBindTexture(GL_TEXTURE_2D, m_rawTexture);
     }
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    if(displayMode == MODE_UV) {
-        uvMapProgram->release();
+    if(m_displayMode == MODE_UV) {
+        m_uvMapProgram->release();
     }
 
     glDisable(GL_BLEND);
@@ -178,39 +178,39 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int width, int height)
 {
-    widgetSize = QSize(width,height);
+    m_widgetSize = QSize(width,height);
     setViewport();
 }
 
 void GLWidget::setViewport()
 {
-    QSize textureSize = (displayMode == MODE_UV)?mapSize:rawSize;
+    QSize textureSize = (m_displayMode == MODE_UV)?m_mapSize:m_rawSize;
 
     double aspectRatio = (double)textureSize.width()/(double)textureSize.height();
 
     int side;
     double factor;
-    if(aspectRatio >= (double)widgetSize.width() / (double)widgetSize.height()) {
-        side = (int)((double)widgetSize.width()/aspectRatio);
-        viewport = QRect(0, (widgetSize.height() - side)/2, widgetSize.width(), side);
-        factor = (double)textureSize.width()/(double)widgetSize.width();
+    if(aspectRatio >= (double)m_widgetSize.width() / (double)m_widgetSize.height()) {
+        side = (int)((double)m_widgetSize.width()/aspectRatio);
+        m_viewport = QRect(0, (m_widgetSize.height() - side)/2, m_widgetSize.width(), side);
+        factor = (double)textureSize.width()/(double)m_widgetSize.width();
     } else {
-        side = (int)((double)widgetSize.height()*aspectRatio);
-        viewport = QRect((widgetSize.width() - side)/2, 0, side, widgetSize.height());
-        factor = (double)textureSize.height()/(double)widgetSize.height();
+        side = (int)((double)m_widgetSize.height()*aspectRatio);
+        m_viewport = QRect((m_widgetSize.width() - side)/2, 0, side, m_widgetSize.height());
+        factor = (double)textureSize.height()/(double)m_widgetSize.height();
     }
-    factor*=zoomFactor;
+    factor*=m_zoomFactor;
 
     if(factor != 0.0) {
-        QSize size = viewport.size() * factor;
-        viewport.translate(QPoint((viewport.width()-size.width())/2, (viewport.height()-size.height())/2));
-        viewport.setSize(size);
+        QSize size = m_viewport.size() * factor;
+        m_viewport.translate(QPoint((m_viewport.width()-size.width())/2, (m_viewport.height()-size.height())/2));
+        m_viewport.setSize(size);
     }
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    lastPos = event->pos();
+    m_lastPos = event->pos();
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -221,7 +221,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     if (event->buttons() & Qt::LeftButton) {
         // handle dragging
     }
-    //lastPos = event->pos();
+    //m_lastPos = event->pos();
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
@@ -231,13 +231,13 @@ void GLWidget::mouseReleaseEvent(QMouseEvent * /* event */)
 
 void GLWidget::makeObject()
 {
-    texCoords.clear();
-    vertices.clear();
+    m_texCoords.clear();
+    m_vertices.clear();
 
     for (int j = 0; j < 4; ++j) {
-        texCoords.append
+        m_texCoords.append
             (QVector2D(j == 0 || j == 3, j == 2 || j == 3));
-        vertices.append
+        m_vertices.append
             (QVector3D(
                  ((j == 0 || j == 3)?1:-1),
                  ((j == 2 || j == 3)?1:-1),
@@ -253,8 +253,8 @@ void GLWidget::setMapTexture(GLuint texture)
     glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_WIDTH,&width);
     glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_HEIGHT,&height);
 
-    mapTexture = texture;
-    mapSize = QSize(width, height);
+    m_mapTexture = texture;
+    m_mapSize = QSize(width, height);
 
     setViewport();
     repaint();
@@ -262,19 +262,19 @@ void GLWidget::setMapTexture(GLuint texture)
 
 void GLWidget::setDisplayTexture(GLuint texture)
 {
-    displayTexture = texture;
+    m_displayTexture = texture;
     repaint();
 }
 
 void GLWidget::setTransparencyGrid(TRANSPARENCYGRID_TYPE type)
 {
-    transparencyGridType = type;
+    m_transparencyGridType = type;
     repaint();
 }
 
 void GLWidget::setMode(DISPLAY_MODE mode)
 {
-    displayMode = mode;
+    m_displayMode = mode;
 
     setViewport();
     paintGL();
@@ -287,15 +287,15 @@ void GLWidget::setRawTexture(GLuint texture)
     glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_WIDTH,&width);
     glGetTexLevelParameteriv(GL_TEXTURE_2D,0,GL_TEXTURE_HEIGHT,&height);
 
-    rawTexture = texture;
-    rawSize = QSize(width, height);
+    m_rawTexture = texture;
+    m_rawSize = QSize(width, height);
 
     setMode(MODE_RAW);
 }
 
 void GLWidget::setZoom(double zoom)
 {
-    zoomFactor = zoom;
+    m_zoomFactor = zoom;
     setViewport();
 
     repaint();
@@ -303,10 +303,10 @@ void GLWidget::setZoom(double zoom)
 
 void GLWidget::zoomInOut(bool in)
 {
-    if(zoomFactor == 0) {
-        zoomFactor = 1;
+    if(m_zoomFactor == 0) {
+        m_zoomFactor = 1;
     }
-    zoomFactor *= (in)?1.25:0.8;
+    m_zoomFactor *= (in)?1.25:0.8;
     setViewport();
 
     repaint();

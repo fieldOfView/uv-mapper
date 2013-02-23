@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'patternsdialog.ui'
 **
-** Created: Mon Feb 11 17:10:20 2013
+** Created: Sat Feb 23 13:29:38 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -170,7 +170,6 @@ public:
         retranslateUi(PatternsDialog);
         QObject::connect(rejectButton, SIGNAL(clicked()), PatternsDialog, SLOT(reject()));
         QObject::connect(selectPatternsButton, SIGNAL(clicked()), PatternsDialog, SLOT(selectPatterns()));
-        QObject::connect(listWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)), PatternsDialog, SLOT(selectPatternFromList(QListWidgetItem*)));
 
         channelList->setCurrentIndex(0);
 

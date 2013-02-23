@@ -97,26 +97,26 @@
      void makeObject();
      void setViewport();
 
-     DISPLAY_MODE displayMode;
-     GLuint rawTexture;
-     QSize rawSize;
+     DISPLAY_MODE m_displayMode;
+     GLuint m_rawTexture;
+     QSize m_rawSize;
 
-     GLuint mapTexture;
-     QSize mapSize;
-     GLuint displayTexture;
+     GLuint m_mapTexture;
+     QSize m_mapSize;
+     GLuint m_displayTexture;
 
-     QVector<QVector3D> vertices;
-     QVector<QVector2D> texCoords;
+     QVector<QVector3D> m_vertices;
+     QVector<QVector2D> m_texCoords;
 
-     QSize widgetSize;
-     QRect viewport;
-     double zoomFactor;
+     QSize m_widgetSize;
+     QRect m_viewport;
+     double m_zoomFactor;
 
-     TRANSPARENCYGRID_TYPE transparencyGridType;
-     QPoint lastPos;
+     TRANSPARENCYGRID_TYPE m_transparencyGridType;
+     QPoint m_lastPos;
 
-     QGLShaderProgram *uvMapProgram;
-     QGLShaderProgram *gridProgram;
+     QGLShaderProgram *m_uvMapProgram;
+     QGLShaderProgram *m_gridProgram;
  };
 
  #endif

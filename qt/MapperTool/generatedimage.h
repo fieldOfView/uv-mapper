@@ -22,12 +22,12 @@ public:
     void drawGrid( QColor background, QColor lineColor, int cells, float lineWidth );
 
 private:
-    QGLFramebufferObject *fbo;
-    QGLShaderProgram *gradientProgram;
-    QGLShaderProgram *gridProgram;
+    QGLFramebufferObject *m_fbo;
+    QGLShaderProgram *m_gradientProgram;
+    QGLShaderProgram *m_gridProgram;
 
-    QVector<QVector3D> vertices;
-    QVector<QVector2D> texCoords;
+    QVector<QVector3D> m_vertices;
+    QVector<QVector2D> m_texCoords;
 
     void drawRect();
     void makeObject();
