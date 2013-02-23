@@ -17,6 +17,9 @@ class PatternsDialog : public QDialog
 public:
     explicit PatternsDialog(QWidget *parent = 0, GLWidget *glWidget = 0);
     ~PatternsDialog();
+
+signals:
+
     
 private:
     Ui::PatternsDialog *ui;
@@ -31,6 +34,9 @@ private:
 private slots:
     void selectPatterns();
     void selectPatternFromList(QListWidgetItem *listItem);
+    void selectPatternFromList(int index);
+    void fileLoadProgress(int index);
+    void setProgressDialogMax(int max);
 };
 
 #endif // PATTERNSDIALOG_H

@@ -12,6 +12,16 @@ PatternManager::PatternManager()
     }*/
 }
 
+void PatternManager::clearOriginalPatterns() {
+
+    QVectorIterator<cv::Mat*> it(m_originalPatterns);
+    while ( it.hasNext() ) {
+
+        delete it.next();
+    }
+    m_originalPatterns.clear();
+}
+
 bool PatternManager::loadFiles(QStringList fileNames) {
 
     if (!m_mtWatchers.isEmpty()) {
@@ -19,12 +29,13 @@ bool PatternManager::loadFiles(QStringList fileNames) {
         return false;
     }
 
+    emit patternSetSizeSet(fileNames.size());
     QStringListIterator it(fileNames);
     while ( it.hasNext() ) {
         QString fileName = it.next();
         QFutureWatcher<cv::Mat*>* mtWatcher = new QFutureWatcher<cv::Mat*>();
         //this doesn't work because of the while loop at the end
-        QObject::connect(mtWatcher, SIGNAL(finished()), this, SLOT(fileLoaded()));
+        QObject::connect(mtWatcher, SIGNAL(finished()), this, SLOT(fileLoadFinished()));
 
         //class method only works with internal member methods (not static so you need an instance)
         //see thresholdImage
@@ -35,25 +46,36 @@ bool PatternManager::loadFiles(QStringList fileNames) {
         QFuture<cv::Mat*> fileLoader = QtConcurrent::run(mt_grayDecoder::loadFile, fileName.toStdString());
 
         mtWatcher->setFuture(fileLoader);
-        m_mtWatchers.enqueue(mtWatcher);
+        //m_mtWatchers.enqueue(mtWatcher);
         qDebug() << "file "<< fileName << " loading";
     }
 
     //This while loop is blocking any signalling QT wants to do so no Signals are parsed
-    while(!m_mtWatchers.isEmpty()) {
+    /*while(!m_mtWatchers.isEmpty()) {
         QFutureWatcher<cv::Mat*>* watch = m_mtWatchers.dequeue();
         qDebug() << watch->isRunning();
         cv::Mat* t = watch->result();
         this->m_originalPatterns.push_back(watch->result());
         qDebug("file loaded");
         delete watch;
-    }
+    }*/
     return true;
 }
 
-void PatternManager::fileLoaded() {//cv::Mat *file) {
+cv::Mat* PatternManager::getMat(int index) {
+
+    return m_originalPatterns.at(index);
+}
+
+void PatternManager::fileLoadFinished() {//cv::Mat *file) {
     //this->m_originalPatterns.push_back(file);
     qDebug("file loaded signal");
+    //QProgressBar* watcher2 = qobject_cast<QProgressBar*>(QObject::sender());
+    QFutureWatcher<cv::Mat*>* watcher = static_cast<QFutureWatcher<cv::Mat*>*>(QObject::sender());
+    this->m_originalPatterns.push_back(watcher->result());
+    //Do I need to delete the watcher now???
+    delete watcher;
+    emit fileLoaded(this->m_originalPatterns.size());
 }
 
 bool PatternManager::thresholdImages()

@@ -1,6 +1,6 @@
 #include "texturefrommat.h"
 
-GLuint makeTextureFromMat(cv::Mat mat, GLuint texture)
+GLuint makeTextureFromMat(cv::Mat& mat, GLuint texture)
 {
     GLenum type, format;
 

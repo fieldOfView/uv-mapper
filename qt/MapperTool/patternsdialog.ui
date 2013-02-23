@@ -254,22 +254,6 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>listWidget</sender>
-   <signal>currentItemChanged(QListWidgetItem*,QListWidgetItem*)</signal>
-   <receiver>PatternsDialog</receiver>
-   <slot>selectPatternFromList(QListWidgetItem*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>149</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>164</x>
-     <y>149</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
   <slot>selectPatterns()</slot>

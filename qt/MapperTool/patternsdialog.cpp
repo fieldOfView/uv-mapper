@@ -14,11 +14,14 @@ PatternsDialog::PatternsDialog(QWidget *parent, GLWidget *parentGlWidget) :
     glWidget(parentGlWidget)
 {
     ui->setupUi(this);
+    connect(ui->listWidget, SIGNAL(currentRowChanged(int)), this, SLOT(selectPatternFromList(int)));
 
     dataPath = "";  // TODO: get from settings
 
     glGenTextures(1, &texture);
     patternManager = new PatternManager();
+    connect(patternManager, SIGNAL(fileLoaded(int)), this, SLOT(fileLoadProgress(int)));
+    connect(patternManager, SIGNAL(patternSetSizeSet(int)), this, SLOT(setProgressDialogMax(int)));
 }
 
 PatternsDialog::~PatternsDialog()
@@ -37,8 +40,17 @@ void PatternsDialog::selectPatterns()
     ui->listWidget->addItems(fileNames);
     ui->listWidget->setEnabled(true);
 
+    patternManager->clearOriginalPatterns();
     patternManager->loadFiles(fileNames);
     patternManager->thresholdImages();
+}
+
+void PatternsDialog::selectPatternFromList(int index)
+{
+    texture = makeTextureFromMat(*patternManager->getMat(index), texture);
+
+    glWidget->setRawTexture(texture);
+    glWidget->repaint();
 }
 
 void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
@@ -51,4 +63,20 @@ void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
     glWidget->repaint();
 }
 
+void PatternsDialog::fileLoadProgress(int index) {
+    if ( index == 1 ) {
+        ui->progressBar->setEnabled(true);
+    }
+    ui->progressBar->setValue(index);
 
+    if ( index >= ui->progressBar->maximum() ) {
+
+        ui->progressBar->setEnabled(false);
+    }
+    selectPatternFromList(index-1);
+}
+
+void PatternsDialog::setProgressDialogMax(int max) {
+    qDebug() << "Max=" << max;
+    ui->progressBar->setMaximum(max);
+}
