@@ -16,23 +16,50 @@ cv::Mat* mt_grayDecoder::loadFile(std::string filepath)
     cv::Mat* loadPtr = new cv::Mat();
     *loadPtr = cv::imread(filepath, CV_LOAD_IMAGE_UNCHANGED);
     return loadPtr;
-
-    //cv::Mat bla  = cv::imread(filepath, CV_LOAD_IMAGE_UNCHANGED);
-    //return &bla
 }
 
-cv::Mat* mt_grayDecoder::findExtremePixels(std::vector<cv::Mat *> *originals) {
-
+cv::Mat* mt_grayDecoder::findExtremeMinPixels(std::vector<cv::Mat*>* originals)
+{
     std::cout << "Do findExtremePixels\n";
-    cv::Mat *dummy;
-    return dummy;
+    //we start at image 3 just because Aldo says so :)
+    //copy image 3 to the min and max Mat
+    cv::Mat* min = new cv::Mat();
+    *min = originals->at(2)->clone();
+    for( int i = 3; i < originals->size(); i++ ) {
+        cv::min(*min, *originals->at(i), *min);
+    }
+    return min;
+}
+
+cv::Mat* mt_grayDecoder::findExtremeMaxPixels(std::vector<cv::Mat*>* originals)
+{
+    std::cout << "Do findExtremePixels\n";
+    //we start at image 3 just because Aldo says so :)
+    //copy image 3 to the min and max Mat
+    cv::Mat* max = new cv::Mat();
+    *max = originals->at(2)->clone();
+    for( int i = 3; i < originals->size(); i++ ) {
+        cv::max(*max, *originals->at(i), *max);
+    }
+    return max;
+}
+
+cv::Mat* mt_grayDecoder::findExtremeMinMaxDiffPixels(cv::Mat& min, cv::Mat& max)
+{
+    cv::Mat* diff = new cv::Mat();
+    //substract the final min from max to get the diff
+    cv::subtract(max, min, *diff);
+    return diff;
 }
 
 cv::Mat* mt_grayDecoder::thresholdImage(cv::Mat *img) {
 
     std::cout << "Do thresholdImage\n";
-    cv::Mat *dummy;
-    return dummy;
+    cv::Mat gray;
+    cv::Mat* thresPtr = new cv::Mat();
+    cv::cvtColor( *img, gray, CV_RGB2GRAY );
+    cv::threshold( gray, *thresPtr, 0, 255, CV_THRESH_BINARY);
+    return thresPtr;
 }
 
 cv::Mat* mt_grayDecoder::thresholdedImagesToGrayCode(std::vector<cv::Mat *> *thresholded) {
