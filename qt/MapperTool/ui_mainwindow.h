@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Sat Feb 23 13:29:38 2013
+** Created: Fri Mar 1 15:59:54 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -93,10 +93,8 @@ public:
         actionExit->setObjectName(QString::fromUtf8("actionExit"));
         actionEditUndo = new QAction(MainWindow);
         actionEditUndo->setObjectName(QString::fromUtf8("actionEditUndo"));
-        actionEditUndo->setEnabled(false);
         actionEditRedo = new QAction(MainWindow);
         actionEditRedo->setObjectName(QString::fromUtf8("actionEditRedo"));
-        actionEditRedo->setEnabled(false);
         actionCreateUnit = new QAction(MainWindow);
         actionCreateUnit->setObjectName(QString::fromUtf8("actionCreateUnit"));
         actionCreateFromPatterns = new QAction(MainWindow);
@@ -262,6 +260,8 @@ public:
         QObject::connect(actionZoomFit, SIGNAL(triggered()), MainWindow, SLOT(zoomToFit()));
         QObject::connect(actionCreateFromPatterns, SIGNAL(triggered()), MainWindow, SLOT(showPatternsDialog()));
         QObject::connect(actionCreateInverse, SIGNAL(triggered()), MainWindow, SLOT(showInverseDialog()));
+        QObject::connect(actionEditUndo, SIGNAL(triggered()), MainWindow, SLOT(editUndo()));
+        QObject::connect(actionEditRedo, SIGNAL(triggered()), MainWindow, SLOT(editRedo()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

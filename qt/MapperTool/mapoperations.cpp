@@ -10,7 +10,7 @@ MapOperations::~MapOperations()
 {
 }
 
-cv::Mat MapOperations::inverse(QSize size, bool centered)
+cv::Mat MapOperations::inverse(QSize size, uint bits, bool centered)
 {
     cv::Mat newMap = cv::Mat::zeros(size.height(), size.width(), CV_16UC4);
 
@@ -18,41 +18,47 @@ cv::Mat MapOperations::inverse(QSize size, bool centered)
     const uint mapCols = m_map.cols;
     const uint mapRows = m_map.rows;
 
+    const uint powerOf2Size = (uint)pow( 2., (double)bits );
+
+    double uvMultiplier = (double)powerOf2Size / 65536.0;
+    QPoint uvOffset;
+    if(centered)
+        uvOffset = (QPoint(powerOf2Size, powerOf2Size) - QPoint(size.width(), size.height())) / 2;
+    else
+        uvOffset = QPoint(0,0);
+
     uint x,y;
+    ushort u,v,a;
+    cv::Vec3w mapPixel;
 
     for (y=0; y<mapRows; y++) {
         for(x=0; x<mapCols; x++) {
-            int u,v,a;
             if(channels == 3) {
-                cv::Vec3s mapPixel = m_map.at<cv::Vec3s>(x,y);
+                cv::Vec3w pixel = m_map.at<cv::Vec3w>(y,x);
                 // CV stores pixels in BGR order
-                u = ((unsigned long)mapPixel[2]*(unsigned long)size.width()) >> 16;
-                v = ((unsigned long)mapPixel[1]*(unsigned long)size.height()) >> 16;
-                a = -1;
+                mapPixel = cv::Vec3w(pixel[2], pixel[1], -1);
             } else {
-                cv::Vec4s mapPixel = m_map.at<cv::Vec4s>(y,x);
+                cv::Vec4s pixel = m_map.at<cv::Vec4s>(y,x);
                 // CV stores pixels in BGR order
-                u = mapPixel[2]*size.width() >> 16;
-                v = mapPixel[1]*size.height() >> 16;
-                a = mapPixel[3];
+                mapPixel = cv::Vec3w(pixel[2], pixel[1], pixel[3]);
             }
-            if(u<0) u=size.width()+u;
-            if(v<0) v=size.height()+v;
+            u = (unsigned long)mapPixel[0] * uvMultiplier - uvOffset.x();
+            v = (unsigned long)mapPixel[1] * uvMultiplier - uvOffset.y();
+            a = mapPixel[2];
 
-            cv::Vec4s &newMapPixel = newMap.at<cv::Vec4s>(v,u);
-            if((uint)newMapPixel[3] < a) {
-                int newX = (x << 16) / mapCols;
-                int newY = (y << 16) / mapRows;
+            if(u<size.width() && v<size.height()) {
+                cv::Vec4w &newMapPixel = newMap.at<cv::Vec4w>(v,u);
+                if(newMapPixel[3] < a) {
+                    int newX = (x << 16) / mapCols;
+                    int newY = (y << 16) / mapRows;
 
-                if(newX<0) newX=mapCols+newX;
-                if(newY<0) newY=mapRows+newY;
-
-                newMapPixel[0] = 0;
-                newMapPixel[1] = newY;
-                newMapPixel[2] = newX;
-                newMapPixel[3] = a;
+                    // CV stores pixels in BGR order
+                    newMapPixel[0] = 0;
+                    newMapPixel[1] = newY;
+                    newMapPixel[2] = newX;
+                    newMapPixel[3] = a;
+                }
             }
-
         }
     }
 
@@ -86,6 +92,16 @@ cv::Mat MapOperations::despeckle()
     cv::Mat newMap = m_map.clone();
 
     // TODO: despeckle
+    m_map = newMap;
+    return m_map;
+}
+
+cv::Mat MapOperations::fillHoles()
+{
+    // NB: this function should be made alphachannel-aware
+    cv::Mat newMap = m_map.clone();
+
+    // TODO: fill holes
     m_map = newMap;
     return m_map;
 }

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'inversedialog.ui'
 **
-** Created: Sat Feb 23 13:29:38 2013
+** Created: Fri Mar 1 14:52:28 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -21,6 +21,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QLineEdit>
+#include <QtGui/QSpinBox>
 
 QT_BEGIN_NAMESPACE
 
@@ -35,6 +36,8 @@ public:
     QLabel *labelHeight;
     QComboBox *comboPresets;
     QCheckBox *checkCentered;
+    QSpinBox *spinBoxDepth;
+    QLabel *labelDepth;
 
     void setupUi(QDialog *InverseDialog)
     {
@@ -57,11 +60,11 @@ public:
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
         lineEditWidth = new QLineEdit(InverseDialog);
         lineEditWidth->setObjectName(QString::fromUtf8("lineEditWidth"));
-        lineEditWidth->setGeometry(QRect(70, 56, 51, 20));
+        lineEditWidth->setGeometry(QRect(70, 56, 61, 20));
         lineEditWidth->setMaxLength(4);
         lineEditHeight = new QLineEdit(InverseDialog);
         lineEditHeight->setObjectName(QString::fromUtf8("lineEditHeight"));
-        lineEditHeight->setGeometry(QRect(205, 56, 51, 20));
+        lineEditHeight->setGeometry(QRect(195, 56, 61, 20));
         lineEditHeight->setMaxLength(4);
         labelPresets = new QLabel(InverseDialog);
         labelPresets->setObjectName(QString::fromUtf8("labelPresets"));
@@ -77,12 +80,23 @@ public:
         comboPresets->setGeometry(QRect(70, 16, 191, 22));
         checkCentered = new QCheckBox(InverseDialog);
         checkCentered->setObjectName(QString::fromUtf8("checkCentered"));
-        checkCentered->setGeometry(QRect(20, 95, 241, 17));
+        checkCentered->setGeometry(QRect(145, 92, 111, 17));
+        checkCentered->setChecked(true);
+        spinBoxDepth = new QSpinBox(InverseDialog);
+        spinBoxDepth->setObjectName(QString::fromUtf8("spinBoxDepth"));
+        spinBoxDepth->setGeometry(QRect(70, 90, 61, 22));
+        spinBoxDepth->setMinimum(4);
+        spinBoxDepth->setMaximum(15);
+        labelDepth = new QLabel(InverseDialog);
+        labelDepth->setObjectName(QString::fromUtf8("labelDepth"));
+        labelDepth->setGeometry(QRect(20, 95, 46, 13));
 
         retranslateUi(InverseDialog);
         QObject::connect(buttonBox, SIGNAL(accepted()), InverseDialog, SLOT(accept()));
         QObject::connect(buttonBox, SIGNAL(rejected()), InverseDialog, SLOT(reject()));
         QObject::connect(comboPresets, SIGNAL(currentIndexChanged(int)), InverseDialog, SLOT(selectPreset(int)));
+        QObject::connect(lineEditWidth, SIGNAL(textChanged(QString)), InverseDialog, SLOT(changeSize()));
+        QObject::connect(lineEditHeight, SIGNAL(textChanged(QString)), InverseDialog, SLOT(changeSize()));
 
         QMetaObject::connectSlotsByName(InverseDialog);
     } // setupUi
@@ -109,6 +123,8 @@ public:
          << QApplication::translate("InverseDialog", "Triple WXGA (3840 x 800)", "3840x800", QApplication::UnicodeUTF8)
         );
         checkCentered->setText(QApplication::translate("InverseDialog", "Centered patterns", 0, QApplication::UnicodeUTF8));
+        spinBoxDepth->setSuffix(QApplication::translate("InverseDialog", " bits", 0, QApplication::UnicodeUTF8));
+        labelDepth->setText(QApplication::translate("InverseDialog", "Depth:", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };
