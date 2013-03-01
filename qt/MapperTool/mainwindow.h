@@ -49,13 +49,18 @@ private slots:
     void showPatternsDialog();
     void showInverseDialog();
 
-    void editUndo();
-    void editRedo();
-
     void fileRevert();
     void fileOpen();
     void fileSave();
     void fileSaveAs();
+
+    void editUndo();
+    void editRedo();
+
+    void filterGaussian();
+    void filterMedian();
+    void filterDespeckle();
+    void filterFillHoles();
 
     void zoomIn();
     void zoomOut();

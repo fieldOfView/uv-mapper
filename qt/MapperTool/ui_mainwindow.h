@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Mar 1 15:59:54 2013
+** Created: Fri Mar 1 16:58:32 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -262,6 +262,10 @@ public:
         QObject::connect(actionCreateInverse, SIGNAL(triggered()), MainWindow, SLOT(showInverseDialog()));
         QObject::connect(actionEditUndo, SIGNAL(triggered()), MainWindow, SLOT(editUndo()));
         QObject::connect(actionEditRedo, SIGNAL(triggered()), MainWindow, SLOT(editRedo()));
+        QObject::connect(actionFilterMedian, SIGNAL(triggered()), MainWindow, SLOT(filterMedian()));
+        QObject::connect(actionFilterGaussian, SIGNAL(triggered()), MainWindow, SLOT(filterGaussian()));
+        QObject::connect(actionFilterDespeckle, SIGNAL(triggered()), MainWindow, SLOT(filterDespeckle()));
+        QObject::connect(actionFilterHoles, SIGNAL(triggered()), MainWindow, SLOT(filterFillHoles()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
