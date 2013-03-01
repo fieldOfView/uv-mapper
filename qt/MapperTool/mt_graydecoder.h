@@ -23,7 +23,10 @@ public:
 
     void setState(MTGD_STATE state);
     static cv::Mat* loadFile(std::string filepath);
-    cv::Mat* findExtremePixels(std::vector<cv::Mat*>* originalsPtr);
+    //cv::Mat* findExtremePixels(std::vector<cv::Mat*>* originalsPtr);
+    cv::Mat* findExtremeMinPixels(std::vector<cv::Mat*>* originalsPtr);
+    cv::Mat* findExtremeMaxPixels(std::vector<cv::Mat*>* originalsPtr);
+    cv::Mat* findExtremeMinMaxDiffPixels(cv::Mat& min, cv::Mat& max);
     cv::Mat* thresholdImage(cv::Mat* imgPtr);
     cv::Mat* thresholdedImagesToGrayCode(std::vector<cv::Mat*>* thresholdedPtr);
 

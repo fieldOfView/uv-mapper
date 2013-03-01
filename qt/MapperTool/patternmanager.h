@@ -14,8 +14,8 @@ class PatternManager : public QObject
 public:
     PatternManager();
     void clearOriginalPatterns();
+    //this could be a slot?
     bool loadFiles( QStringList fileNames);
-    bool thresholdImages();
     //bool save( QString fileName = NULL );
 
     cv::Mat* getMat(int index);
@@ -23,17 +23,24 @@ public:
 
 public slots:
     void fileLoadFinished();
+    void thresholdImages();
+    void thresholdImageFinished();
 
 signals:
-    void fileLoaded(int index);
     void patternSetSizeSet(int index);
+    void fileLoaded(int index);
+    void originalPatternsLoaded();
+    void imgThresholded(int index);
+    void originalPatternsThresholded();
 
 private:
 
     //QVector<qt_grayDecoder*> m_decoders;
+    int patternSetSize;
     QVector<QString> m_fileNames;
     QVector<cv::Mat*> m_originalPatterns;
     QVector<cv::Mat*> m_thresholdedPatterns;
+    cv::Mat min, max, diff;
     QQueue<QFutureWatcher<cv::Mat*>*> m_mtWatchers;
 
     ThreadSafeQueue<std::string> m_filesToLoad;

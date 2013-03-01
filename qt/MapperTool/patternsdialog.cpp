@@ -22,6 +22,7 @@ PatternsDialog::PatternsDialog(QWidget *parent, GLWidget *parentGlWidget) :
     m_patternManager = new PatternManager();
     connect(m_patternManager, SIGNAL(fileLoaded(int)), this, SLOT(fileLoadProgress(int)));
     connect(m_patternManager, SIGNAL(patternSetSizeSet(int)), this, SLOT(setProgressDialogMax(int)));
+    connect(m_patternManager, SIGNAL(originalPatternsLoaded()), m_patternManager, SLOT(thresholdImages()));
 }
 
 PatternsDialog::~PatternsDialog()
@@ -42,7 +43,7 @@ void PatternsDialog::selectPatterns()
 
     m_patternManager->clearOriginalPatterns();
     m_patternManager->loadFiles(fileNames);
-    m_patternManager->thresholdImages();
+    //m_patternManager->thresholdImages();
 }
 
 void PatternsDialog::selectPatternFromList(int index)

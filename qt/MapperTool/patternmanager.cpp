@@ -29,6 +29,7 @@ bool PatternManager::loadFiles(QStringList fileNames) {
         return false;
     }
 
+    patternSetSize = fileNames.size();
     emit patternSetSizeSet(fileNames.size());
     QStringListIterator it(fileNames);
     while ( it.hasNext() ) {
@@ -49,26 +50,20 @@ bool PatternManager::loadFiles(QStringList fileNames) {
         //m_mtWatchers.enqueue(mtWatcher);
         qDebug() << "file "<< fileName << " loading";
     }
-
-    //This while loop is blocking any signalling QT wants to do so no Signals are parsed
-    /*while(!m_mtWatchers.isEmpty()) {
-        QFutureWatcher<cv::Mat*>* watch = m_mtWatchers.dequeue();
-        qDebug() << watch->isRunning();
-        cv::Mat* t = watch->result();
-        this->m_originalPatterns.push_back(watch->result());
-        qDebug("file loaded");
-        delete watch;
-    }*/
     return true;
 }
 
 cv::Mat* PatternManager::getMat(int index) {
 
+    if(index < m_thresholdedPatterns.size()) {
+        qDebug() <<"return thres" << m_thresholdedPatterns.at(index)->at<uint>(100);
+        return m_thresholdedPatterns.at(index);
+    }
     return m_originalPatterns.at(index);
 }
 
-void PatternManager::fileLoadFinished() {//cv::Mat *file) {
-    //this->m_originalPatterns.push_back(file);
+void PatternManager::fileLoadFinished()
+{
     qDebug("file loaded signal");
     //QProgressBar* watcher2 = qobject_cast<QProgressBar*>(QObject::sender());
     QFutureWatcher<cv::Mat*>* watcher = static_cast<QFutureWatcher<cv::Mat*>*>(QObject::sender());
@@ -76,35 +71,48 @@ void PatternManager::fileLoadFinished() {//cv::Mat *file) {
     //Do I need to delete the watcher now???
     delete watcher;
     emit fileLoaded(this->m_originalPatterns.size());
+    if(this->m_originalPatterns.size() == patternSetSize) {
+        emit originalPatternsLoaded();
+    }
 }
 
-bool PatternManager::thresholdImages()
+void PatternManager::thresholdImages()
 {
     qDebug() << "img thresholding";
     if (!m_mtWatchers.isEmpty()) {
         qDebug("Error: the watchers queue is not empty!");
-        return false;
+        return;
     }
+    mt_grayDecoder decoder2;
+    std::vector<cv::Mat*> orgStdVec = m_originalPatterns.toStdVector();
+    min = *decoder2.findExtremeMinPixels(&orgStdVec);
+    max = *decoder2.findExtremeMaxPixels(&orgStdVec);
 
     QVectorIterator<cv::Mat*> it(m_originalPatterns);
     while ( it.hasNext() ) {
         cv::Mat* origPtr = it.next();
         QFutureWatcher<cv::Mat*>* mtWatcher = new QFutureWatcher<cv::Mat*>();
         //QObject::connect(mtWatcher, SIGNAL(finished)), this, SLOT(fileLoaded(cv::Mat*))
+        QObject::connect(mtWatcher, SIGNAL(finished()), this, SLOT(thresholdImageFinished()));
+
         mt_grayDecoder decoder;
         QFuture<cv::Mat*> thresholder = QtConcurrent::run(decoder, &mt_grayDecoder::thresholdImage, origPtr);
         mtWatcher->setFuture(thresholder);
-        m_mtWatchers.enqueue(mtWatcher);
+        //m_mtWatchers.enqueue(mtWatcher);
         qDebug() << "img thresholding";
     }
+}
 
-    while(!m_mtWatchers.isEmpty()) {
-        QFutureWatcher<cv::Mat*>* watch = m_mtWatchers.dequeue();
-        this->m_thresholdedPatterns.push_back(watch->result());
-        qDebug("Image thresholded");
-        delete watch;
+void PatternManager::thresholdImageFinished() {
+    QFutureWatcher<cv::Mat*>* watcher = static_cast<QFutureWatcher<cv::Mat*>*>(QObject::sender());
+    this->m_thresholdedPatterns.push_back(watcher->result());
+    qDebug() << "Image thresholded " << watcher->result()->depth();
+    delete watcher;
+    emit imgThresholded(this->m_thresholdedPatterns.size());
+    if(this->m_thresholdedPatterns.size() == patternSetSize) {
+        emit originalPatternsThresholded();
+        qDebug("All images thresholded");
     }
-    return true;
 }
 
 GLuint PatternManager::getTexture(int index)

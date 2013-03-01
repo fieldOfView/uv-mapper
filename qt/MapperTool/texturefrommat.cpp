@@ -13,18 +13,21 @@ GLuint makeTextureFromMat(cv::Mat& mat, GLuint texture)
         break;
     }
 
+    GLint glFormat;
     switch (mat.channels()) {
+    case 1:
+        type = GL_LUMINANCE;
+        glFormat = (format == GL_UNSIGNED_BYTE)?GL_LUMINANCE8:GL_LUMINANCE16;
+        break;
     case 3:
         type = GL_BGR_EXT;
+        glFormat = (format == GL_UNSIGNED_BYTE)?GL_RGB8:GL_RGB16;
         break;
     case 4:
         type = GL_BGRA_EXT;
+        glFormat = (format == GL_UNSIGNED_BYTE)?GL_RGBA8:GL_RGBA16;
         break;
     }
-
-    GLint glFormat = (type == GL_BGR_EXT)?
-                ((format == GL_UNSIGNED_BYTE)?GL_RGB8:GL_RGB16):
-                ((format == GL_UNSIGNED_BYTE)?GL_RGBA8:GL_RGBA16);
 
     glBindTexture( GL_TEXTURE_2D, texture );
 
