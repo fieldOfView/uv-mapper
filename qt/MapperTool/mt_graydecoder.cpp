@@ -1,4 +1,5 @@
 #include "mt_graydecoder.h"
+#include <QDebug>
 
 mt_grayDecoder::mt_grayDecoder()
 {
@@ -52,13 +53,37 @@ cv::Mat* mt_grayDecoder::findExtremeMinMaxDiffPixels(cv::Mat& min, cv::Mat& max)
     return diff;
 }
 
-cv::Mat* mt_grayDecoder::thresholdImage(cv::Mat *img) {
+cv::Mat* mt_grayDecoder::thresholdImage(cv::Mat *img, cv::Mat min, cv::Mat diff) {
 
     std::cout << "Do thresholdImage\n";
-    cv::Mat gray;
+    /*cv::Mat gray;
     cv::Mat* thresPtr = new cv::Mat();
     cv::cvtColor( *img, gray, CV_RGB2GRAY );
     cv::threshold( gray, *thresPtr, 0, 255, CV_THRESH_BINARY);
+    return thresPtr;
+    */
+    //create thresholded image
+    cv::Mat optimised;
+    cv::Mat* thresPtr = new cv::Mat();
+
+    //optimise image based on min and diff
+    try {
+        cv::subtract(*img, min, optimised);
+        cv::divide(optimised, diff, optimised);
+    }
+    catch(std::exception e) {
+        printf("Exception1: [%s]\n", e.what());
+    }
+    try {
+        cv::cvtColor( optimised, *thresPtr, CV_RGB2GRAY );
+        cv::threshold( *thresPtr, *thresPtr, 0, 255, CV_THRESH_BINARY);
+    }
+    catch(std::exception e) {
+        printf("Exception: [%s]\n", e.what());
+    }
+    optimised.release();
+    //diff.release();
+    //min.release();
     return thresPtr;
 }
 
