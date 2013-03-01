@@ -54,6 +54,14 @@ private slots:
     void fileSave();
     void fileSaveAs();
 
+    void editUndo();
+    void editRedo();
+
+    void filterGaussian();
+    void filterMedian();
+    void filterDespeckle();
+    void filterFillHoles();
+
     void zoomIn();
     void zoomOut();
     void zoomReset();

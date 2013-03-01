@@ -2,14 +2,17 @@
 #include "ui_inversedialog.h"
 
 #include <QDesktopWidget>
+#include <QDebug>
+
+#include <algorithm>
 
 InverseDialog::InverseDialog(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::InverseDialog)
 {
     m_ui->setupUi(this);
-    m_ui->lineEditWidth->setValidator(new QIntValidator(1, 8192, this));
-    m_ui->lineEditHeight->setValidator(new QIntValidator(1, 8192, this));
+    m_ui->lineEditWidth->setValidator(new QIntValidator(16, 8192, this));
+    m_ui->lineEditHeight->setValidator(new QIntValidator(16, 8192, this));
 
     selectPreset(0);
 }
@@ -66,7 +69,26 @@ void InverseDialog::selectPreset(int presetNr)
     }
 }
 
+void InverseDialog::changeSize()
+{
+    int bits = 0, maxDimension = std::max(m_ui->lineEditWidth->text().toInt(), m_ui->lineEditHeight->text().toInt());
+    maxDimension--;
+    while (maxDimension >>= 1) ++bits;
+    bits++;
+    m_ui->spinBoxDepth->setValue(bits);
+}
+
 QSize InverseDialog::getSizeSetting()
 {
     return QSize( m_ui->lineEditWidth->text().toInt(), m_ui->lineEditHeight->text().toInt() );
+}
+
+uint InverseDialog::getDepthSetting()
+{
+    return m_ui->spinBoxDepth->value();
+}
+
+bool InverseDialog::getCenteredSetting()
+{
+    return m_ui->checkCentered->isChecked();
 }

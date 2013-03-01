@@ -121,8 +121,7 @@ void MainWindow::showInverseDialog()
         return;
 
     MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
-    m_uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), true));
-    m_glWidget->setMapTexture(m_uvMap->getTexture());
+    m_uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), inverseDialog->getDepthSetting(), inverseDialog->getCenteredSetting()));
 
     delete mapOperation;
     delete inverseDialog;
@@ -164,6 +163,59 @@ void MainWindow::fileSaveAs()
         m_settings.setValue("DataPath", m_dataPath);
     }
 }
+
+void MainWindow::editUndo()
+{
+    m_uvMap->undo();
+    m_glWidget->repaint();
+}
+
+void MainWindow::editRedo()
+{
+    m_uvMap->redo();
+    m_glWidget->repaint();
+}
+
+void MainWindow::filterGaussian()
+{
+    MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
+    m_uvMap->setMat(mapOperation->guassianBlur(1.0));
+
+    delete mapOperation;
+
+    m_glWidget->repaint();
+}
+
+void MainWindow::filterMedian()
+{
+    MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
+    m_uvMap->setMat(mapOperation->medianBlur(3.0));
+
+    delete mapOperation;
+
+    m_glWidget->repaint();
+}
+
+void MainWindow::filterDespeckle()
+{
+    MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
+    m_uvMap->setMat(mapOperation->despeckle());
+
+    delete mapOperation;
+
+    m_glWidget->repaint();
+}
+
+void MainWindow::filterFillHoles()
+{
+    MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
+    m_uvMap->setMat(mapOperation->fillHoles());
+
+    delete mapOperation;
+
+    m_glWidget->repaint();
+}
+
 
 void MainWindow::toggleFullscreen()
 {
