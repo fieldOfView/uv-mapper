@@ -124,7 +124,7 @@ win32 {
                   opencv_imgproc240.target = release/opencv_imgproc240.dll
 
                   QMAKE_EXTRA_TARGETS += opencv_core240 opencv_highgui240 opencv_imgproc240
-                  PRE_TARGETDEPS += release/opencv_core240.dll release/opencv_highgui240.dll release/opencv_imgproc
+                  PRE_TARGETDEPS += release/opencv_core240.dll release/opencv_highgui240.dll release/opencv_imgproc240.dll
 
           } else {
                   LIBS += -L$${OPENCVLIBDIR} \
