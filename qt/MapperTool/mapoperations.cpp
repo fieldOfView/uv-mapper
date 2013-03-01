@@ -1,5 +1,6 @@
 #include "mapoperations.h"
 #include <QDebug>
+#include <QPoint>
 
 MapOperations::MapOperations(cv::Mat initialMap)
 {
@@ -21,11 +22,9 @@ cv::Mat MapOperations::inverse(QSize size, uint bits, bool centered)
     const uint powerOf2Size = (uint)pow( 2., (double)bits );
 
     double uvMultiplier = (double)powerOf2Size / 65536.0;
-    QPoint uvOffset;
+    QPoint uvOffset(0,0);
     if(centered)
         uvOffset = (QPoint(powerOf2Size, powerOf2Size) - QPoint(size.width(), size.height())) / 2;
-    else
-        uvOffset = QPoint(0,0);
 
     uint x,y;
     ushort u,v,a;

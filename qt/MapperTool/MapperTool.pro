@@ -61,14 +61,17 @@ OTHER_FILES += \
     resources/testGrid_frag.glsl
 
 unix {
-        LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui -lopencv_imgproc
+    LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui -lopencv_imgproc
 }
 
 macx {
     QMAKE_CXXFLAGS_WARN_ON += -Wno-reorder
+    ICON = $$PWD/resources/icon.icns
+    QMAKE_INFO_PLIST = $$PWD/resources/Info.plist
 }
 
 win32 {
+    RC_FILE = $$PWD/resources/resource.rc
     # Copy Qt runtime
 
     CONFIG(debug, debug|release) {

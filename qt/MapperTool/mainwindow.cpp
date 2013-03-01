@@ -122,6 +122,7 @@ void MainWindow::showInverseDialog()
 
     MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
     m_uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), inverseDialog->getDepthSetting(), inverseDialog->getCenteredSetting()));
+    m_glWidget->repaint();
 
     delete mapOperation;
     delete inverseDialog;
@@ -131,6 +132,8 @@ void MainWindow::fileRevert()
 {
     if(!m_uvMap->load(""))
         fileOpen();
+
+    m_glWidget->repaint();
 }
 
 void MainWindow::fileOpen()
