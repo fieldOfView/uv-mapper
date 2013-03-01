@@ -28,9 +28,14 @@ bool PatternManager::loadFiles(QStringList fileNames) {
         qDebug("Error: the watchers queue is not empty!");
         return false;
     }
+    //clear current contents
+    clearOriginalPatterns();
 
+    //save the size of the list of filenames
     patternSetSize = fileNames.size();
     emit patternSetSizeSet(fileNames.size());
+
+    //iterate the filenames
     QStringListIterator it(fileNames);
     while ( it.hasNext() ) {
         QString fileName = it.next();
@@ -83,10 +88,12 @@ void PatternManager::thresholdImages()
         qDebug("Error: the watchers queue is not empty!");
         return;
     }
+    //Fix me this synchronous logic and not threadsafe...
     mt_grayDecoder decoder2;
     std::vector<cv::Mat*> orgStdVec = m_originalPatterns.toStdVector();
     min = *decoder2.findExtremeMinPixels(&orgStdVec);
     max = *decoder2.findExtremeMaxPixels(&orgStdVec);
+    diff = *decoder2.findExtremeMinMaxDiffPixels(min, max);
 
     QVectorIterator<cv::Mat*> it(m_originalPatterns);
     while ( it.hasNext() ) {
@@ -96,7 +103,7 @@ void PatternManager::thresholdImages()
         QObject::connect(mtWatcher, SIGNAL(finished()), this, SLOT(thresholdImageFinished()));
 
         mt_grayDecoder decoder;
-        QFuture<cv::Mat*> thresholder = QtConcurrent::run(decoder, &mt_grayDecoder::thresholdImage, origPtr);
+        QFuture<cv::Mat*> thresholder = QtConcurrent::run(decoder, &mt_grayDecoder::thresholdImage, origPtr, min, diff);
         mtWatcher->setFuture(thresholder);
         //m_mtWatchers.enqueue(mtWatcher);
         qDebug() << "img thresholding";

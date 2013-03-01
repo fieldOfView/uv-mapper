@@ -27,7 +27,7 @@ public:
     cv::Mat* findExtremeMinPixels(std::vector<cv::Mat*>* originalsPtr);
     cv::Mat* findExtremeMaxPixels(std::vector<cv::Mat*>* originalsPtr);
     cv::Mat* findExtremeMinMaxDiffPixels(cv::Mat& min, cv::Mat& max);
-    cv::Mat* thresholdImage(cv::Mat* imgPtr);
+    cv::Mat* thresholdImage(cv::Mat* imgPtr, cv::Mat min, cv::Mat diff);
     cv::Mat* thresholdedImagesToGrayCode(std::vector<cv::Mat*>* thresholdedPtr);
 
 protected:

@@ -21,6 +21,7 @@ PatternsDialog::PatternsDialog(QWidget *parent, GLWidget *parentGlWidget) :
     glGenTextures(1, &m_texture);
     m_patternManager = new PatternManager();
     connect(m_patternManager, SIGNAL(fileLoaded(int)), this, SLOT(fileLoadProgress(int)));
+    connect(m_patternManager, SIGNAL(imgThresholded(int)), this, SLOT(fileLoadProgress(int)));
     connect(m_patternManager, SIGNAL(patternSetSizeSet(int)), this, SLOT(setProgressDialogMax(int)));
     connect(m_patternManager, SIGNAL(originalPatternsLoaded()), m_patternManager, SLOT(thresholdImages()));
 }
@@ -65,14 +66,14 @@ void PatternsDialog::selectPatternFromList(QListWidgetItem *listItem)
 }
 
 void PatternsDialog::fileLoadProgress(int index) {
-    if ( index == 1 ) {
-        m_ui->progressBar->setEnabled(true);
-    }
-    m_ui->progressBar->setValue(index);
 
     if ( index >= m_ui->progressBar->maximum() ) {
 
         m_ui->progressBar->setEnabled(false);
+    }
+    else {
+        m_ui->progressBar->setEnabled(true);
+        m_ui->progressBar->setValue(index);
     }
     selectPatternFromList(index-1);
 }
