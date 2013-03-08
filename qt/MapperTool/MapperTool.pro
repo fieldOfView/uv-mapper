@@ -61,7 +61,7 @@ OTHER_FILES += \
     resources/testGrid_frag.glsl
 
 unix {
-    LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui -lopencv_imgproc
+    LIBS += -I/usr/include/opencv -lopencv_core -lopencv_highgui -lopencv_imgproc -lopencv_photo
 }
 
 macx {
@@ -110,11 +110,13 @@ win32 {
                   LIBS += -L$${OPENCVLIBDIR} \
                           -lopencv_core240 \
                           -lopencv_highgui240 \
-                          -lopencv_imgproc240
+                          -lopencv_imgproc240 \
+                          -lopencv_photo240
                   PRE_TARGETDEPS += \
                           $${OPENCVLIBDIR}/opencv_core240.lib \
                           $${OPENCVLIBDIR}/opencv_highgui240.lib \
-                          $${OPENCVLIBDIR}/opencv_imgproc240.lib
+                          $${OPENCVLIBDIR}/opencv_imgproc240.lib \
+                          $${OPENCVLIBDIR}/opencv_photo240.lib
 
                   opencv_core240.commands = copy /Y $${OPENCVBINDIR}\\opencv_core240.dll release
                   opencv_core240.target = release/opencv_core240.dll
@@ -122,19 +124,23 @@ win32 {
                   opencv_highgui240.target = release/opencv_highgui240.dll
                   opencv_imgproc240.commands = copy /Y $${OPENCVBINDIR}\\opencv_imgproc240.dll release
                   opencv_imgproc240.target = release/opencv_imgproc240.dll
+                  opencv_photo240.commands = copy /Y $${OPENCVBINDIR}\\opencv_photo240.dll release
+                  opencv_photo240.target = release/opencv_photo240.dll
 
-                  QMAKE_EXTRA_TARGETS += opencv_core240 opencv_highgui240 opencv_imgproc240
-                  PRE_TARGETDEPS += release/opencv_core240.dll release/opencv_highgui240.dll release/opencv_imgproc240.dll
+                  QMAKE_EXTRA_TARGETS += opencv_core240 opencv_highgui240 opencv_imgproc240 opencv_photo240
+                  PRE_TARGETDEPS += release/opencv_core240.dll release/opencv_highgui240.dll release/opencv_imgproc240.dll release/opencv_photo240.dll
 
           } else {
                   LIBS += -L$${OPENCVLIBDIR} \
                           -lopencv_core240d \
                           -lopencv_highgui240d \
-                          -lopencv_imgproc240d
+                          -lopencv_imgproc240d \
+                          -lopencv_photo240d
                   PRE_TARGETDEPS += \
                           $${OPENCVLIBDIR}/opencv_core240d.lib \
                           $${OPENCVLIBDIR}/opencv_highgui240d.lib \
                           $${OPENCVLIBDIR}/opencv_imgproc240d.lib \
+                          $${OPENCVLIBDIR}/opencv_photo240d.lib
 
                   opencv_core240d.commands = copy /Y $${OPENCVBINDIR}\\opencv_core240d.dll debug
                   opencv_core240d.target = debug/opencv_core240d.dll
@@ -142,9 +148,11 @@ win32 {
                   opencv_highgui240d.target = debug/opencv_highgui240d.dll
                   opencv_imgproc240d.commands = copy /Y $${OPENCVBINDIR}\\opencv_imgproc240d.dll debug
                   opencv_imgproc240d.target = debug/opencv_imgproc240d.dll
+                  opencv_photo240d.commands = copy /Y $${OPENCVBINDIR}\\opencv_photo240d.dll debug
+                  opencv_photo240d.target = debug/opencv_photo240d.dll
 
-                  QMAKE_EXTRA_TARGETS += opencv_core240d opencv_highgui240d opencv_imgproc240d
-                  PRE_TARGETDEPS += debug/opencv_core240d.dll debug/opencv_highgui240d.dll debug/opencv_imgproc240d.dll
+                  QMAKE_EXTRA_TARGETS += opencv_core240d opencv_highgui240d opencv_imgproc240d opencv_photo240d
+                  PRE_TARGETDEPS += debug/opencv_core240d.dll debug/opencv_highgui240d.dll debug/opencv_imgproc240d.dll debug/opencv_photo240d.dll
 
           }
     } else {
