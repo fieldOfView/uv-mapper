@@ -105,10 +105,8 @@ cv::Mat MapOperations::fillHoles()
     cv::Mat smallMap;
     cv::resize(newMap, smallMap, cv::Size(512, 512),0,0,cv::INTER_NEAREST);
 
-    cv::Mat alpha16(smallMap.rows, smallMap.cols, CV_16UC1);
-    cv::Mat alpha(smallMap.rows, smallMap.cols, CV_8UC1);
-    cv::Mat rgb16(smallMap.rows, smallMap.cols, CV_16UC3);
-    cv::Mat rgb(smallMap.rows, smallMap.cols, CV_8UC3);
+    cv::Mat alpha16(smallMap.rows, smallMap.cols, CV_16UC1), alpha;
+    cv::Mat rgb16(smallMap.rows, smallMap.cols, CV_16UC3), rgb;
 
     cv::Mat resultMats[] = { rgb16, alpha16 };
     int channelMix[] = { 0,0, 1,1, 2,2, 3,3 };
@@ -122,12 +120,16 @@ cv::Mat MapOperations::fillHoles()
     alpha16.convertTo(alpha, CV_8UC1, 1/256., 0);
     alpha16.release();
 
-    cv::Mat filledRgb(smallMap.rows, smallMap.cols, CV_8UC3);
-    cv::Mat filledAlpha(smallMap.rows, smallMap.cols, CV_8UC1);
+    cv::Mat filledRgb;
+    cv::Mat filledAlpha;
     cv::Mat filledRgba(smallMap.rows, smallMap.cols, CV_8UC4);
 
     cv::inpaint(rgb, smallMask, filledRgb, 3, cv::INPAINT_NS);
     cv::inpaint(alpha, smallMask, filledAlpha, 3, cv::INPAINT_NS);
+
+    rgb.release();
+    alpha.release();
+    smallMap.release();
 
     cv::Mat inputMats[] = { filledRgb, filledAlpha };
     cv::mixChannels( inputMats, 2, &filledRgba, 1, channelMix, 4 );
@@ -146,6 +148,8 @@ cv::Mat MapOperations::fillHoles()
     cv::Mat tmpMap16;
     tmpMap.convertTo(tmpMap16, CV_16UC4, 256., 0);
     newMap += tmpMap16;
+
+    tmpMap16.release();
 
     m_map = newMap;
     return m_map;
