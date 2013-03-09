@@ -263,6 +263,11 @@ void MainWindow::selectDisplayTexture()
     m_glWidget->setDisplayTexture(m_displayTexture->getTexture());
 }
 
+void MainWindow::toggleShowTransparency(bool value)
+{
+    m_glWidget->setShowTransparency(value);
+}
+
 void MainWindow::selectTransparencyGrid()
 {
     QAction *action = (QAction *)sender();

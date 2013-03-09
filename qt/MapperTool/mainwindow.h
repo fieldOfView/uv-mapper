@@ -69,6 +69,8 @@ private slots:
 
     void selectDisplayTexture();
     void selectTransparencyGrid();
+
+    void toggleShowTransparency(bool value);
 };
 
 #endif // MAINWINDOW_H

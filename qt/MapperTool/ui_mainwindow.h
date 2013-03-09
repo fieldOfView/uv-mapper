@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Mar 1 16:58:32 2013
+** Created: Sat Mar 9 18:37:28 2013
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -57,6 +57,7 @@ public:
     QAction *actionGridNone;
     QAction *actionGridLight;
     QAction *actionGridDark;
+    QAction *actionShowTransparency;
     QWidget *centralWidget;
     QHBoxLayout *horizontalLayout;
     QMenuBar *menuBar;
@@ -151,6 +152,10 @@ public:
         actionGridDark = new QAction(MainWindow);
         actionGridDark->setObjectName(QString::fromUtf8("actionGridDark"));
         actionGridDark->setCheckable(true);
+        actionShowTransparency = new QAction(MainWindow);
+        actionShowTransparency->setObjectName(QString::fromUtf8("actionShowTransparency"));
+        actionShowTransparency->setCheckable(true);
+        actionShowTransparency->setChecked(true);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -213,6 +218,7 @@ public:
         menuView->addAction(menuZoom->menuAction());
         menuView->addSeparator();
         menuView->addAction(menuBackground->menuAction());
+        menuView->addAction(actionShowTransparency);
         menuView->addSeparator();
         menuView->addAction(actionDisplayUV);
         menuView->addAction(actionDisplayU);
@@ -266,6 +272,7 @@ public:
         QObject::connect(actionFilterGaussian, SIGNAL(triggered()), MainWindow, SLOT(filterGaussian()));
         QObject::connect(actionFilterDespeckle, SIGNAL(triggered()), MainWindow, SLOT(filterDespeckle()));
         QObject::connect(actionFilterHoles, SIGNAL(triggered()), MainWindow, SLOT(filterFillHoles()));
+        QObject::connect(actionShowTransparency, SIGNAL(triggered(bool)), MainWindow, SLOT(toggleShowTransparency(bool)));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -374,8 +381,21 @@ public:
         actionFilterDespeckle->setText(QApplication::translate("MainWindow", "Despeckle...", 0, QApplication::UnicodeUTF8));
         actionFilterHoles->setText(QApplication::translate("MainWindow", "Fill holes...", 0, QApplication::UnicodeUTF8));
         actionGridNone->setText(QApplication::translate("MainWindow", "Black", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionGridNone->setToolTip(QApplication::translate("MainWindow", "Render against a black background", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         actionGridLight->setText(QApplication::translate("MainWindow", "Light grid", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionGridLight->setToolTip(QApplication::translate("MainWindow", "Render against a light grid", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         actionGridDark->setText(QApplication::translate("MainWindow", "Dark grid", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionGridDark->setToolTip(QApplication::translate("MainWindow", "Render against a dark grid", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        actionShowTransparency->setText(QApplication::translate("MainWindow", "Transparency", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionShowTransparency->setToolTip(QApplication::translate("MainWindow", "Toggle rendering with or without transparency", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0, QApplication::UnicodeUTF8));
         menuEdit->setTitle(QApplication::translate("MainWindow", "Edit", 0, QApplication::UnicodeUTF8));
         menuFilter->setTitle(QApplication::translate("MainWindow", "Filter", 0, QApplication::UnicodeUTF8));

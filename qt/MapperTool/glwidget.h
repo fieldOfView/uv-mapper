@@ -70,6 +70,7 @@
        GRID_DARK
      };
 
+     void setShowTransparency(bool show);
      void setTransparencyGrid(TRANSPARENCYGRID_TYPE type);
      void setMapTexture(GLuint texture);
      void setDisplayTexture(GLuint texture);
@@ -111,6 +112,8 @@
      QSize m_widgetSize;
      QRect m_viewport;
      double m_zoomFactor;
+
+     bool m_showTransparency;
 
      TRANSPARENCYGRID_TYPE m_transparencyGridType;
      QPoint m_lastPos;

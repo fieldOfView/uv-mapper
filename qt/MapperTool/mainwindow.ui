@@ -103,6 +103,7 @@
     <addaction name="menuZoom"/>
     <addaction name="separator"/>
     <addaction name="menuBackground"/>
+    <addaction name="actionShowTransparency"/>
     <addaction name="separator"/>
     <addaction name="actionDisplayUV"/>
     <addaction name="actionDisplayU"/>
@@ -404,6 +405,9 @@
    <property name="text">
     <string>Black</string>
    </property>
+   <property name="toolTip">
+    <string>Render against a black background</string>
+   </property>
   </action>
   <action name="actionGridLight">
    <property name="checkable">
@@ -415,6 +419,9 @@
    <property name="text">
     <string>Light grid</string>
    </property>
+   <property name="toolTip">
+    <string>Render against a light grid</string>
+   </property>
   </action>
   <action name="actionGridDark">
    <property name="checkable">
@@ -422,6 +429,23 @@
    </property>
    <property name="text">
     <string>Dark grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Render against a dark grid</string>
+   </property>
+  </action>
+  <action name="actionShowTransparency">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Transparency</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle rendering with or without transparency</string>
    </property>
   </action>
  </widget>
@@ -894,6 +918,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionShowTransparency</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>toggleShowTransparency(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>359</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>toggleFullscreen()</slot>
@@ -917,5 +957,6 @@
   <slot>filterMedian()</slot>
   <slot>filterDespeckle()</slot>
   <slot>filterFillHoles()</slot>
+  <slot>toggleShowTransparency(bool)</slot>
  </slots>
 </ui>

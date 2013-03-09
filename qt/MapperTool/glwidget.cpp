@@ -47,7 +47,7 @@ GLWidget::GLWidget(QWidget *parent, QGLWidget *shareWidget)
       m_mapSize(1,1),m_rawSize(1,1),
       m_mapTexture(0),m_rawTexture(0),
       m_zoomFactor(1.0),
-      m_transparencyGridType(GRID_LIGHT),
+      m_showTransparency(true), m_transparencyGridType(GRID_LIGHT),
       m_uvMapProgram(0), m_gridProgram(0),
       m_displayMode(MODE_UV)
 {
@@ -161,6 +161,7 @@ void GLWidget::paintGL()
         m_uvMapProgram->bind();
         m_uvMapProgram->setUniformValue("mapTex", 0);
         m_uvMapProgram->setUniformValue("displayTex", 1);
+        m_uvMapProgram->setUniformValue("transparency", m_showTransparency);
         break;
     case MODE_RAW:
         glActiveTexture(GL_TEXTURE0);
@@ -263,6 +264,12 @@ void GLWidget::setMapTexture(GLuint texture)
 void GLWidget::setDisplayTexture(GLuint texture)
 {
     m_displayTexture = texture;
+    repaint();
+}
+
+void GLWidget::setShowTransparency(bool show)
+{
+    m_showTransparency = show;
     repaint();
 }
 
