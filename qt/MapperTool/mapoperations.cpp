@@ -69,10 +69,37 @@ cv::Mat MapOperations::inverse(QSize size, uint bits, bool centered)
 
 cv::Mat MapOperations::guassianBlur(double radius)
 {
-    // NB: this function should be made alphachannel-aware
     cv::Mat newMap = m_map.clone();
 
-    cv::GaussianBlur(m_map, newMap, cv::Size(), radius);
+    // This gaussian filter is alpha-aware
+    // red & green are first multiplied by alpha,
+    // then all three channels are blurred and
+    // finally red and green are divided by the (blurred) alpha
+
+    cv::Mat red(newMap.rows, newMap.cols, CV_16UC1);
+    cv::Mat green(newMap.rows, newMap.cols, CV_16UC1);
+    cv::Mat alpha(newMap.rows, newMap.cols, CV_16UC1);
+    cv::Mat mats[] = { red, green, alpha };
+
+    // CV stores pixels in BGR order
+    // We're not interested in the blue channel
+    int mixSplit[] = { 2,0, 1,1, 3,2 };
+    int mixMerge[] = { 0,2, 1,1, 2,3 };
+
+    mixChannels(&newMap, 1, mats, 3, mixSplit, 3);
+
+    multiply(red, alpha, red, 1./65536);
+    multiply(green, alpha, green, 1./65536);
+
+    cv::GaussianBlur(red, red, cv::Size(), radius);
+    cv::GaussianBlur(green, green, cv::Size(), radius);
+    cv::GaussianBlur(alpha, alpha, cv::Size(), radius);
+
+    divide(red, alpha, red, 65536);
+    divide(green, alpha, green, 65536);
+
+    mixChannels(mats, 3, &newMap, 1, mixMerge, 3);
+
     m_map = newMap;
     return m_map;
 }
