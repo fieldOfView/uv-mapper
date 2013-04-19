@@ -106,6 +106,8 @@ cv::Mat MapOperations::guassianBlur(double radius)
 
 cv::Mat MapOperations::medianBlur(int radius)
 {
+    radius = (radius % 2 == 0)?radius+1:radius;
+
     // NB: this function should be made alphachannel-aware
     cv::Mat newMap = m_map.clone();
 

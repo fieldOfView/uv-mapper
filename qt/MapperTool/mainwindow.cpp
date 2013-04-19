@@ -3,6 +3,7 @@
 #include "unitmapdialog.h"
 #include "patternsdialog.h"
 #include "inversedialog.h"
+#include "filterdialog.h"
 
 #include "mapoperations.h"
 
@@ -117,8 +118,10 @@ void MainWindow::showInverseDialog()
 {
     InverseDialog *inverseDialog = new InverseDialog(this);
     inverseDialog->setWindowFlags(inverseDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
-    if(!inverseDialog->exec())
+    if(!inverseDialog->exec()) {
+        delete inverseDialog;
         return;
+    }
 
     MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
     m_uvMap->setMat(mapOperation->inverse(inverseDialog->getSizeSetting(), inverseDialog->getDepthSetting(), inverseDialog->getCenteredSetting()));
@@ -181,20 +184,38 @@ void MainWindow::editRedo()
 
 void MainWindow::filterGaussian()
 {
+    FilterDialog *filterDialog = new FilterDialog(this);
+    filterDialog->setWindowFlags(filterDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    filterDialog->setRadiusRange(1.0, 100.0, 1.0);
+    if( !filterDialog->exec()) {
+        delete filterDialog;
+        return;
+    }
+
     MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
-    m_uvMap->setMat(mapOperation->guassianBlur(1.0));
+    m_uvMap->setMat(mapOperation->guassianBlur(filterDialog->getRadius()));
 
     delete mapOperation;
+    delete filterDialog;
 
     m_glWidget->repaint();
 }
 
 void MainWindow::filterMedian()
 {
+    FilterDialog *filterDialog = new FilterDialog(this);
+    filterDialog->setWindowFlags(filterDialog->windowFlags() ^ Qt::WindowContextHelpButtonHint);
+    filterDialog->setRadiusRange(1.0, 5.0, 2.0);
+    if( !filterDialog->exec()) {
+        delete filterDialog;
+        return;
+    }
+
     MapOperations *mapOperation = new MapOperations(m_uvMap->getMat());
-    m_uvMap->setMat(mapOperation->medianBlur(3.0));
+    m_uvMap->setMat(mapOperation->medianBlur(filterDialog->getRadius()));
 
     delete mapOperation;
+    delete filterDialog;
 
     m_glWidget->repaint();
 }
